@@ -2,7 +2,7 @@
 
 This folder holds one plan record per major effort; each record lives in the subfolder matching its status. New plans use `PLAN_TEMPLATE.md` and move subfolders on every status change.
 
-0 plans — 0 Proposed · 0 Agreed · 0 Implemented · 0 Superseded
+1 plan — 0 Proposed · 1 Agreed · 0 Implemented · 0 Superseded
 
 ## Proposed
 
@@ -13,6 +13,7 @@ This folder holds one plan record per major effort; each record lives in the sub
 
 | ID | Plan | Date |
 | --- | --- | --- |
+| [PLAN-VITTORIOGIORDANOYBQ-001](agreed/PLAN-VITTORIOGIORDANOYBQ-001-nido-piano-di-prodotto-web-app-supabase-fase-0-4.md) | Nido - product plan (web app + Supabase, Fase 0-4) | 2026-10-14 |
 
 ## Implemented
 
