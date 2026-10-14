@@ -1,12 +1,12 @@
 ---
 id: KI-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
-status: Open
+status: Fixed
 area: supabase
 severity: Medium
 opened: 2026-10-14
-fixed: null
-related: [TASK-WEB-VITTORIOGIORDANOYBQ-001]
+fixed: 2026-10-14
+related: [TASK-WEB-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
 
@@ -32,7 +32,22 @@ Decide before the Fase 1 calendar ships. Option A (recommended, keeps the privac
 
 ## Fix
 
-[For fixed issues: what was changed and how it was verified.]
+Option A applied (the calendar promises couple/private visibility, so the database must
+enforce it). New migration `supabase/migrations/20261014161502_nido_events_privacy.sql`
+recreates `events_select`, `events_update` and `events_delete` with
+`public.is_couple_member(couple_id) and (visibility = 'couple' or created_by = auth.uid())`;
+the insert check stays unchanged. A couple event remains editable by both partners; a
+private one only by its creator, and the `with check` clause stops a partner from turning
+somebody else's event into a private one.
+
+The same statements ship as the idempotent one-shot `supabase/apply-events-privacy.sql`
+(for the already-migrated project) and `supabase/apply-all.sql` was regenerated for fresh
+projects. Plan §5 now carries the per-table visibility rule (PLAN-VITTORIOGIORDANOYBQ-001).
+
+Verified: policy SQL review; `node tools/scaffold.mjs records check` green afterwards.
+Live verification pending: the owner pastes `supabase/apply-events-privacy.sql` in the SQL
+Editor of project `fvhqirvfyehyyucvwjjz` (the script ends with a SELECT printing the three
+resulting policies), then a partner account must stop seeing the other's private events.
 
 ## Notes
 
