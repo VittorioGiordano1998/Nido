@@ -73,3 +73,53 @@ export function CheckIcon({ className = 'h-5 w-5' }: IconProps) {
     </svg>
   )
 }
+
+export function PlusIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  )
+}
+
+export function LockIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2.5" />
+      <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+    </svg>
+  )
+}
+
+export function TrashIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M5 7h14M10 7V5h4v2M8 7l.8 12h6.4L16 7" />
+      <path d="M10.5 11v4.5M13.5 11v4.5" />
+    </svg>
+  )
+}
+
+export function ChevronLeftIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M14.5 6 9 12l5.5 6" />
+    </svg>
+  )
+}
+
+export function ChevronRightIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M9.5 6 15 12l-5.5 6" />
+    </svg>
+  )
+}
+
+export function CloseIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="m6 6 12 12M18 6 6 18" />
+    </svg>
+  )
+}
