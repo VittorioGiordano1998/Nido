@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react'
 
 export function Spinner({ className = 'h-5 w-5' }: { className?: string }) {
   return (
@@ -54,6 +54,18 @@ export function TextInput({ className = '', ...rest }: InputHTMLAttributes<HTMLI
     <input
       {...rest}
       className={`w-full rounded-xl bg-white px-4 py-3 text-sm text-stone-900 ring-1 ring-stone-200 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-clay-400 ${className}`}
+    />
+  )
+}
+
+export function TextArea({
+  className = '',
+  ...rest
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      {...rest}
+      className={`w-full resize-none rounded-xl bg-white px-4 py-3 text-sm text-stone-900 ring-1 ring-stone-200 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-clay-400 ${className}`}
     />
   )
 }
