@@ -2,16 +2,13 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-7 tasks — 5 Proposed · 0 Ready · 2 In Progress · 0 Blocked · 0 Done · 0 Cancelled
+7 tasks — 2 Proposed · 0 Ready · 5 In Progress · 0 Blocked · 0 Done · 0 Cancelled
 
 ## Proposed
 
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CAL-VITTORIOGIORDANOYBQ-002](proposed/TASK-CAL-VITTORIOGIORDANOYBQ-002-calendar-recurrences-rrule-and-local-reminders.md) | Calendar: recurrences (RRULE) and local reminders | Feature | calendar | Medium | 2026-10-14 | — |
-| [TASK-HOME-VITTORIOGIORDANOYBQ-001](proposed/TASK-HOME-VITTORIOGIORDANOYBQ-001-home-summary-next-events-and-open-tasks.md) | Home summary: next events and open tasks | Feature | home | Medium | 2026-10-14 | — |
-| [TASK-LIST-VITTORIOGIORDANOYBQ-001](proposed/TASK-LIST-VITTORIOGIORDANOYBQ-001-lists-shared-lists-with-check-items-and-assignment.md) | Lists: shared lists with check items and assignment | Feature | lists | High | 2026-10-14 | — |
-| [TASK-NOTE-VITTORIOGIORDANOYBQ-001](proposed/TASK-NOTE-VITTORIOGIORDANOYBQ-001-notes-shared-notes-with-realtime-editing.md) | Notes: shared notes with realtime editing | Feature | notes | Medium | 2026-10-14 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-001](proposed/TASK-PUSH-VITTORIOGIORDANOYBQ-001-push-notifications-partner-changes.md) | Push notifications: partner changes | Feature | push | Medium | 2026-10-14 | — |
 
 ## Ready
@@ -24,6 +21,9 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CAL-VITTORIOGIORDANOYBQ-001](in-progress/TASK-CAL-VITTORIOGIORDANOYBQ-001-calendar-shared-events-with-visibility-and-realtime.md) | Calendar: shared events with visibility and realtime | Feature | calendar | High | 2026-10-14 | — |
+| [TASK-HOME-VITTORIOGIORDANOYBQ-001](in-progress/TASK-HOME-VITTORIOGIORDANOYBQ-001-home-summary-next-events-and-open-tasks.md) | Home summary: next events and open tasks | Feature | home | Medium | 2026-10-14 | — |
+| [TASK-LIST-VITTORIOGIORDANOYBQ-001](in-progress/TASK-LIST-VITTORIOGIORDANOYBQ-001-lists-shared-lists-with-check-items-and-assignment.md) | Lists: shared lists with check items and assignment | Feature | lists | High | 2026-10-14 | — |
+| [TASK-NOTE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NOTE-VITTORIOGIORDANOYBQ-001-notes-shared-notes-with-realtime-editing.md) | Notes: shared notes with realtime editing | Feature | notes | Medium | 2026-10-14 | — |
 | [TASK-WEB-VITTORIOGIORDANOYBQ-001](in-progress/TASK-WEB-VITTORIOGIORDANOYBQ-001-web-app-m0-skeleton-supabase-schema-auth-and-pairing.md) | Web app M0 - skeleton, Supabase schema, auth and pairing | Feature | web app | High | 2026-10-14 | — |
 
 ## Blocked

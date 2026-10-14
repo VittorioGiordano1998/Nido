@@ -2,12 +2,12 @@
 id: TASK-HOME-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: home
 severity: Medium
 opened: 2026-10-14
 done: null
-next: Proposed; depends on TASK-CAL-VITTORIOGIORDANOYBQ-001 and TASK-LIST-VITTORIOGIORDANOYBQ-001.
+next: Implemented and green (next events, open tasks with list name, latest note); pending the owner's check on the live site after the next push.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-001, TASK-LIST-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -62,6 +62,11 @@ here, only composition of their state hooks.
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
+- 2026-10-14 — status Proposed → In Progress
+- 2026-10-14 — opencode (DeepSeek V4.1 Flash) — implemented the summary: next events
+  (hidden when the calendar switch is off), open tasks with their list name (hidden when
+  the lists switch is off), latest note with a link to `/notes`. Verified:
+  `npm run build` + `npm run lint` green.
 
 ## Resolution
 

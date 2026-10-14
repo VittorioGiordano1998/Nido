@@ -2,12 +2,12 @@
 id: TASK-LIST-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: lists
 severity: High
 opened: 2026-10-14
 done: null
-next: Proposed; independent of the calendar, ready to pick up.
+next: Implemented and green (lists index + detail, items, check-off, assignment, Realtime); pending the owner's two-account check on the live site after the next push.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-HOME-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -67,6 +67,12 @@ same tables.
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
+- 2026-10-14 — status Proposed → In Progress
+- 2026-10-14 — opencode (DeepSeek V4.1 Flash) — implemented `useLists` (lists + tasks,
+  CRUD, Realtime on both tables with one channel), `ListsPage` (index with open/total
+  counts), `ListView` (`/lists/:id`: add item, check-off that records `done_by`/`done_at`,
+  assignment cycle me → partner → none, delete item/list, rename inline), `useOpenTasks`
+  selector for Home, router route. Verified: `npm run build` + `npm run lint` green.
 
 ## Resolution
 

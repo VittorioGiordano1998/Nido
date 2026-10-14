@@ -2,12 +2,12 @@
 id: TASK-NOTE-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: notes
 severity: Medium
 opened: 2026-10-14
 done: null
-next: Proposed; start after the lists task or in parallel (independent schema).
+next: Implemented and green (notes index + editor, Realtime, last write wins); pending the owner's two-account check on the live site after the next push.
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -60,6 +60,11 @@ that the Fase 2 features reuse.
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
+- 2026-10-14 — status Proposed → In Progress
+- 2026-10-14 — opencode (DeepSeek V4.1 Flash) — implemented `useNotes` (load ordered by
+  `updated_at`, create/update/delete, Realtime), `NotesPage` + `NoteEditor` (title, body,
+  delete, Esc/backdrop close), route `/notes`, shared `notePreview` helper, Home entry
+  point on the latest note. Verified: `npm run build` + `npm run lint` green.
 
 ## Resolution
 

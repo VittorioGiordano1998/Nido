@@ -120,6 +120,7 @@ deve ricaricarsi, non rispondere 404.
 
 ## Stato
 
-Milestone **M1** (MVP: calendario, liste, note, home) in corso: il calendario è
-implementato e in verifica, le liste e le note sono i prossimi blocchi. **M0** è completa
-salvo il deploy su Vercel, che resta sul tuo account. Record in `docs/development/tasks/`.
+Milestone **M1** (MVP: calendario, liste, note, home) in corso: calendario, liste, note e
+home sono implementati e pubblicati su https://nidoapp-sage.vercel.app; in verifica i flussi
+a due account. Restano le notifiche push (decisione Web Push vs FCM) e, dentro il calendario,
+ricorrenze e promemoria. **M0** è completa. Record in `docs/development/tasks/`.
