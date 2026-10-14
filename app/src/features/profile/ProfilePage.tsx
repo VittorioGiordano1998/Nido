@@ -176,7 +176,7 @@ export function ProfilePage() {
       </Button>
 
       <p className="pb-2 text-center text-xs text-stone-400">
-        Nido · M0 — {session?.user.email}
+        Nido · M1 — {session?.user.email}
       </p>
     </div>
   )
