@@ -1,0 +1,34 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+
+import { CalendarPage } from '../features/calendar/CalendarPage'
+import { LoginPage } from '../features/auth/LoginPage'
+import { HomePage } from '../features/home/HomePage'
+import { ListsPage } from '../features/lists/ListsPage'
+import { PairPage } from '../features/coupling/PairPage'
+import { ProfilePage } from '../features/profile/ProfilePage'
+import { UsPage } from '../features/us/UsPage'
+import { AppShell } from './AppShell'
+import { RequireAuth, RequireCouple } from './guards'
+
+export function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<RequireAuth />}>
+          <Route path="/pair" element={<PairPage />} />
+          <Route element={<RequireCouple />}>
+            <Route element={<AppShell />}>
+              <Route index element={<HomePage />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/lists" element={<ListsPage />} />
+              <Route path="/us" element={<UsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+          </Route>
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}

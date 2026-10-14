@@ -1,0 +1,18 @@
+# CODEOWNERS
+#
+# Paths require review from the listed owners (GitLab "code owners").
+# NOTE: every owner line below is a PLACEHOLDER — replace each with a real
+# group or username (e.g. @your-org/project-devs, @firstname.lastname)
+# and uncomment it. A name that does not exist can block merge requests outright,
+# so keep the lines commented until they resolve.
+#
+# Record IDs use OWNER tokens from tools/git-identity.* (see docs/development/IDENTITIES.md).
+
+# Everything not matched below — set to the team or the project owner.
+# * @your-org/project
+
+# Docs: architecture, contributing, and the tracking records (tasks/KIs/DGs/plans + indexes).
+# /docs/ @your-org/project-docs
+
+# Everything else.
+# /src/ @your-org/project

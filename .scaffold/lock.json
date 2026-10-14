@@ -1,0 +1,12 @@
+{
+  "schema": 2,
+  "channel": "stable",
+  "resolved": {
+    "core": {
+      "range": "*",
+      "version": "2.18.0",
+      "package": "@youbiquo/scaffold-addon-core",
+      "integrity": "sha512-45uKchLJWQ3+zYpbO7OzUebO+0Q7RmjdzYP8CbRGbeQlP8DvPC7iDuJJ3IdpN10D0JXrjNhHezDXnCV9zaZstQ=="
+    }
+  }
+}
