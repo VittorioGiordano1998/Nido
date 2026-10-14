@@ -47,12 +47,15 @@ npm run lint     # oxlint
 4. `*_nido_keepalive.sql` — heartbeat + RPC di ping + job pg_cron anti-pausa
 5. `*_nido_events_privacy.sql` — policy su `events`: la visibilità `private` è applicata
    dal database (solo il creatore legge e scrive i propri eventi privati)
+6. `*_nido_question_bank_seed.sql` — banca delle 60 domande del "Domanda del giorno"
+   (idempotente: rilanciabile per aggiungere le domande nuove)
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
 **progetto nuovo** (le `create table` falliscono con `42P07` su un progetto già migrato:
 in quel caso applicare solo le migrazioni mancanti, oppure l'eventuale file di fix dedicato,
-es. `supabase/apply-keepalive.sql` o `supabase/apply-events-privacy.sql`).
+es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql` o
+`supabase/apply-question-bank.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -120,7 +123,7 @@ deve ricaricarsi, non rispondere 404.
 
 ## Stato
 
-Milestone **M1** (MVP: calendario, liste, note, home) in corso: calendario, liste, note e
-home sono implementati e pubblicati su https://nidoapp-sage.vercel.app; in verifica i flussi
-a due account. Restano le notifiche push (decisione Web Push vs FCM) e, dentro il calendario,
-ricorrenze e promemoria. **M0** è completa. Record in `docs/development/tasks/`.
+**M1** pubblicata (calendario, liste, note, home) e in verifica a due account; mancano push,
+ricorrenze e promemoria del calendario. **Fase 2** in corso: hub "Noi" con Domanda del
+giorno, Cosa c'è da sapere e Capsule del tempo; in coda decisioni alla cieca, wishlist, piano
+settimanale e promemoria. **M0** completa. Record in `docs/development/tasks/`.
