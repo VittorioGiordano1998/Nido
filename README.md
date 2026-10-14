@@ -77,54 +77,36 @@ Supabase invia comunque un'email di avviso una settimana prima di un'eventuale p
 
 ## Deploy su Vercel
 
-Il client è una SPA: `app/vercel.json` contiene la rewrite catch-all (`/(.*)` → `/index.html`)
-necessaria perché il refresh su una rotta interna (es. `/lists`) non dia 404. Il deploy parte
-dalla cartella `app/` e **non richiede un repository git**: la CLI carica i file locali.
-Il progetto dichiara `engines.node = 24.x`, che Vercel rispetta.
+Il deploy è **automatico**: il progetto Vercel **`nido_app`** (team *Vittorio*) è collegato al
+repository GitHub, quindi ogni push su `main` pubblica in produzione.
 
-1. Installa la CLI e accedi (una volta sola):
+- **URL di produzione:** https://nidoapp-sage.vercel.app
+- **Impostazioni che contano** (Settings → Build and Development): **Root Directory = `app`**,
+  Framework Preset = Vite, Build Command = `npm run build`, Output Directory = `dist`.
+  Senza Root Directory `app` il build non parte e il sito risponde 404: non modificarla.
+- **Variabili d'ambiente** (Settings → Environment Variables → Production e Preview):
+  `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (stessi valori di `app/.env.local`).
+  `VITE_` è per definizione pubblico: il valore va salvato come *Config*, non *Secret*.
+- `app/vercel.json` contiene la rewrite catch-all (`/(.*)` → `/index.html`) che serve la SPA
+  sul refresh delle rotte interne (es. `/calendar`): vale perché Root Directory è `app`.
+- `engines.node = 24.x` in `app/package.json` fissa la versione Node del build.
 
-   ```sh
-   npm i -g vercel
-   vercel login
-   ```
+Per un redeploy manuale senza push: Vercel → Deployments → sull'ultima deployment **⋯ →
+Redeploy** (senza "use existing build cache"). La CLI (`vercel`, link locale in `app/.vercel`)
+resta utile per `vercel env pull` e per i comandi puntuali; il percorso normale è il push.
 
-2. Collega il progetto (nome consigliato **nido**, directory `./`):
+### Configurazione Supabase (una volta)
 
-   ```sh
-   cd app
-   vercel link
-   ```
+Supabase → Authentication → URL Configuration:
+- **Site URL** = `https://nidoapp-sage.vercel.app` (è dove atterrano i link di conferma email
+  e il rientro OAuth; durante lo sviluppo locale torna a `http://localhost:5173`);
+- **Redirect URLs** = aggiungi `https://nidoapp-sage.vercel.app/**` e
+  `http://localhost:5173/**`, entrambi, così valgono locale e produzione;
+- Google (quando lo abiliterai): il callback da autorizzare resta
+  `https://<project-ref>.supabase.co/auth/v1/callback`.
 
-3. Registra le variabili d'ambiente (stessi valori di `.env.local`; ripeti per `preview`
-   se vuoi i deploy di anteprima):
-
-   ```sh
-   vercel env add VITE_SUPABASE_URL production
-   vercel env add VITE_SUPABASE_ANON_KEY production
-   ```
-
-   Alternativa: Dashboard Vercel → Project → Settings → Environment Variables.
-
-4. Deploy di produzione:
-
-   ```sh
-   vercel --prod
-   ```
-
-5. Dopo il primo deploy, su Supabase → Authentication → URL Configuration imposta:
-   **Site URL** = `https://<progetto>.vercel.app` (è dove atterrano i link di conferma
-   email e il rientro OAuth; durante lo sviluppo locale torna a `http://localhost:5173`);
-   **Redirect URLs** = aggiungi `https://<progetto>.vercel.app/**` e
-   `http://localhost:5173/**`, entrambi, così valgono locale e produzione.
-   Google (quando lo abiliterai): il callback da autorizzare resta
-   `https://<project-ref>.supabase.co/auth/v1/callback`.
-
-6. Verifica: apri l'URL, accedi e fai un refresh su una rotta interna (es. `/profile`):
-   l'app deve ricaricarsi, non rispondere 404.
-
-Note: la CLI crea `app/.vercel/` (link locale al progetto, non va versionato); `dist/` lo
-ricostruisce Vercel a ogni deploy.
+Verifica: apri l'URL, accedi e fai un refresh su una rotta interna (es. `/calendar`): l'app
+deve ricaricarsi, non rispondere 404.
 
 ## Regole di progetto
 

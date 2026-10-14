@@ -7,7 +7,7 @@ area: web app
 severity: High
 opened: 2026-10-14
 done: null
-next: Owner deploys to Vercel following README §Deploy su Vercel (CLI, project "nido"); then sets the Supabase Site URL / Redirect URLs to the deploy domain and verifies the live app (refresh on a deep route); after that, M0 can be closed.
+next: Deployed and live at https://nidoapp-sage.vercel.app (Vercel project `nido_app`; every push on main auto-deploys). Last owner steps: Supabase Authentication URL Configuration (Site URL + Redirect URLs) and a quick check of the live app; then M0 can close.
 related: [ADR-WEB-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -80,6 +80,7 @@ Deferred (not in this task; tracked as follow-ups): onboarding slides, push noti
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Live verification after the keep-alive fix: `keepalive_ping` 200; 26/26 tables reachable via REST; anon probe clean (no table exposes rows without authentication); the owner ran the two-account pairing test in the browser — OK. While reviewing the events policies, found that `visibility = 'private'` is not enforced (filed `KI-VITTORIOGIORDANOYBQ-001`). `npm run build` + `npm run lint` green.
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Vercel prep: `app/vercel.json` (SPA catch-all rewrite), `engines.node = 24.x` in `package.json`, README §Deploy su Vercel (CLI steps + post-deploy Supabase URL configuration). Deploy left to the owner.
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — plan converted into `PLAN-VITTORIOGIORDANOYBQ-001` (agreed, `docs/development/plans/agreed/`) and the root `Piano-App-Coppie.md` removed (git history keeps it); README and `RULES.local.md` point to the record. KI-001 fixed in the same pass: `supabase/migrations/20261014161502_nido_events_privacy.sql` enforces `visibility = 'private'` in the events policies, `supabase/apply-events-privacy.sql` is the idempotent one-shot for the live project, `apply-all.sql` regenerated. Owner step: paste `apply-events-privacy.sql` in the SQL Editor.
+- 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Vercel deploy live: rebuilt the project settings (`nido_app`, Root Directory `app`, Vite preset, `npm run build`, output `dist`, `VITE_*` vars for Production and Preview), then triggered a Git deployment from `main` (`READY`): `/` and `/calendar` answer 200, assets served from `/assets/`, SPA rewrite active on the production alias `https://nidoapp-sage.vercel.app`. README §Deploy su Vercel rewritten around the push-to-deploy flow. Remaining owner step: Supabase Authentication URL Configuration.
 
 ## Resolution
 
