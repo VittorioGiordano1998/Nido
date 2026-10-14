@@ -83,6 +83,10 @@ Impact: it is the flagship of the "Noi" tab and the first daily ritual of the ap
   `useDailyQuestion` (FNV-1a deterministic pick, today's answers under RLS, 30-day archive,
   streak, Realtime), `QuestionPage`, and the "Noi" hub (`UsPage`) with routes
   `/us/question`, `/us/facts`, `/us/capsules`. Verified: `npm run build` + `npm run lint` green.
+- 2026-10-14 — opencode (DeepSeek V4.1 Flash) — fixed double-encoded UTF-8 (mojibake) in the
+  two hand-assembled apply files: `apply-question-bank.sql` and `apply-all.sql` carried
+  `Qual Ã¨`/`piÃ¹`/`perchÃ©` instead of `Qual è`/`più`/`perché`; all 60 question lines now
+  match the seed migration byte-for-byte and no non-ASCII mojibake remains.
 
 ## Resolution
 
