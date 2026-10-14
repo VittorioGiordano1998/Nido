@@ -79,6 +79,7 @@ Deferred (not in this task; tracked as follow-ups): onboarding slides, push noti
 - 2026-10-14 — status Proposed → In Progress
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Live verification after the keep-alive fix: `keepalive_ping` 200; 26/26 tables reachable via REST; anon probe clean (no table exposes rows without authentication); the owner ran the two-account pairing test in the browser — OK. While reviewing the events policies, found that `visibility = 'private'` is not enforced (filed `KI-VITTORIOGIORDANOYBQ-001`). `npm run build` + `npm run lint` green.
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Vercel prep: `app/vercel.json` (SPA catch-all rewrite), `engines.node = 24.x` in `package.json`, README §Deploy su Vercel (CLI steps + post-deploy Supabase URL configuration). Deploy left to the owner.
+- 2026-10-14 — opencode (DeepSeek V4.1 Flash) — plan converted into `PLAN-VITTORIOGIORDANOYBQ-001` (agreed, `docs/development/plans/agreed/`) and the root `Piano-App-Coppie.md` removed (git history keeps it); README and `RULES.local.md` point to the record. KI-001 fixed in the same pass: `supabase/migrations/20261014161502_nido_events_privacy.sql` enforces `visibility = 'private'` in the events policies, `supabase/apply-events-privacy.sql` is the idempotent one-shot for the live project, `apply-all.sql` regenerated. Owner step: paste `apply-events-privacy.sql` in the SQL Editor.
 
 ## Resolution
 

@@ -43,8 +43,10 @@ Never the reverse. The database schema has a single source of truth:
 
 ## Project conventions
 
-- **No git remote, no push.** This project is private and local: never add a remote and never
-  push anywhere. Record moves and index regeneration work without a git repository.
+- **Private repository, no unsolicited push.** `origin` points to
+  `github.com/VittorioGiordano1998/Nido` (the owner's account) and stays the only remote;
+  agents commit locally and never push — the owner pushes. Record moves and index
+  regeneration work without a git repository.
 - UI language is Italian; code, comments, docs and records are English.
 - No hard-coded endpoints or keys: the Supabase URL and anon key live in `app/.env.local`,
   read through `app/src/core/env.ts`. A missing value shows the in-app setup screen instead
@@ -56,7 +58,8 @@ Never the reverse. The database schema has a single source of truth:
   inside, theme colors mapped to the clay/sage tokens.
 - On this machine npm must be run through `cmd /c` (the PowerShell execution policy blocks
   the `.ps1` shims).
-- Product plan lives in `Piano-App-Coppie.md` (repo root); the stack decision is recorded in
+- Product plan lives in the `PLAN-VITTORIOGIORDANOYBQ-001` record
+  (`docs/development/plans/agreed/`); the stack decision is recorded in
   `ADR-WEB-VITTORIOGIORDANOYBQ-001`.
 
 ## Addons installed

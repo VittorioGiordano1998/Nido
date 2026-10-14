@@ -45,12 +45,14 @@ npm run lint     # oxlint
 2. `*_nido_rls_policies.sql` — RLS su ogni tabella + policy per gli oggetti Storage
 3. `*_nido_realtime.sql` — tabelle pubblicate su Realtime
 4. `*_nido_keepalive.sql` — heartbeat + RPC di ping + job pg_cron anti-pausa
+5. `*_nido_events_privacy.sql` — policy su `events`: la visibilità `private` è applicata
+   dal database (solo il creatore legge e scrive i propri eventi privati)
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
 **progetto nuovo** (le `create table` falliscono con `42P07` su un progetto già migrato:
 in quel caso applicare solo le migrazioni mancanti, oppure l'eventuale file di fix dedicato,
-es. `supabase/apply-keepalive.sql`).
+es. `supabase/apply-keepalive.sql` o `supabase/apply-events-privacy.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -126,13 +128,16 @@ ricostruisce Vercel a ogni deploy.
 
 ## Regole di progetto
 
-- Questo repository **non ha e non deve avere un remote git**: nulla va pushato.
+- Repository privato: `origin` è `github.com/VittorioGiordano1998/Nido` (account dell'owner) e
+  resta l'unico remote; gli agenti non fanno push — i commit restano locali finché non pushi tu.
 - Regole per agenti e sviluppatori: `docs/agents/RULES.md` + `docs/agents/RULES.local.md`.
 - Lavoro tracciato task-first in `docs/development/` (vedi `TASK_INDEX.md`).
-- Il piano di prodotto è in `Piano-App-Coppie.md`; la decisione di stack in
-  `docs/development/architecture/adr/`.
+- Il piano di prodotto è il record
+  [`PLAN-VITTORIOGIORDANOYBQ-001`](docs/development/plans/agreed/PLAN-VITTORIOGIORDANOYBQ-001-nido-piano-di-prodotto-web-app-supabase-fase-0-4.md);
+  la decisione di stack in `docs/development/architecture/adr/`.
 
 ## Stato
 
-Milestone **M0** (skeleton web + fondamenta Supabase + auth + pairing) in corso:
-vedi `docs/development/tasks/in-progress/`.
+Milestone **M1** (MVP: calendario, liste, note, home) in corso: il calendario è
+implementato e in verifica, le liste e le note sono i prossimi blocchi. **M0** è completa
+salvo il deploy su Vercel, che resta sul tuo account. Record in `docs/development/tasks/`.
