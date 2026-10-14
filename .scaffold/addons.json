@@ -1,0 +1,450 @@
+{
+  "schema": 4,
+  "tokens": {
+    "Company": "<Company>",
+    "Prefix": "<Prefix>",
+    "Project": "<Project>"
+  },
+  "addons": {
+    "core": {
+      "files": {
+        ".claude/CLAUDE.md": {
+          "sha": "6283fbc6325c50d916683e35a962c3067b77be7260276c349dc5fbdcc280774d",
+          "policy": "managed"
+        },
+        ".claude/agents/docs-keeper.md": {
+          "sha": "2678eada4add310d7d86c7cc303450b8848e72333b6c2fb49edca601f1497ca7",
+          "policy": "managed"
+        },
+        ".claude/commands/commit.md": {
+          "sha": "b83933127b19a54e4ac48ff1eeb4d7c6f4c50da8e7807cf6bc204db40a308b05",
+          "policy": "managed"
+        },
+        ".claude/commands/new-dg.md": {
+          "sha": "d2f2bc9609e9625cb10f1a7381a42ea490ee2f87f8c80dfcfdc5eb1e18c9e159",
+          "policy": "managed"
+        },
+        ".claude/commands/new-issue.md": {
+          "sha": "268fcc155a9e85a095de644cdde14698bc263f7ce5eaf35c8773001e2bd899f5",
+          "policy": "managed"
+        },
+        ".claude/commands/new-task.md": {
+          "sha": "0f4a2d64391856be9c8bd3afa4b025b8f81f5c1e33be43b9f1a1d1f5efc3e0bd",
+          "policy": "managed"
+        },
+        ".claude/commands/scaffold.md": {
+          "sha": "2621d6df8ba0e7a73085340c4394aed5b565ebcda66d755b3985ced3ac3c094e",
+          "policy": "managed"
+        },
+        ".claude/settings.json": {
+          "sha": "ee6d1034985be06dde6005c06f88905313a86b286452e8756a977a6cdf55fcbb",
+          "policy": "once"
+        },
+        ".editorconfig": {
+          "sha": "51d52623071e209e39ae2655877f6f4e9d458c1d0368ca2172b99730b09c17d8",
+          "policy": "managed"
+        },
+        ".gitattributes": {
+          "sha": "d3510f80f0d9cc7636b5892d0a20781286dc006cfa12161b35ea30e59b0baad3",
+          "policy": "managed"
+        },
+        ".gitlab-ci.yml": {
+          "sha": "04f81c12c5c6b0738754e53ad86e770624cec6959b30fe25f8e6d48643d52faf",
+          "policy": "once"
+        },
+        ".gitlab/merge_request_templates/Default.md": {
+          "sha": "83df95f838822851f2a8da67ee4a9bf19197aaed787a71369972f527d51bcb8d",
+          "policy": "managed"
+        },
+        ".markdownlint.json": {
+          "sha": "cde39095248bc1e0f468ca4532ef3f62d67308c88e523b6361b84169c71e0b4f",
+          "policy": "managed"
+        },
+        ".mcp.json": {
+          "sha": "04162c5396e79a0906d262fbbaf5768850e2d2c939d9cdf8ed8f8abd271a4d8a",
+          "policy": "once"
+        },
+        ".opencode/opencode.json": {
+          "sha": "500e88d15d6f7710820b73d811563caa6ef526be6676b6899aa964a6e2983934",
+          "policy": "once"
+        },
+        ".opencode/skills/caveman/SKILL.md": {
+          "sha": "6a93e68b5d843ab6da3290dfe81cfdf26de166be7f3feca5acb52744f63db593",
+          "policy": "managed"
+        },
+        ".opencode/skills/caveman/agents/openai.yaml": {
+          "sha": "4961a650c93d688aab1f68850149cfde235a9f25b20072fcad3ee192914808fc",
+          "policy": "managed"
+        },
+        ".opencode/skills/caveman/assets/caveman-small.svg": {
+          "sha": "1c8f55516541b6094cb20ceabb50ff89b01d1acafaae84487e53739deebcbb1f",
+          "policy": "managed"
+        },
+        ".opencode/skills/caveman/assets/caveman.svg": {
+          "sha": "8024fa96dce034675eb5610139e75f6d2b5db3b4cb3df3090adb8a2b2a285595",
+          "policy": "managed"
+        },
+        ".opencode/skills/karpathy-guidelines/SKILL.md": {
+          "sha": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7",
+          "policy": "managed"
+        },
+        "AGENTS.md": {
+          "sha": "4aa6500199a92d498b0c2975fed7519f941b70a1937d6ced98c1069ee8e79554",
+          "policy": "managed"
+        },
+        "CODEOWNERS": {
+          "sha": "d80ae18c13d3243cc21ade7ba502f931b6e5cf0c1741be841d34dbd8fbf665ae",
+          "policy": "once"
+        },
+        "CONTRIBUTING.md": {
+          "sha": "c1f620bf573f615c86a05156cedf811ec623c779c1749b388ae18366d88dc87f",
+          "policy": "managed"
+        },
+        "commitlint.config.js": {
+          "sha": "84968650ad01410f929375c121924bf595519ce4d7cfb9fbe3d297c50ae41bf2",
+          "policy": "once"
+        },
+        "docs/README.md": {
+          "sha": "6058be25c888803e20b5f757a435675a13afc4a7e97440610d5e433f0ea70850",
+          "policy": "managed"
+        },
+        "docs/agents/RULES.local.md": {
+          "sha": "d4e8524321c7a07c20dedd1f6e6cacf31378a9828bf8bb3c2e93e69f16139b55",
+          "policy": "once"
+        },
+        "docs/agents/RULES.md": {
+          "sha": "218aac857b84b6151881421611454305df200d30bba63a86085f520cbd71803a",
+          "policy": "managed"
+        },
+        "docs/contributing/agentic-tools.md": {
+          "sha": "ade4f2ecee1b897ccad6594efdd8c3f9ae47d75b82c6c9de0e027ec873038df5",
+          "policy": "managed"
+        },
+        "docs/contributing/ci-cd.md": {
+          "sha": "4fdc066f4126c70a98567b23bd3fe7ee86874c84043aeac2038ff040523c7b91",
+          "policy": "managed"
+        },
+        "docs/contributing/commits.md": {
+          "sha": "4efb8c9107eac44d0f9b1cc7746d071ace3a0644f2af5e8749095c2d0fe0a460",
+          "policy": "managed"
+        },
+        "docs/contributing/pull-requests.md": {
+          "sha": "b84d22c1f4b863baa168bbdda448b0782c2bc1b8b6a3948b4c0039d0723364ba",
+          "policy": "managed"
+        },
+        "docs/development/IDENTITIES.md": {
+          "sha": "5b7ee4b5bfce5dd09ae551fec7d0b54b11844bb5b268093ce214f8e9a652ec92",
+          "policy": "once"
+        },
+        "docs/development/architecture/README.md": {
+          "sha": "e93f48e55ffa2e733e125925fb7e41a6df91a75f1683257403b630ec778b4c3b",
+          "policy": "managed"
+        },
+        "docs/development/architecture/adr/ADR_INDEX.md": {
+          "sha": "31941c5d3d5236fd3cda5c735d553a916ce9d8df5a5091805b40280c3a883b67",
+          "policy": "once"
+        },
+        "docs/development/architecture/adr/ADR_TEMPLATE.md": {
+          "sha": "6f04090afef556e005fd8ab8aaccdabb4999573ee6b439388608f36ee2f49eaf",
+          "policy": "managed"
+        },
+        "docs/development/architecture/adr/accepted/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/architecture/adr/deprecated/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/architecture/adr/implemented/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/architecture/adr/proposed/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/architecture/adr/superseded/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/architecture/features/FEATURE_INDEX.md": {
+          "sha": "7c2655d9921fca2fa602c9ab6c38aba14932910842d2c83de281f575e53c53cc",
+          "policy": "once"
+        },
+        "docs/development/architecture/integrations/INTEGRATIONS_INDEX.md": {
+          "sha": "6965b1631bb285f5fd5e8f253beb3dd891acecc1818254713bbc8d05ed506692",
+          "policy": "once"
+        },
+        "docs/development/architecture/patterns/PATTERNS_INDEX.md": {
+          "sha": "3006ff4ee99ade2555d9d4bffa833c4730fa57b1f521964f0037fae189d30b6c",
+          "policy": "once"
+        },
+        "docs/development/architecture/system/SYSTEM_INDEX.md": {
+          "sha": "0e67aabfba8f8fa643516b462bbe9cc27bdb8269c55d7e755ad91fd067d1554d",
+          "policy": "once"
+        },
+        "docs/development/delivery_gaps/DELIVERY_GAP_INDEX.md": {
+          "sha": "3bc15812f4b5c555cc6cc88790350d92ec175696561e99d8e2289f0112d00e28",
+          "policy": "once"
+        },
+        "docs/development/delivery_gaps/DELIVERY_GAP_TEMPLATE.md": {
+          "sha": "9f81b4db46dac5ba7a9f8d01a3b96868c8cf020b3f3f94f435252592022f78cf",
+          "policy": "managed"
+        },
+        "docs/development/delivery_gaps/closed/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/delivery_gaps/open/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/delivery_gaps/planned/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/known_issues/KNOWN_ISSUE_INDEX.md": {
+          "sha": "6114fcbca9b6fc29ceb4831104ec4f0a74980536ace7d2c7546eba3e97ccad86",
+          "policy": "once"
+        },
+        "docs/development/known_issues/KNOWN_ISSUE_TEMPLATE.md": {
+          "sha": "591c4043087ff9adaf9b396a31eeb9fa2407119ff570a524962e665768528910",
+          "policy": "managed"
+        },
+        "docs/development/known_issues/fixed/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/known_issues/open/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/known_issues/wont-fix/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/plans/PLAN_INDEX.md": {
+          "sha": "d3883b24976d45eedffa2251be289a0a1a342b57b2430118a539ed5562f52052",
+          "policy": "once"
+        },
+        "docs/development/plans/PLAN_TEMPLATE.md": {
+          "sha": "b5e2f19d66af79d071501ea6fb5cde801d5d264288cf0c858ff962b2120d953c",
+          "policy": "managed"
+        },
+        "docs/development/plans/agreed/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/plans/implemented/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/plans/proposed/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/plans/superseded/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/snippets/SNIPPETS_INDEX.md": {
+          "sha": "eb8f57ad9e0864df8b63f5fcb525d0b023f4d997452092afad56d8c62f7139bf",
+          "policy": "once"
+        },
+        "docs/development/tasks/TASK_INDEX.md": {
+          "sha": "ae1174956931e1cc1b64a6b7d13a7ed966cb3dc04ecdb48919f9736b92f1ae2b",
+          "policy": "once"
+        },
+        "docs/development/tasks/TASK_TEMPLATE.md": {
+          "sha": "5e8814306a9e69485a967d99fb3bc538e7af29e5994caeeef000ee40f7bbe1e2",
+          "policy": "managed"
+        },
+        "docs/development/tasks/blocked/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/tasks/cancelled/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/tasks/done/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/tasks/in-progress/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/tasks/proposed/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/development/tasks/ready/.gitkeep": {
+          "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "policy": "managed"
+        },
+        "docs/onboarding.md": {
+          "sha": "11e561edcdf895d42deb09ee0fb190672080743f59ed081924207baba74f73ac",
+          "policy": "managed"
+        },
+        "tools/check-records.sh": {
+          "sha": "cbd9b1436e7c0d3798f8c9bbc0959fb6491de817903c3a6e7c2eb2b2d9bdf5d6",
+          "policy": "managed"
+        },
+        "tools/git-identity.ps1": {
+          "sha": "bbe4dd8f9a1137e9f24bf0ae29aafb731acd00d5c3a81c24db98bf319b8c98d8",
+          "policy": "managed"
+        },
+        "tools/git-identity.sh": {
+          "sha": "e3b0bd7347294653bee1b4d3983fc085ec63b01e8971656ac2ef0fb42a788040",
+          "policy": "managed"
+        },
+        "tools/link-agent-config.ps1": {
+          "sha": "2caf78cdbbe1264e70e99d7b14194443fdd69b4dff5c6c9c0893790a5ddb7aa2",
+          "policy": "managed"
+        },
+        "tools/link-agent-config.sh": {
+          "sha": "ae19ad3c60ff43328b818b076e0fa880beaa2f926cfdee6464f873005758baa0",
+          "policy": "managed"
+        },
+        "tools/scaffold.mjs": {
+          "sha": "3754fdd2bfb4687360d296fcc5b35ceeed7c71cee079084c2117b2f2b2063baf",
+          "policy": "managed"
+        },
+        "tools/scaffold.ps1": {
+          "sha": "9ecd88c44d04c0882c1287a38175dda43e223cee1dc95d2ce1cdc0f9e0de59dd",
+          "policy": "managed"
+        },
+        "tools/scaffold.sh": {
+          "sha": "9d0718f71e6a15e63bf85a20752e26c6f5f81487ac63a33ea75f99ee1f302abf",
+          "policy": "managed"
+        }
+      },
+      "appends": [
+        ".gitignore"
+      ],
+      "json": [
+        {
+          "file": ".claude/settings.json",
+          "undo": [
+            {
+              "op": "deleteKeyIfEmpty",
+              "path": [],
+              "key": "enabledMcpjsonServers"
+            },
+            {
+              "op": "arrayRemove",
+              "path": [
+                "permissions",
+                "allow"
+              ],
+              "items": [
+                "Bash(sh tools/scaffold.sh:*)",
+                "Bash(sh tools/check-records.sh)",
+                "Bash(sh tools/git-identity.sh)",
+                "Bash(git status:*)",
+                "Bash(git diff:*)"
+              ],
+              "claims": [
+                "Bash(sh tools/scaffold.sh:*)",
+                "Bash(sh tools/check-records.sh)",
+                "Bash(sh tools/git-identity.sh)",
+                "Bash(git status:*)",
+                "Bash(git diff:*)"
+              ]
+            },
+            {
+              "op": "arrayRemove",
+              "path": [
+                "enabledMcpjsonServers"
+              ],
+              "items": [
+                "scaffold"
+              ],
+              "claims": [
+                "scaffold"
+              ]
+            }
+          ]
+        },
+        {
+          "file": ".opencode/opencode.json",
+          "undo": [
+            {
+              "op": "deleteKey",
+              "path": [
+                "mcp",
+                "scaffold"
+              ],
+              "key": "type",
+              "value": "local",
+              "claim": true
+            },
+            {
+              "op": "deleteKey",
+              "path": [
+                "mcp",
+                "scaffold"
+              ],
+              "key": "enabled",
+              "value": true,
+              "claim": true
+            },
+            {
+              "op": "arrayRemove",
+              "path": [
+                "mcp",
+                "scaffold",
+                "command"
+              ],
+              "items": [],
+              "claims": [
+                "node",
+                "tools/scaffold.mjs",
+                "mcp"
+              ]
+            }
+          ]
+        },
+        {
+          "file": ".mcp.json",
+          "undo": [
+            {
+              "op": "deleteKey",
+              "path": [
+                "mcpServers",
+                "scaffold"
+              ],
+              "key": "command",
+              "value": "node",
+              "claim": true
+            },
+            {
+              "op": "arrayRemove",
+              "path": [
+                "mcpServers",
+                "scaffold",
+                "args"
+              ],
+              "items": [],
+              "claims": [
+                "tools/scaffold.mjs",
+                "mcp"
+              ]
+            }
+          ]
+        }
+      ],
+      "ci": [],
+      "links": [
+        ".opencode/agents",
+        ".opencode/commands"
+      ],
+      "version": "2.18.0",
+      "requires": [],
+      "updatedAt": "2026-10-14T13:23:36.937Z",
+      "installedAt": "2026-10-14T13:23:36.937Z"
+    }
+  }
+}

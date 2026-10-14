@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Clay — colore primario di Nido (terracotta caldo, originale) */
+  --color-clay-50: #fdf6f2;
+  --color-clay-100: #fbeae2;
+  --color-clay-200: #f6d3c4;
+  --color-clay-300: #eeb49d;
+  --color-clay-400: #e48f6f;
+  --color-clay-500: #d96f48;
+  --color-clay-600: #c25532;
+  --color-clay-700: #a2432a;
+  --color-clay-800: #833826;
+  --color-clay-900: #6b3022;
+
+  /* Sage — accento secondario */
+  --color-sage-100: #eef2ec;
+  --color-sage-300: #c3d1bd;
+  --color-sage-500: #829a79;
+  --color-sage-700: #55684e;
+
+  --color-cream: #faf7f3;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-cream text-stone-900 antialiased;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}

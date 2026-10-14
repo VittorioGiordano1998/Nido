@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "scaffold": {
+      "command": "node",
+      "args": ["tools/scaffold.mjs", "mcp"]
+    }
+  }
+}

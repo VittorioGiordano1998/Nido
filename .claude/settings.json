@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sh tools/scaffold.sh:*)",
+      "Bash(sh tools/check-records.sh)",
+      "Bash(sh tools/git-identity.sh)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "scaffold"
+  ]
+}

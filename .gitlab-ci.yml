@@ -1,0 +1,84 @@
+# <Project> CI — GitLab
+#
+# Lint jobs run unconditionally. Addons append their own test/build jobs
+# through a .gitlab-ci.yml.append fragment; when an addon adds jobs,
+# uncomment the corresponding stage below and follow the addon's manual
+# merge notes.
+
+stages:
+  - lint
+  # - test
+  # - build
+
+variables:
+  GIT_DEPTH: "0"
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ───────────────────────────── lint ─────────────────────────────
+
+commitlint:
+  stage: lint
+  image: node:20
+  script:
+    - npm install --no-save @commitlint/cli@19.8.1 @commitlint/config-conventional@19.8.1
+    - |
+      if [ -n "$CI_MERGE_REQUEST_DIFF_BASE_SHA" ]; then
+        npx commitlint --from "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --to "$CI_COMMIT_SHA" --verbose
+      else
+        npx commitlint --last --verbose
+      fi
+
+markdownlint:
+  stage: lint
+  image: node:20
+  script:
+    - npm install --no-save markdownlint-cli@0.41.0
+    - npx markdownlint "docs/**/*.md" "*.md"
+        --ignore "docs/archive"
+
+# Record registry: owner-qualified IDs unique, filename == id, every status matching its
+# folder, and every generated index equal to a regeneration. This is the enforcement that
+# keeps "find before create / claim don't duplicate" honest.
+# Needs node: the checks run in @scaffold/records, which tools/check-records.sh shims onto.
+records:
+  stage: lint
+  image: node:20
+  script:
+    - sh tools/check-records.sh
+
+# Scaffold updates and policy: the full `status` report (upgrades, policy
+# findings) against the registry. Needs the runner to reach the npm registry
+# that serves the engine and addon packages, so it is opt-in: uncomment once
+# the runner can reach it.
+# scaffold:
+#   stage: lint
+#   image: node:20
+#   before_script:
+#     - apk add --no-cache git || true
+#   script:
+#     - sh tools/scaffold.sh status --check
+
+# Project-specific convention checks — uncomment and fill with the project's own
+# machine-checkable rules (addons add theirs through .gitlab-ci.yml.append fragments).
+# conventions:
+#   stage: lint
+#   image: alpine:3.20
+#   before_script:
+#     - apk add --no-cache grep findutils bash
+#   script:
+#     # Example: no hard-coded endpoints (RFC 2606 / 6761 reserved names exempt).
+#     - |
+#       bash -c '
+#         RESERVED="\.(invalid|test|localhost|example)([:/\"]|$)|example\.(com|net|org)([:/\"]|$)"
+#         HITS=$(grep -rn "\"https\?://" src --include="*.*" | grep -vE "$RESERVED" || true)
+#         if [ -n "$HITS" ]; then
+#           echo "Hard-coded endpoint literals found:"
+#           echo "$HITS"
+#           exit 1
+#         fi
+#         echo "OK: no endpoint literals."
+#       '

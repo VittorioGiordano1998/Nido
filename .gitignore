@@ -1,0 +1,30 @@
+
+# BEGIN EXTENSION: core
+# ── Agent config ────────────────────────────────────────────────────────────
+# Agent config is single-sourced in .claude/. opencode only scans .opencode/,
+# so these two are junctions (Windows) / symlinks (macOS, Linux) into .claude/.
+/.opencode/agents/
+/.opencode/commands/
+
+# User-local agent settings (machine-specific permissions)
+.claude/settings.local.json
+
+# ── Node (opencode plugins) ─────────────────────────────────────────────────
+# opencode writes these into .opencode/ itself; they are machine-local.
+node_modules/
+/.opencode/package.json
+/.opencode/package-lock.json
+/.opencode/bun.lock
+
+# ── Editors / OS ────────────────────────────────────────────────────────────
+.vs/
+.idea/
+.vscode/
+*.user
+.DS_Store
+Thumbs.db
+
+# ── Scaffold engine ─────────────────────────────────────────────────────────
+# Backups the engine takes before restoring upstream content are local-only.
+/.scaffold/backup/
+# END EXTENSION: core

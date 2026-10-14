@@ -1,0 +1,29 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# defaults
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# JSON / XML
+[*.{json,xml}]
+indent_style = space
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# Shell scripts
+[*.{sh,bat,cmd,ps1}]
+end_of_line = lf
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Language-specific sections live in the addons: each one appends the sections for
+# the languages and file types it introduces, via its own .editorconfig.append fragment.
+# ─────────────────────────────────────────────────────────────────────────────
