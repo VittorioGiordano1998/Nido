@@ -4,6 +4,8 @@ import { CalendarPage } from '../features/calendar/CalendarPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { HomePage } from '../features/home/HomePage'
 import { ListsPage } from '../features/lists/ListsPage'
+import { ListView } from '../features/lists/ListView'
+import { NotesPage } from '../features/notes/NotesPage'
 import { PairPage } from '../features/coupling/PairPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { UsPage } from '../features/us/UsPage'
@@ -22,6 +24,8 @@ export function AppRouter() {
               <Route index element={<HomePage />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/lists" element={<ListsPage />} />
+              <Route path="/lists/:id" element={<ListView />} />
+              <Route path="/notes" element={<NotesPage />} />
               <Route path="/us" element={<UsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
