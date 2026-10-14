@@ -36,8 +36,9 @@ feature set; original code, design, texts and brand; the consulted sources are l
 | M3 - Privacy and monetization | E2E document vault, cycle tracker, premium (paywall, IAP, per-couple entitlement), savings projects, loyalty cards | Vault: server never sees plaintext; cycle data owner-only verified; premium entitlement tested on a sandbox purchase |
 | M4 - Polish | Realtime canvas, home widget, yearly recap, localization (IT/ES/EN/DE) | Manual pass on the packaged app; i18n coverage check |
 
-M0 is delivered except the owner's Vercel deploy and Supabase URL configuration; M1
-implementation started 2026-10-14.
+M0 is delivered and deployed at https://nidoapp-sage.vercel.app (Vercel project `nido_app`;
+every push on `main` auto-deploys); the Supabase Auth URL configuration is the last owner
+step. M1 implementation started 2026-10-14.
 
 ## Decisions
 
@@ -97,7 +98,9 @@ implementation started 2026-10-14.
 - **M0 (2026-10-14):** migrations applied to project `fvhqirvfyehyyucvwjjz` (26/26 tables
   reachable via the REST API); `keepalive_ping` 200; anon probe clean; pairing verified in the
   browser by the owner; the events privacy gap found during that review is
-  KI-VITTORIOGIORDANOYBQ-001, fixed in the same milestone.
+  KI-VITTORIOGIORDANOYBQ-001, fixed in the same milestone. Deployed on Vercel (`nido_app`,
+  Root Directory `app`): production build from GitHub `main`, `/` and `/calendar` served with
+  the SPA rewrite.
 - **M1 (in progress):** validated per feature as it lands; see the task records under
   `docs/development/tasks/`.
 - **Not validated:** recurrence (RRULE) and local reminders (deferred within M1), push
