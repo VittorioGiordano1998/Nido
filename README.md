@@ -144,6 +144,20 @@ Le notifiche push usano Web Push con VAPID (decisione in
 Gli avvisi delle **ricorrenze** (promemoria eventi) restano locali e funzionano mentre l'app
 è aperta; il push delle novità del partner passa da qui.
 
+### Eliminazione account e reset (una volta)
+
+Due strumenti pensati per l'uso privato/test:
+
+- **Eliminazione account (GDPR)**: `supabase functions deploy delete-account` — nessun
+  secret aggiuntivo (la funzione verifica il JWT di chi la chiama). Dal Profilo →
+  *Elimina account*, con doppia conferma (si scrive `ELIMINA`). Il partner che resta tiene
+  la coppia e i dati condivisi; se non resta nessuno, anche la coppia viene rimossa.
+- **Reset dei dati di coppia (strumento di test)**: incolla `supabase/apply-reset-couple.sql`
+  nel SQL Editor. Dal Profilo → *Zona test* → *Svuota i dati della coppia* (si scrive
+  `RESET`): eventi, liste, note, wishlist, decisioni, promemoria, risparmi, tessere, capsule
+  e ciclo vengono svuotati; account, coppia e banca domande restano. È pensato per riprovare
+  i flussi da zero: da rivedere prima di un uso pubblico.
+
 ## Regole di progetto
 
 - Repository privato: `origin` è `github.com/VittorioGiordano1998/Nido` (account dell'owner) e

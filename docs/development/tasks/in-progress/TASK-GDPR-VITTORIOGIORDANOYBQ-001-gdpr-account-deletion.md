@@ -2,12 +2,12 @@
 id: TASK-GDPR-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: gdpr
 severity: Medium
 opened: 2026-10-15
 done: null
-next: Proposed; required before store publication (TASK-PACK-VITTORIOGIORDANOYBQ-001 depends on it).
+next: Implemented (delete-account Edge Function + the Profilo double-confirmation card); owner step remains: deploy the function (`supabase functions deploy delete-account`) and try it on a scratch account.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002, TASK-PACK-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -47,6 +47,9 @@ PLAN-VITTORIOGIORDANOYBQ-001 §GDPR/store: an account-deletion Edge Function (ac
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; top of the private-test queue. Edge Function delete-account + double-confirmation flow.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: `supabase/functions/delete-account/index.ts` (JWT-verified caller, service-role user deletion so the cascades purge their rows, cleanup of a couple left with no members, partner-keeps case untouched) and `DeleteAccountCard` in Profilo (typed `ELIMINA` confirmation, friendly error when the function is not deployed, sign-out + redirect on success); README documents the one-time deploy. `npm run build` + `npm run lint` green; the scratch-account test is the owner step.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; top of the private-test queue. Edge Function delete-account + double-confirmation flow.
 
 ## Resolution
 
