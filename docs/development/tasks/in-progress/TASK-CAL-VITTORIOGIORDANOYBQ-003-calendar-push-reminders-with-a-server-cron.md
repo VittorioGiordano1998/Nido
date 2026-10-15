@@ -2,12 +2,12 @@
 id: TASK-CAL-VITTORIOGIORDANOYBQ-003
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: calendar
 severity: Medium
 opened: 2026-10-15
 done: null
-next: "Proposed; needs the push pipeline verified. Design: the client materializes the next occurrences, a cron sends them."
+next: "Implemented; owner steps remain: deploy send-reminders, set SEND_REMINDERS_SECRET, enable pg_net, paste apply-push-reminders.sql (project ref + secret), two-account check (event in 20 minutes, app closed)."
 related: [TASK-CAL-VITTORIOGIORDANOYBQ-002, TASK-PUSH-VITTORIOGIORDANOYBQ-001, TASK-PUSH-VITTORIOGIORDANOYBQ-002, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -59,6 +59,8 @@ The design keeps the recurrence logic in one place: the **client** expands occur
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing push_reminders, the client materialization, send-reminders and the pg_cron job.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration 20261015230000_nido_push_reminders.sql (`push_reminders` + RLS with only_for privacy + `sent_at` system-managed by column revoke + the pg_cron/pg_net job template with guarded placeholders) with apply-push-reminders.sql and apply-all.sql; `reminders.ts` now materializes the next 7 days on app open and on every event change (same 15-min/9:00 constants, delete-then-upsert, last write wins); new Edge Function send-reminders (secret header, fan-out to `only_for` or both partners, marks sent, 404/410 token pruning, 30-day row pruning) with `[functions.send-reminders] verify_jwt = false`; README documents the owner steps. `npm run build` + `npm run lint` + `check:recurrence` green; both migrations and both apply scripts validated against a real Postgres (PGlite) including the trigger, cron command, RLS and cascade. Owner steps remain: deploy send-reminders, set SEND_REMINDERS_SECRET, enable pg_net, paste apply-push-reminders.sql, then the two-account check (event in 20 minutes, app closed).
 
 ## Resolution
 
