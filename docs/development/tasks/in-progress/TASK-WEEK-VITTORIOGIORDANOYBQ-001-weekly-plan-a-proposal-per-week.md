@@ -2,12 +2,12 @@
 id: TASK-WEEK-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: weekly plan
 severity: Low
 opened: 2026-10-14
 done: null
-next: Proposed; ready to claim (Fase 2.4).
+next: Implemented and green (current-week card with accept/decline/alternative, replaced trail, history with status chips, Realtime); pending the owner's two-account check.
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -57,6 +57,9 @@ workflow.
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; current-week card with accept/decline/alternative plus a short history.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `useWeekPlan` (Monday-based `currentWeekStart`, propose, accept/decline, replace marking the old as `replaced`, Realtime) and `PlanPage` (current-week card, alternative form, replaced trail, past weeks with status chips); route `/us/plan` and the Noi hub card switched to ready. `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; current-week card with accept/decline/alternative plus a short history.
 
 ## Resolution
 
