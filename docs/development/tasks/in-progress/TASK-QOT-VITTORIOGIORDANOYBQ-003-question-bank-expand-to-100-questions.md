@@ -2,12 +2,12 @@
 id: TASK-QOT-VITTORIOGIORDANOYBQ-003
 owner: VITTORIOGIORDANOYBQ
 type: Chore
-status: Proposed
+status: In Progress
 area: question of the day
 severity: Low
 opened: 2026-10-15
 done: null
-next: Proposed; append 40 original questions idempotently and regenerate the apply scripts.
+next: Implemented and verified (40 new original questions, 100 total; the three artifacts are byte-identical per the consistency check); pending the owner's paste of apply-question-bank.sql.
 related: [TASK-QOT-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -48,6 +48,9 @@ PLAN-VITTORIOGIORDANOYBQ-001 targets a 100-question bank (Fase 2.1 and §Risks: 
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; second batch of 40 original questions with a consistency check across the artifacts.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261015160000_nido_question_bank_seed_100.sql` (40 original questions, 8 per category: ricordi/noi/desideri/futuro/gioco, same idempotent pattern), `apply-question-bank.sql` and `apply-all.sql` extended; a Node check over the three artifacts passes (60+40 = 100 unique, byte-identical texts, no mojibake). No client change (the pick hashes over the ordered bank).
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; second batch of 40 original questions with a consistency check across the artifacts.
 
 ## Resolution
 

@@ -2,12 +2,12 @@
 id: TASK-WISH-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: wishlist
 severity: Low
 opened: 2026-10-14
 done: null
-next: Proposed; ready to claim (Fase 2.3). The gift radar (birthdays) comes after the calendar recurrences.
+next: Implemented and green (partner/own groups, editor with price/link/priority, preso toggle recording the buyer, Realtime); pending the owner's two-account check.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -56,6 +56,9 @@ Impact: it turns the calendar's birthdays and anniversaries into something actio
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the wishlist (CRUD, preso toggle, Realtime).
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `useWishlist` (couple-wide CRUD, upsert of the `preso` state with `purchased_by`, Realtime), `WishlistPage` (groups "I desideri di {partner}" / "I tuoi", price formatted with Intl, external link, notes, priority, toggle) and `WishlistEditor` (title/link validated http(s)/price/currency/priority/notes); route `/us/wishlist` and the Noi hub card switched to ready. `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the wishlist (CRUD, preso toggle, Realtime).
 
 ## Resolution
 
