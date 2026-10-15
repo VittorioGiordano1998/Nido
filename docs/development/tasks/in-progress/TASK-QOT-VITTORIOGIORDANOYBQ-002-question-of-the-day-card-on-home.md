@@ -2,12 +2,12 @@
 id: TASK-QOT-VITTORIOGIORDANOYBQ-002
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: question of the day
 severity: Low
 opened: 2026-10-15
 done: null
-next: Proposed; ready to claim; adds the Home card deferred by TASK-QOT-VITTORIOGIORDANOYBQ-001.
+next: Implemented and green (Home card reusing useDailyQuestion; bank-missing empty state); pending the owner's bank paste and the two-account check.
 related: [TASK-QOT-VITTORIOGIORDANOYBQ-001, TASK-HOME-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -48,6 +48,8 @@ Deferred in TASK-QOT-VITTORIOGIORDANOYBQ-001 (Notes): Home does not surface toda
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the Home card reusing useDailyQuestion.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `features/question/DailyQuestionCard.tsx` (spinner, bank-missing empty state, "rispondi" state, waiting state, revealed answers, streak pill) composed into HomePage under the Noi section toggle; `npm run build` + `npm run lint` green.
 
 ## Resolution
 
