@@ -5,13 +5,16 @@ import { Button, ErrorBanner, Field, Select, TextArea, TextInput } from '../../u
 import { CloseIcon, LockIcon, TrashIcon } from '../../ui/icons'
 import { parseRecurrence, serializeRecurrence } from './recurrence'
 import type { RecurrenceFrequency } from './recurrence'
-import type { CalendarEvent, EventInput, EventVisibility } from './useEvents'
+import type { CalendarEvent, EventInput, EventOccasion, EventVisibility } from './useEvents'
 
 interface EventEditorProps {
   /** Evento in modifica; `null` = nuovo evento. */
   event: CalendarEvent | null
   /** Giorno selezionato nel calendario, default per un nuovo evento. */
   defaultDateKey: string
+  /** Membri della coppia: scelte "occasione per". */
+  members: Array<{ userId: string; displayName: string }>
+  myId: string | null
   saving: boolean
   error: string | null
   onSave: (input: EventInput) => Promise<void>
@@ -32,6 +35,8 @@ interface FormState {
   recurrenceEnd: RecurrenceEnd
   recurrenceUntil: string
   recurrenceCount: string
+  occasion: 'none' | EventOccasion
+  occasionFor: string
   location: string
   description: string
   visibility: EventVisibility
@@ -43,7 +48,11 @@ function isoFromParts(dateKey: string, time: string): string {
   return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).toISOString()
 }
 
-function initialState(event: CalendarEvent | null, defaultDateKey: string): FormState {
+function initialState(
+  event: CalendarEvent | null,
+  defaultDateKey: string,
+  myId: string | null,
+): FormState {
   const recurrence = event ? parseRecurrence(event.rrule) : null
   if (!event) {
     return {
@@ -57,6 +66,8 @@ function initialState(event: CalendarEvent | null, defaultDateKey: string): Form
       recurrenceEnd: 'never',
       recurrenceUntil: '',
       recurrenceCount: '3',
+      occasion: 'none',
+      occasionFor: myId ?? '',
       location: '',
       description: '',
       visibility: 'couple',
@@ -73,6 +84,8 @@ function initialState(event: CalendarEvent | null, defaultDateKey: string): Form
     recurrenceEnd: recurrence?.count ? 'count' : recurrence?.until ? 'until' : 'never',
     recurrenceUntil: recurrence?.until ?? '',
     recurrenceCount: recurrence?.count ? String(recurrence.count) : '3',
+    occasion: event.occasion ?? 'none',
+    occasionFor: event.occasionFor ?? myId ?? '',
     location: event.location ?? '',
     description: event.description ?? '',
     visibility: event.visibility,
@@ -82,13 +95,15 @@ function initialState(event: CalendarEvent | null, defaultDateKey: string): Form
 export function EventEditor({
   event,
   defaultDateKey,
+  members,
+  myId,
   saving,
   error,
   onSave,
   onDelete,
   onClose,
 }: EventEditorProps) {
-  const [form, setForm] = useState<FormState>(() => initialState(event, defaultDateKey))
+  const [form, setForm] = useState<FormState>(() => initialState(event, defaultDateKey, myId))
   const [validationError, setValidationError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -171,6 +186,8 @@ export function EventEditor({
       allDay: form.allDay,
       visibility: form.visibility,
       rrule,
+      occasion: form.occasion === 'none' ? null : form.occasion,
+      occasionFor: form.occasion === 'none' ? null : form.occasionFor || myId,
     })
   }
 
@@ -356,6 +373,43 @@ export function EventEditor({
               placeholder="Facoltativo"
             />
           </Field>
+
+          <Field
+            label="Occasione speciale"
+            hint="Compleanni e anniversari compaiono nel radar regali della wishlist."
+          >
+            <Select
+              value={form.occasion}
+              onChange={(changeEvent) =>
+                setForm({
+                  ...form,
+                  occasion: changeEvent.target.value as FormState['occasion'],
+                  occasionFor: form.occasionFor || myId || '',
+                })
+              }
+            >
+              <option value="none">Nessuna</option>
+              <option value="birthday">Compleanno</option>
+              <option value="anniversary">Anniversario</option>
+            </Select>
+          </Field>
+
+          {form.occasion !== 'none' && (
+            <Field label="Per">
+              <Select
+                value={form.occasionFor}
+                onChange={(changeEvent) =>
+                  setForm({ ...form, occasionFor: changeEvent.target.value })
+                }
+              >
+                {members.map((member) => (
+                  <option key={member.userId} value={member.userId}>
+                    {member.userId === myId ? 'Io' : member.displayName}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          )}
 
           <Field label="Visibilità" hint="Un evento privato non è visibile al partner.">
             <div className="grid grid-cols-2 gap-2">

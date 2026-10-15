@@ -31,7 +31,7 @@ const FEATURES = [
   {
     to: '/us/wishlist',
     title: 'Wishlist',
-    description: 'I desideri di ognuno, con il radar regali in arrivo.',
+    description: 'I desideri di ognuno, con il radar delle occasioni.',
     ready: true,
   },
   {
