@@ -3,9 +3,10 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Button, Card, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
-import { CheckIcon, ChevronLeftIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { BellIcon, CheckIcon, ChevronLeftIcon, PlusIcon, TrashIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
+import { useNudges } from '../nudges/useNudges'
 import { useLists } from './useLists'
 import type { Task } from './useLists'
 
@@ -23,6 +24,7 @@ export function ListView() {
   const navigate = useNavigate()
   const { session } = useAuth()
   const { couple } = useCouple()
+  const { sendNudge } = useNudges()
   const {
     lists,
     tasks,
@@ -42,6 +44,7 @@ export function ListView() {
   const [titleDraft, setTitleDraft] = useState<string | null>(null)
 
   const myId = session?.user.id
+  const partner = couple?.members.find((member) => member.userId !== myId) ?? null
   const list = lists.find((item) => item.id === id) ?? null
   const listTasks = useMemo(() => tasks.filter((task) => task.listId === id), [tasks, id])
   const openTasks = listTasks.filter((task) => !task.done)
@@ -121,6 +124,18 @@ export function ListView() {
     )
   }
 
+  async function handleNudge(taskId: string, title: string) {
+    if (!partner) return
+    try {
+      await sendNudge(partner.userId, {
+        taskId,
+        message: `Ricordati: ${title.length > 80 ? `${title.slice(0, 77)}…` : title}`,
+      })
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Errore invio promemoria.')
+    }
+  }
+
   async function handleDeleteTask(taskId: string) {
     try {
       await deleteTask(taskId)
@@ -193,6 +208,16 @@ export function ListView() {
               }`}
             >
               {assignee ? initials(assignee.displayName) : '—'}
+            </button>
+          )}
+          {!task.done && partner && (
+            <button
+              type="button"
+              aria-label={`Ricorda a ${partner.displayName}: ${task.title}`}
+              onClick={() => void handleNudge(task.id, task.title)}
+              className="rounded-lg p-1.5 text-ink-muted transition hover:bg-accent-50 hover:text-accent-ink"
+            >
+              <BellIcon className="h-4 w-4" />
             </button>
           )}
           <button

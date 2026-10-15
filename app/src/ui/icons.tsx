@@ -123,3 +123,12 @@ export function CloseIcon({ className = 'h-5 w-5' }: IconProps) {
     </svg>
   )
 }
+
+export function BellIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M12 4a5 5 0 0 1 5 5v4l1.5 3h-13L7 13V9a5 5 0 0 1 5-5z" />
+      <path d="M10 19.5a2.1 2.1 0 0 0 4 0" />
+    </svg>
+  )
+}
