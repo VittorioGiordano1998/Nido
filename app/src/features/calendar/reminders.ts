@@ -1,23 +1,34 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { formatTimeIt } from '../../core/dates'
+import { supabase } from '../../core/supabase'
+import { useAuth } from '../auth/AuthProvider'
+import { useCouple } from '../coupling/CoupleProvider'
 import { expandOccurrences } from './recurrence'
 import type { EventOccurrence } from './recurrence'
+import type { CalendarEvent } from './useEvents'
 import { useEvents } from './useEvents'
 
 /**
- * Local reminders while the app is open (Notification API). The web platform
- * cannot schedule a notification with the browser closed: that gap closes
- * with push (TASK-PUSH-VITTORIOGIORDANOYBQ-001).
+ * Calendar reminders on two channels.
+ *
+ * While the app is open a local Notification fires (Notification API). With
+ * the app closed the delivery is server-side: this module materializes the
+ * next days of occurrences into `push_reminders`, and the pg_cron job
+ * `nido-push-reminders` calls the Edge Function send-reminders
+ * (TASK-CAL-VITTORIOGIORDANOYBQ-003). Both use the same lead time and the
+ * same body, so they read as one feature.
  */
 
 /** How long before the start the notification fires. */
 const LEAD_MINUTES = 15
 /** All-day events remind at this hour of their own day. */
 const ALL_DAY_HOUR = 9
-/** Timers are (re)scheduled for this horizon, then refreshed. */
+/** Local timers are (re)scheduled for this horizon, then refreshed. */
 const HORIZON_MINUTES = 31
 const RESCHEDULE_MS = 5 * 60 * 1000
+/** Server-side reminders are materialized this far ahead, then refreshed. */
+const PUSH_HORIZON_DAYS = 7
 
 export function reminderAtMs(occurrence: EventOccurrence): number {
   const start = new Date(occurrence.startAt)
@@ -47,11 +58,74 @@ function notificationsSupported(): boolean {
   return typeof Notification !== 'undefined'
 }
 
-/** Mounted by the shell: fires reminders for occurrences due within the horizon. */
+/**
+ * Replaces the couple's unsent future rows with the current expansion: both
+ * devices refresh, the last one wins (fine for private use). Sent rows and the
+ * partner's private ones are out of reach of the table's policies; deleted
+ * events cascade.
+ */
+async function materializePushReminders(
+  coupleId: string,
+  userId: string,
+  events: CalendarEvent[],
+): Promise<void> {
+  const now = Date.now()
+  const dayStart = new Date(now)
+  dayStart.setHours(0, 0, 0, 0)
+  const horizonEnd = new Date(now + PUSH_HORIZON_DAYS * 24 * 60 * 60 * 1000)
+
+  const rows = expandOccurrences(events, dayStart, horizonEnd)
+    .filter((occurrence) => {
+      const at = reminderAtMs(occurrence)
+      return at > now && at <= horizonEnd.getTime()
+    })
+    .map((occurrence) => ({
+      couple_id: coupleId,
+      event_id: occurrence.event.id,
+      occurrence_key: occurrence.key,
+      fire_at: new Date(reminderAtMs(occurrence)).toISOString(),
+      only_for: occurrence.event.visibility === 'private' ? occurrence.event.createdBy : null,
+      created_by: userId,
+      title: occurrence.event.title,
+      body: notificationBody(occurrence),
+    }))
+
+  const { error: clearError } = await supabase
+    .from('push_reminders')
+    .delete()
+    .eq('couple_id', coupleId)
+    .is('sent_at', null)
+    .gt('fire_at', new Date(now).toISOString())
+  if (clearError) throw new Error(clearError.message)
+
+  if (rows.length === 0) return
+  const { error: upsertError } = await supabase
+    .from('push_reminders')
+    .upsert(rows, { onConflict: 'event_id,occurrence_key' })
+  if (upsertError) throw new Error(upsertError.message)
+}
+
+/** Mounted by the shell: fires local reminders while open and materializes the
+ * server-side ones. */
 export function useEventReminders(enabled: boolean): void {
-  const { events } = useEvents()
+  const { events, loading, error } = useEvents()
+  const { couple } = useCouple()
+  const { session } = useAuth()
+  const coupleId = couple?.id ?? null
+  const userId = session?.user.id ?? null
   const fired = useRef(new Set<string>())
   const [tick, setTick] = useState(0)
+  const chain = useRef(Promise.resolve())
+
+  // Materialization does not depend on the local-reminder switch: it is what
+  // lets the couple's subscribed devices receive reminders with the app
+  // closed. The push subscription stays the per-device delivery gate.
+  useEffect(() => {
+    if (!coupleId || !userId || loading || error) return
+    chain.current = chain.current
+      .then(() => materializePushReminders(coupleId, userId, events))
+      .catch(() => {})
+  }, [coupleId, userId, loading, error, events])
 
   useEffect(() => {
     if (!enabled) return
