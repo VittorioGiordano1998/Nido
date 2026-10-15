@@ -9,10 +9,12 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { HomePage } from '../features/home/HomePage'
 import { ListsPage } from '../features/lists/ListsPage'
 import { ListView } from '../features/lists/ListView'
+import { LoyaltyPage } from '../features/loyalty/LoyaltyPage'
 import { NotesPage } from '../features/notes/NotesPage'
 import { PairPage } from '../features/coupling/PairPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { QuestionPage } from '../features/question/QuestionPage'
+import { SavingsPage } from '../features/savings/SavingsPage'
 import { UsPage } from '../features/us/UsPage'
 import { PlanPage } from '../features/weekplan/PlanPage'
 import { WishlistPage } from '../features/wishlist/WishlistPage'
@@ -38,6 +40,8 @@ export function AppRouter() {
               <Route path="/us/decisions" element={<DecisionsPage />} />
               <Route path="/us/wishlist" element={<WishlistPage />} />
               <Route path="/us/plan" element={<PlanPage />} />
+              <Route path="/us/savings" element={<SavingsPage />} />
+              <Route path="/us/loyalty" element={<LoyaltyPage />} />
               <Route path="/us/facts" element={<FactsPage />} />
               <Route path="/us/capsules" element={<CapsulesPage />} />
               <Route path="/profile" element={<ProfilePage />} />
