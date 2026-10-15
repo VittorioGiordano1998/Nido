@@ -2,13 +2,12 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-31 tasks — 20 Proposed · 0 Ready · 11 In Progress · 0 Blocked · 0 Done · 0 Cancelled
+31 tasks — 19 Proposed · 0 Ready · 12 In Progress · 0 Blocked · 0 Done · 0 Cancelled
 
 ## Proposed
 
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [TASK-CAL-VITTORIOGIORDANOYBQ-002](proposed/TASK-CAL-VITTORIOGIORDANOYBQ-002-calendar-recurrences-rrule-and-local-reminders.md) | Calendar: recurrences (RRULE) and local reminders | Feature | calendar | Medium | 2026-10-14 | — |
 | [TASK-CANV-VITTORIOGIORDANOYBQ-001](proposed/TASK-CANV-VITTORIOGIORDANOYBQ-001-realtime-canvas.md) | Realtime canvas | Feature | canvas | Medium | 2026-10-15 | — |
 | [TASK-CYC-VITTORIOGIORDANOYBQ-001](proposed/TASK-CYC-VITTORIOGIORDANOYBQ-001-cycle-tracker-owner-only-log-with-explicit-consent.md) | Cycle tracker: owner-only log with explicit consent | Feature | cycle tracker | Medium | 2026-10-15 | — |
 | [TASK-DEC-VITTORIOGIORDANOYBQ-001](proposed/TASK-DEC-VITTORIOGIORDANOYBQ-001-blind-decisions-with-two-way-reveal.md) | Blind decisions with two-way reveal | Feature | decisions | Medium | 2026-10-14 | — |
@@ -39,6 +38,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CAL-VITTORIOGIORDANOYBQ-001](in-progress/TASK-CAL-VITTORIOGIORDANOYBQ-001-calendar-shared-events-with-visibility-and-realtime.md) | Calendar: shared events with visibility and realtime | Feature | calendar | High | 2026-10-14 | — |
+| [TASK-CAL-VITTORIOGIORDANOYBQ-002](in-progress/TASK-CAL-VITTORIOGIORDANOYBQ-002-calendar-recurrences-rrule-and-local-reminders.md) | Calendar: recurrences (RRULE) and local reminders | Feature | calendar | Medium | 2026-10-14 | — |
 | [TASK-CAPS-VITTORIOGIORDANOYBQ-001](in-progress/TASK-CAPS-VITTORIOGIORDANOYBQ-001-time-capsules-that-open-on-a-chosen-day.md) | Time capsules that open on a chosen day | Feature | capsules | Medium | 2026-10-14 | — |
 | [TASK-FACT-VITTORIOGIORDANOYBQ-001](in-progress/TASK-FACT-VITTORIOGIORDANOYBQ-001-things-to-know-partner-facts-cards.md) | Things to know: partner facts cards | Feature | facts | Medium | 2026-10-14 | — |
 | [TASK-HOME-VITTORIOGIORDANOYBQ-001](in-progress/TASK-HOME-VITTORIOGIORDANOYBQ-001-home-summary-next-events-and-open-tasks.md) | Home summary: next events and open tasks | Feature | home | Medium | 2026-10-14 | — |
