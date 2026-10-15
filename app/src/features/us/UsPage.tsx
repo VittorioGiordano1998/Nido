@@ -38,7 +38,7 @@ const FEATURES = [
     to: '/us/plan',
     title: 'Piano settimanale',
     description: 'Una proposta a settimana da fare insieme.',
-    ready: false,
+    ready: true,
   },
   {
     to: '/us/nudges',
