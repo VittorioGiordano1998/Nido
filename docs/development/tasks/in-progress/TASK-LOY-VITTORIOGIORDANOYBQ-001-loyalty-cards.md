@@ -2,12 +2,12 @@
 id: TASK-LOY-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: loyalty cards
 severity: Low
 opened: 2026-10-15
 done: null
-next: Proposed; ready to claim (Fase 3.5).
+next: Implemented and green (cards grid, editor with the format/tone choices, full-screen scannable view with jsbarcode/QR, Realtime, hub entry); pending the owner's scan test at the counter.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -45,6 +45,9 @@ M3 / Fase 3.5. `loyalty_cards` exists since M0; couples store supermarket and sh
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; loyalty cards with a scannable full-screen view (barcode/QR).
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `useLoyalty` (couple-wide CRUD with Realtime), `LoyaltyBarcode` (jsbarcode Code 128 / EAN-13 / Code 39 + react-qr-code for QR, black on white for scanner reliability; MIT logged in LEGAL-NOTES), the cards grid with tone chips, the editor (store, code, format, tone) and the full-screen viewer; route `/us/loyalty` and the hub entry. `npm run build` + `npm run lint` green; the scan test at the counter is the owner step.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; loyalty cards with a scannable full-screen view (barcode/QR).
 
 ## Resolution
 
