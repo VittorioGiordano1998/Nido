@@ -1397,3 +1397,10 @@ begin
       check (accent in ('terra', 'oliva', 'mare', 'prugna'));
   end if;
 end $$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261015113000_nido_onboarding.sql
+-- ============================================================================
+
+alter table public.profiles
+  add column if not exists onboarded_at timestamptz;
