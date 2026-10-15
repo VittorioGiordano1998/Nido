@@ -29,6 +29,15 @@ export type SectionKey = (typeof SECTION_DEFS)[number]['key']
 type EnabledMap = Record<SectionKey, boolean>
 
 const STORAGE_KEY = 'nido.sections.v1'
+const REMINDERS_KEY = 'nido.reminders.v1'
+
+function loadRemindersEnabled(): boolean {
+  try {
+    return window.localStorage.getItem(REMINDERS_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 function loadEnabled(): EnabledMap {
   const defaults: EnabledMap = { calendar: true, lists: true, us: true }
@@ -49,12 +58,25 @@ function loadEnabled(): EnabledMap {
 type SettingsContextValue = {
   enabled: EnabledMap
   toggle: (key: SectionKey) => void
+  /** Per-device local reminders for calendar events (Notification API). */
+  remindersEnabled: boolean
+  setRemindersEnabled: (value: boolean) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [enabled, setEnabled] = useState<EnabledMap>(loadEnabled)
+  const [remindersEnabled, setRemindersEnabledState] = useState(loadRemindersEnabled)
+
+  const setRemindersEnabled = useCallback((value: boolean) => {
+    setRemindersEnabledState(value)
+    try {
+      window.localStorage.setItem(REMINDERS_KEY, value ? '1' : '0')
+    } catch {
+      // localStorage non disponibile: la preferenza resta in memoria.
+    }
+  }, [])
 
   const toggle = useCallback((key: SectionKey) => {
     setEnabled((current) => {
@@ -68,7 +90,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const value = useMemo(() => ({ enabled, toggle }), [enabled, toggle])
+  const value = useMemo(
+    () => ({ enabled, toggle, remindersEnabled, setRemindersEnabled }),
+    [enabled, toggle, remindersEnabled, setRemindersEnabled],
+  )
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
 }

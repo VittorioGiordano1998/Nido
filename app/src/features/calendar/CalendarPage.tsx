@@ -19,15 +19,17 @@ import {
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { EventEditor } from './EventEditor'
+import { expandOccurrences } from './recurrence'
+import type { EventOccurrence } from './recurrence'
 import { useEvents } from './useEvents'
 import type { CalendarEvent, EventInput } from './useEvents'
 
 const WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'] as const
 
-function timeLabel(event: CalendarEvent): string {
-  if (event.allDay) return 'Tutto il giorno'
-  const start = formatTimeIt(event.startAt)
-  return event.endAt ? `${start} – ${formatTimeIt(event.endAt)}` : start
+function occurrenceLabel(occurrence: EventOccurrence): string {
+  if (occurrence.event.allDay) return 'Tutto il giorno'
+  const start = formatTimeIt(occurrence.startAt)
+  return occurrence.endAt ? `${start} – ${formatTimeIt(occurrence.endAt)}` : start
 }
 
 export function CalendarPage() {
@@ -45,18 +47,28 @@ export function CalendarPage() {
   const [todayKey] = useState(() => toDateKey(new Date()))
   const cells = useMemo(() => monthCells(month), [month])
 
+  const occurrences = useMemo(() => {
+    const first = cells[0]?.date ?? month
+    const last = cells[cells.length - 1]?.date ?? month
+    return expandOccurrences(
+      events,
+      first,
+      new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1),
+    )
+  }, [cells, events, month])
+
   const byDay = useMemo(() => {
-    const map = new Map<string, CalendarEvent[]>()
-    for (const event of events) {
-      const key = toDateKey(new Date(event.startAt))
+    const map = new Map<string, EventOccurrence[]>()
+    for (const occurrence of occurrences) {
+      const key = toDateKey(new Date(occurrence.startAt))
       const list = map.get(key)
-      if (list) list.push(event)
-      else map.set(key, [event])
+      if (list) list.push(occurrence)
+      else map.set(key, [occurrence])
     }
     return map
-  }, [events])
+  }, [occurrences])
 
-  const selectedEvents = byDay.get(selectedKey) ?? []
+  const selectedOccurrences = byDay.get(selectedKey) ?? []
   const hasCouple = couple !== null
 
   function openNew() {
@@ -191,13 +203,13 @@ export function CalendarPage() {
               >
                 <span>{cell.date.getDate()}</span>
                 <span className="mt-0.5 flex h-1.5 items-center gap-0.5">
-                  {dayEvents.slice(0, 3).map((event) => (
+                  {dayEvents.slice(0, 3).map((occurrence) => (
                     <span
-                      key={event.id}
+                      key={occurrence.key}
                       className={`h-1 w-1 rounded-full ${
                         isSelected
                           ? 'bg-white'
-                          : event.createdBy === myId
+                          : occurrence.event.createdBy === myId
                             ? 'bg-accent-500'
                             : 'bg-sage-500'
                       }`}
@@ -219,7 +231,7 @@ export function CalendarPage() {
           <div className="flex justify-center py-6">
             <Spinner />
           </div>
-        ) : selectedEvents.length === 0 ? (
+        ) : selectedOccurrences.length === 0 ? (
           <EmptyState
             title="Nessun evento"
             description={
@@ -230,28 +242,33 @@ export function CalendarPage() {
           />
         ) : (
           <ul className="space-y-2">
-            {selectedEvents.map((event) => (
-              <li key={event.id}>
-                <button type="button" onClick={() => openEdit(event)} className="w-full">
+            {selectedOccurrences.map((occurrence) => (
+              <li key={occurrence.key}>
+                <button
+                  type="button"
+                  onClick={() => openEdit(occurrence.event)}
+                  className="w-full"
+                >
                   <Card className="flex w-full items-center gap-3 text-left transition hover:ring-accent-300">
                     <span
                       className={`h-9 w-1.5 shrink-0 rounded-full ${
-                        event.createdBy === myId ? 'bg-accent-400' : 'bg-sage-500'
+                        occurrence.event.createdBy === myId ? 'bg-accent-400' : 'bg-sage-500'
                       }`}
                     />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-1.5">
                         <span className="truncate text-sm font-semibold text-ink">
-                          {event.title}
+                          {occurrence.event.title}
                         </span>
-                        {event.visibility === 'private' && (
+                        {occurrence.event.visibility === 'private' && (
                           <LockIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
                         )}
                       </span>
                       <span className="block text-xs text-ink-muted">
-                        {timeLabel(event)}
-                        {event.location ? ` · ${event.location}` : ''}
-                        {event.createdBy !== myId ? ' · del partner' : ''}
+                        {occurrenceLabel(occurrence)}
+                        {occurrence.event.location ? ` · ${occurrence.event.location}` : ''}
+                        {occurrence.recurring ? ' · si ripete' : ''}
+                        {occurrence.event.createdBy !== myId ? ' · del partner' : ''}
                       </span>
                     </span>
                   </Card>
