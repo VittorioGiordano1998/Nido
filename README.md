@@ -47,15 +47,21 @@ npm run lint     # oxlint
 4. `*_nido_keepalive.sql` — heartbeat + RPC di ping + job pg_cron anti-pausa
 5. `*_nido_events_privacy.sql` — policy su `events`: la visibilità `private` è applicata
    dal database (solo il creatore legge e scrive i propri eventi privati)
-6. `*_nido_question_bank_seed.sql` — banca delle 60 domande del "Domanda del giorno"
-   (idempotente: rilanciabile per aggiungere le domande nuove)
+6. `*_nido_question_bank_seed.sql` + `*_nido_question_bank_seed_100.sql` — banca delle domande
+   del "Domanda del giorno", in due lotti idempotenti (60 + 40 = 100)
+7. `*_nido_profile_preferences.sql` — tema e accento su `profiles`
+8. `*_nido_onboarding.sql` — flag di primo avvio (`profiles.onboarded_at`)
+9. `*_nido_event_occasions.sql` — occasioni regalo sugli eventi (radar della wishlist)
+10. `*_nido_push_nudges.sql` — chiavi push su `push_tokens` + `nudges` su Realtime
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
 **progetto nuovo** (le `create table` falliscono con `42P07` su un progetto già migrato:
 in quel caso applicare solo le migrazioni mancanti, oppure l'eventuale file di fix dedicato,
-es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql` o
-`supabase/apply-question-bank.sql`).
+es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
+`supabase/apply-question-bank.sql`, `supabase/apply-profile-preferences.sql`,
+`supabase/apply-onboarding.sql`, `supabase/apply-occasions.sql` o
+`supabase/apply-push-nudges.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -111,6 +117,33 @@ Supabase → Authentication → URL Configuration:
 Verifica: apri l'URL, accedi e fai un refresh su una rotta interna (es. `/calendar`): l'app
 deve ricaricarsi, non rispondere 404.
 
+### Push (Web Push, una volta)
+
+Le notifiche push usano Web Push con VAPID (decisione in
+`ADR-PUSH-VITTORIOGIORDANOYBQ-001`). Passi:
+
+1. **Chiavi VAPID** (una volta sola, sulla macchina): `npx web-push generate-vapid-keys`
+   — salva chiave pubblica e privata.
+2. **Secret Supabase** (Edge Functions → Secrets, o `supabase secrets set`):
+   `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (es. `mailto:tu@email`),
+   `SEND_PUSH_SECRET` (una stringa a caso, es. `openssl rand -hex 32`).
+3. **Deploy della funzione**: `supabase functions deploy send-push` (serve `supabase login`
+   e il link al progetto; `verify_jwt = false` è già in `supabase/config.toml`, l'autorizzazione
+   è l'header segreto).
+4. **Database Webhook** (Supabase → Database → Webhooks → nuovo): tabella `nudges`,
+   evento **Insert**, tipo HTTP, URL `https://<project-ref>.supabase.co/functions/v1/send-push`,
+   header `x-webhook-secret: <SEND_PUSH_SECRET>`.
+5. **Vercel**: aggiungi `VITE_VAPID_PUBLIC_KEY` (chiave pubblica) tra le Environment
+   Variables e rifai il deploy (basta un push).
+6. **Prova**: Profilo → Notifiche → attiva "Notifiche push" sui dispositivi; dall'altro
+   account manda un promemoria (Noi → Promemoria al partner, o la campanella su una voce
+   di lista) e la notifica arriva. Su iPhone serve prima aggiungere l'app alla schermata
+   Home (Safari → Condividi → Aggiungi a Home); con l'app chiusa la notifica arriva solo
+   da lì.
+
+Gli avvisi delle **ricorrenze** (promemoria eventi) restano locali e funzionano mentre l'app
+è aperta; il push delle novità del partner passa da qui.
+
 ## Regole di progetto
 
 - Repository privato: `origin` è `github.com/VittorioGiordano1998/Nido` (account dell'owner) e
@@ -123,7 +156,9 @@ deve ricaricarsi, non rispondere 404.
 
 ## Stato
 
-**M1** pubblicata (calendario, liste, note, home) e in verifica a due account; mancano push,
-ricorrenze e promemoria del calendario. **Fase 2** in corso: hub "Noi" con Domanda del
-giorno, Cosa c'è da sapere e Capsule del tempo; in coda decisioni alla cieca, wishlist, piano
-settimanale e promemoria. **M0** completa. Record in `docs/development/tasks/`.
+**M0, M1 e Fase 2** complete e pubblicate (calendario con ricorrenze e occasioni, liste, note,
+home, hub "Noi" con domanda del giorno, decisioni, wishlist con radar, piano settimanale,
+capsule, fatti, profilo con tema/accenti). **Push e promemoria al partner** implementati:
+mancano le chiavi/il deploy lato owner (vedi "Push") e la prova di consegna sul dispositivo.
+Prossimo: **Fase 3** (cassaforte E2E, tracker ciclo, premium, risparmi, tessere).
+Record in `docs/development/tasks/`.
