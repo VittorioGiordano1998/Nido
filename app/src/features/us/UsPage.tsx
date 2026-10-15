@@ -41,6 +41,18 @@ const FEATURES = [
     description: 'Una proposta a settimana da fare insieme.',
     ready: true,
   },
+  {
+    to: '/us/savings',
+    title: 'Risparmi',
+    description: 'Obiettivi di coppia, con la barra che cresce insieme.',
+    ready: true,
+  },
+  {
+    to: '/us/loyalty',
+    title: 'Tessere',
+    description: 'Le tessere dei negozi, pronte al banco.',
+    ready: true,
+  },
 ] as const
 
 export function UsPage() {
