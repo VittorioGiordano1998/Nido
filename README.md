@@ -11,7 +11,7 @@ design e brand sono originali. Vedi `docs/legal/LEGAL-NOTES.md`.
 | Cartella | Contenuto |
 | --- | --- |
 | `app/` | Client web: Vite + React + TypeScript + Tailwind CSS |
-| `supabase/` | Migrazioni SQL (schema, RLS, Realtime); le Edge Functions arriveranno qui |
+| `supabase/` | Migrazioni SQL (schema, RLS, Realtime) ed Edge Functions |
 | `docs/` | Documentazione, regole per agenti, record (task/ADR/…), note legali |
 | `tools/` | Scaffold di progetto (regole, record, comandi) + keep-alive Supabase |
 
@@ -53,6 +53,9 @@ npm run lint     # oxlint
 8. `*_nido_onboarding.sql` — flag di primo avvio (`profiles.onboarded_at`)
 9. `*_nido_event_occasions.sql` — occasioni regalo sugli eventi (radar della wishlist)
 10. `*_nido_push_nudges.sql` — chiavi push su `push_tokens` + `nudges` su Realtime
+11. `*_nido_push_events.sql` — trigger su `events`: un evento di coppia avvisa il partner
+12. `*_nido_push_reminders.sql` — `push_reminders` + il job pg_cron che consegna i
+    promemoria a app chiusa
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
@@ -60,8 +63,9 @@ file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — 
 in quel caso applicare solo le migrazioni mancanti, oppure l'eventuale file di fix dedicato,
 es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-question-bank.sql`, `supabase/apply-profile-preferences.sql`,
-`supabase/apply-onboarding.sql`, `supabase/apply-occasions.sql` o
-`supabase/apply-push-nudges.sql`).
+`supabase/apply-onboarding.sql`, `supabase/apply-occasions.sql`,
+`supabase/apply-push-nudges.sql`, `supabase/apply-push-events.sql` o
+`supabase/apply-push-reminders.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -126,23 +130,38 @@ Le notifiche push usano Web Push con VAPID (decisione in
    — salva chiave pubblica e privata.
 2. **Secret Supabase** (Edge Functions → Secrets, o `supabase secrets set`):
    `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (es. `mailto:tu@email`),
-   `SEND_PUSH_SECRET` (una stringa a caso, es. `openssl rand -hex 32`).
-3. **Deploy della funzione**: `supabase functions deploy send-push` (serve `supabase login`
-   e il link al progetto; `verify_jwt = false` è già in `supabase/config.toml`, l'autorizzazione
-   è l'header segreto).
-4. **Database Webhook** (Supabase → Database → Webhooks → nuovo): tabella `nudges`,
+   `SEND_PUSH_SECRET` (una stringa a caso, es. `openssl rand -hex 32`) e
+   `SEND_REMINDERS_SECRET` (un'altra stringa a caso, per il cron dei promemoria).
+3. **Deploy delle funzioni**: `supabase functions deploy send-push` e
+   `supabase functions deploy send-reminders` (serve `supabase login` e il link al
+   progetto; `verify_jwt = false` è già in `supabase/config.toml`, l'autorizzazione è
+   l'header segreto).
+4. **Database Webhook nudge** (Supabase → Database → Webhooks → nuovo): tabella `nudges`,
    evento **Insert**, tipo HTTP, URL `https://<project-ref>.supabase.co/functions/v1/send-push`,
    header `x-webhook-secret: <SEND_PUSH_SECRET>`.
-5. **Vercel**: aggiungi `VITE_VAPID_PUBLIC_KEY` (chiave pubblica) tra le Environment
+5. **Webhook eventi (SQL, una volta)**: incolla `supabase/apply-push-events.sql` nell'SQL
+   Editor sostituendo `<project-ref>` e `<SEND_PUSH_SECRET>`: quando il partner crea un
+   evento di coppia arriva "{Nome} ha aggiunto «Titolo»" con data e ora; gli eventi
+   privati non avvisano e le modifiche restano silenziose.
+6. **Promemoria a app chiusa (SQL, una volta)**: assicurati che pg_cron (Dashboard →
+   Integrations → Cron) e pg_net (Dashboard → Database → Extensions) siano abilitati, poi
+   incolla `supabase/apply-push-reminders.sql` sostituendo `<project-ref>` e
+   `SEND_REMINDERS_SECRET`: il job `nido-push-reminders` ogni 5 minuti consegna i
+   promemoria che l'app ha materializzato.
+7. **Vercel**: aggiungi `VITE_VAPID_PUBLIC_KEY` (chiave pubblica) tra le Environment
    Variables e rifai il deploy (basta un push).
-6. **Prova**: Profilo → Notifiche → attiva "Notifiche push" sui dispositivi; dall'altro
+8. **Prova**: Profilo → Notifiche → attiva "Notifiche push" sui dispositivi; dall'altro
    account manda un promemoria (Noi → Promemoria al partner, o la campanella su una voce
    di lista) e la notifica arriva. Su iPhone serve prima aggiungere l'app alla schermata
    Home (Safari → Condividi → Aggiungi a Home); con l'app chiusa la notifica arriva solo
    da lì.
 
-Gli avvisi delle **ricorrenze** (promemoria eventi) restano locali e funzionano mentre l'app
-è aperta; il push delle novità del partner passa da qui.
+I **promemoria eventi** funzionano su due canali: mentre l'app è aperta scatta la notifica
+locale (15 minuti prima; alle 9 per i "tutto il giorno"); con l'app chiusa arrivano via push
+sui dispositivi con le notifiche attive. I promemoria lato server coprono i prossimi 7
+giorni e si aggiornano a ogni apertura dell'app o modifica degli eventi: se l'app non viene
+mai aperta per più di 7 giorni, oltre quell'orizzonte non arriva nulla (limite accettato).
+Gli eventi **privati** avvisano solo chi li ha creati.
 
 ### Eliminazione account e reset (una volta)
 
@@ -172,7 +191,8 @@ Due strumenti pensati per l'uso privato/test:
 
 **M0, M1 e Fase 2** complete e pubblicate (calendario con ricorrenze e occasioni, liste, note,
 home, hub "Noi" con domanda del giorno, decisioni, wishlist con radar, piano settimanale,
-capsule, fatti, profilo con tema/accenti). **Push e promemoria al partner** implementati:
-mancano le chiavi/il deploy lato owner (vedi "Push") e la prova di consegna sul dispositivo.
+capsule, fatti, profilo con tema/accenti). **Push, promemoria al partner e push del
+calendario** (novità eventi e promemoria a app chiusa) implementati: mancano le chiavi,
+il deploy e i due script SQL lato owner (vedi "Push") e la prova di consegna sul dispositivo.
 Prossimo: **Fase 3** (cassaforte E2E, tracker ciclo, premium, risparmi, tessere).
 Record in `docs/development/tasks/`.
