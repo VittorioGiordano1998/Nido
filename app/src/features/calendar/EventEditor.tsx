@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 
 import { toDateKey, toTimeInput } from '../../core/dates'
-import { Button, ErrorBanner, Field, TextArea, TextInput } from '../../ui/components'
+import { Button, ErrorBanner, Field, Select, TextArea, TextInput } from '../../ui/components'
 import { CloseIcon, LockIcon, TrashIcon } from '../../ui/icons'
+import { parseRecurrence, serializeRecurrence } from './recurrence'
+import type { RecurrenceFrequency } from './recurrence'
 import type { CalendarEvent, EventInput, EventVisibility } from './useEvents'
 
 interface EventEditorProps {
@@ -17,12 +19,19 @@ interface EventEditorProps {
   onClose: () => void
 }
 
+type RecurrenceEnd = 'never' | 'until' | 'count'
+
 interface FormState {
   title: string
   allDay: boolean
   dateKey: string
   startTime: string
   endTime: string
+  recurrenceFreq: 'NONE' | RecurrenceFrequency
+  recurrenceInterval: string
+  recurrenceEnd: RecurrenceEnd
+  recurrenceUntil: string
+  recurrenceCount: string
   location: string
   description: string
   visibility: EventVisibility
@@ -35,6 +44,7 @@ function isoFromParts(dateKey: string, time: string): string {
 }
 
 function initialState(event: CalendarEvent | null, defaultDateKey: string): FormState {
+  const recurrence = event ? parseRecurrence(event.rrule) : null
   if (!event) {
     return {
       title: '',
@@ -42,6 +52,11 @@ function initialState(event: CalendarEvent | null, defaultDateKey: string): Form
       dateKey: defaultDateKey,
       startTime: '09:00',
       endTime: '10:00',
+      recurrenceFreq: 'NONE',
+      recurrenceInterval: '1',
+      recurrenceEnd: 'never',
+      recurrenceUntil: '',
+      recurrenceCount: '3',
       location: '',
       description: '',
       visibility: 'couple',
@@ -53,6 +68,11 @@ function initialState(event: CalendarEvent | null, defaultDateKey: string): Form
     dateKey: toDateKey(new Date(event.startAt)),
     startTime: event.allDay ? '09:00' : toTimeInput(event.startAt),
     endTime: event.endAt && !event.allDay ? toTimeInput(event.endAt) : '10:00',
+    recurrenceFreq: recurrence?.frequency ?? 'NONE',
+    recurrenceInterval: String(recurrence?.interval ?? 1),
+    recurrenceEnd: recurrence?.count ? 'count' : recurrence?.until ? 'until' : 'never',
+    recurrenceUntil: recurrence?.until ?? '',
+    recurrenceCount: recurrence?.count ? String(recurrence.count) : '3',
     location: event.location ?? '',
     description: event.description ?? '',
     visibility: event.visibility,
@@ -109,6 +129,38 @@ export function EventEditor({
       }
     }
 
+    let rrule: string | null = null
+    if (form.recurrenceFreq !== 'NONE') {
+      if (form.recurrenceEnd === 'until') {
+        if (!form.recurrenceUntil) {
+          setValidationError('Serve la data di fine della ricorrenza.')
+          return
+        }
+        if (form.recurrenceUntil < form.dateKey) {
+          setValidationError("La ricorrenza finisce prima dell'evento.")
+          return
+        }
+      }
+      if (form.recurrenceEnd === 'count') {
+        const count = Number(form.recurrenceCount)
+        if (!Number.isFinite(count) || count < 1) {
+          setValidationError('Il numero di ripetizioni non è valido.')
+          return
+        }
+      }
+      const interval = Number(form.recurrenceInterval)
+      rrule = serializeRecurrence({
+        frequency: form.recurrenceFreq,
+        interval:
+          Number.isFinite(interval) && interval >= 1 ? Math.min(52, Math.trunc(interval)) : 1,
+        until: form.recurrenceEnd === 'until' ? form.recurrenceUntil : null,
+        count:
+          form.recurrenceEnd === 'count'
+            ? Math.min(365, Math.trunc(Number(form.recurrenceCount)))
+            : null,
+      })
+    }
+
     setValidationError(null)
     await onSave({
       title,
@@ -118,6 +170,7 @@ export function EventEditor({
       endAt,
       allDay: form.allDay,
       visibility: form.visibility,
+      rrule,
     })
   }
 
@@ -212,6 +265,76 @@ export function EventEditor({
                   }
                 />
               </Field>
+            </div>
+          )}
+
+          <Field label="Ripetizione">
+            <Select
+              value={form.recurrenceFreq}
+              onChange={(changeEvent) =>
+                setForm({
+                  ...form,
+                  recurrenceFreq: changeEvent.target.value as FormState['recurrenceFreq'],
+                })
+              }
+            >
+              <option value="NONE">Non si ripete</option>
+              <option value="DAILY">Ogni giorno</option>
+              <option value="WEEKLY">Ogni settimana</option>
+              <option value="MONTHLY">Ogni mese</option>
+              <option value="YEARLY">Ogni anno</option>
+            </Select>
+          </Field>
+
+          {form.recurrenceFreq !== 'NONE' && (
+            <div className="space-y-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-line">
+              <Field label="Ogni quanto" hint="1 = ogni volta; 2 = salta un giro.">
+                <TextInput
+                  type="number"
+                  min={1}
+                  max={52}
+                  value={form.recurrenceInterval}
+                  onChange={(changeEvent) =>
+                    setForm({ ...form, recurrenceInterval: changeEvent.target.value })
+                  }
+                />
+              </Field>
+              <Field label="Fine">
+                <Select
+                  value={form.recurrenceEnd}
+                  onChange={(changeEvent) =>
+                    setForm({
+                      ...form,
+                      recurrenceEnd: changeEvent.target.value as RecurrenceEnd,
+                      recurrenceUntil: form.recurrenceUntil || form.dateKey,
+                    })
+                  }
+                >
+                  <option value="never">Mai</option>
+                  <option value="until">A una data</option>
+                  <option value="count">Dopo un numero di volte</option>
+                </Select>
+              </Field>
+              {form.recurrenceEnd === 'until' && (
+                <TextInput
+                  type="date"
+                  value={form.recurrenceUntil}
+                  onChange={(changeEvent) =>
+                    setForm({ ...form, recurrenceUntil: changeEvent.target.value })
+                  }
+                />
+              )}
+              {form.recurrenceEnd === 'count' && (
+                <TextInput
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={form.recurrenceCount}
+                  onChange={(changeEvent) =>
+                    setForm({ ...form, recurrenceCount: changeEvent.target.value })
+                  }
+                />
+              )}
             </div>
           )}
 

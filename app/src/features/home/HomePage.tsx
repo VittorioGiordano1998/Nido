@@ -113,27 +113,28 @@ export function HomePage() {
             />
           ) : (
             <Card className="divide-y divide-line">
-              {upcoming.map((event) => (
+              {upcoming.map((occurrence) => (
                 <Link
-                  key={event.id}
+                  key={occurrence.key}
                   to="/calendar"
                   className="flex items-center gap-3 py-2.5 first:pt-1 last:pb-1"
                 >
                   <span className="w-12 shrink-0 text-xs font-semibold capitalize text-ink-muted">
-                    {formatShortDateIt(event.startAt)}
+                    {formatShortDateIt(occurrence.startAt)}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5">
                       <span className="truncate text-sm font-semibold text-ink">
-                        {event.title}
+                        {occurrence.event.title}
                       </span>
-                      {event.visibility === 'private' && (
+                      {occurrence.event.visibility === 'private' && (
                         <LockIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
                       )}
                     </span>
                     <span className="block text-xs text-ink-muted">
-                      {event.allDay ? 'Tutto il giorno' : formatTimeIt(event.startAt)}
-                      {event.location ? ` · ${event.location}` : ''}
+                      {occurrence.event.allDay ? 'Tutto il giorno' : formatTimeIt(occurrence.startAt)}
+                      {occurrence.event.location ? ` · ${occurrence.event.location}` : ''}
+                      {occurrence.recurring ? ' · si ripete' : ''}
                     </span>
                   </span>
                 </Link>

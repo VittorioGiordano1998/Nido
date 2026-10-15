@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
+import { expandOccurrences, occurrenceEndMs } from './recurrence'
 
 export type EventVisibility = 'couple' | 'private'
 
@@ -18,6 +19,8 @@ export interface CalendarEvent {
   visibility: EventVisibility
   createdBy: string
   updatedAt: string
+  /** iCal text (FREQ/INTERVAL/UNTIL/COUNT subset); null = single event. */
+  rrule: string | null
 }
 
 export interface EventInput {
@@ -28,6 +31,7 @@ export interface EventInput {
   endAt: string | null
   allDay: boolean
   visibility: EventVisibility
+  rrule: string | null
 }
 
 interface EventRow {
@@ -42,10 +46,11 @@ interface EventRow {
   visibility: string
   created_by: string
   updated_at: string
+  rrule: string | null
 }
 
 const EVENT_COLUMNS =
-  'id, couple_id, title, description, location, start_at, end_at, all_day, visibility, created_by, updated_at'
+  'id, couple_id, title, description, location, start_at, end_at, all_day, visibility, created_by, updated_at, rrule'
 
 function rowToEvent(row: EventRow): CalendarEvent {
   return {
@@ -60,6 +65,7 @@ function rowToEvent(row: EventRow): CalendarEvent {
     visibility: row.visibility === 'private' ? 'private' : 'couple',
     createdBy: row.created_by,
     updatedAt: row.updated_at,
+    rrule: row.rrule,
   }
 }
 
@@ -73,13 +79,6 @@ function upsert(events: CalendarEvent[], next: CalendarEvent): CalendarEvent[] {
 
 function asRow(value: Record<string, unknown>): EventRow | null {
   return typeof value.id === 'string' ? (value as unknown as EventRow) : null
-}
-
-/** Istante in cui un evento smette di essere "imminente". */
-function eventEnd(event: CalendarEvent): number {
-  if (event.endAt) return new Date(event.endAt).getTime()
-  const start = new Date(event.startAt).getTime()
-  return event.allDay ? start + 24 * 60 * 60 * 1000 : start + 60 * 60 * 1000
 }
 
 /**
@@ -159,6 +158,7 @@ export function useEvents() {
           end_at: input.endAt,
           all_day: input.allDay,
           visibility: input.visibility,
+          rrule: input.rrule,
         })
         .select(EVENT_COLUMNS)
         .single()
@@ -179,6 +179,7 @@ export function useEvents() {
         end_at: input.endAt,
         all_day: input.allDay,
         visibility: input.visibility,
+        rrule: input.rrule,
       })
       .eq('id', id)
       .select(EVENT_COLUMNS)
@@ -200,7 +201,7 @@ export function useEvents() {
   return value
 }
 
-/** I prossimi eventi (fine oltre adesso), già ordinati: per Home e riepiloghi. */
+/** I prossimi eventi (occorrenze ricorrenti incluse), già ordinati: per Home. */
 export function useUpcomingEvents(limit = 3) {
   const data = useEvents()
   const [now, setNow] = useState(() => Date.now())
@@ -210,9 +211,12 @@ export function useUpcomingEvents(limit = 3) {
     return () => window.clearInterval(timer)
   }, [])
 
-  const upcoming = useMemo(
-    () => data.events.filter((event) => eventEnd(event) >= now).slice(0, limit),
-    [data.events, limit, now],
-  )
+  const upcoming = useMemo(() => {
+    const current = new Date(now)
+    const horizon = new Date(now + 90 * 24 * 60 * 60 * 1000)
+    return expandOccurrences(data.events, current, horizon)
+      .filter((occurrence) => occurrenceEndMs(occurrence) >= now)
+      .slice(0, limit)
+  }, [data.events, limit, now])
   return { ...data, upcoming }
 }
