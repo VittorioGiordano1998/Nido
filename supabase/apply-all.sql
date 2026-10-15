@@ -1535,3 +1535,10 @@ begin
   delete from public.vault_keys where couple_id = target_couple;
 end;
 $$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261015210000_nido_cycle_consent.sql
+-- ============================================================================
+
+alter table public.profiles
+  add column if not exists cycle_consent_at timestamptz;
