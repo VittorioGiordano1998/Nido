@@ -1454,3 +1454,23 @@ insert into public.question_bank (lang, category, text) values
   ('it', 'gioco', 'Se ci dessero un superpotere di coppia, quale sceglieresti?'),
   ('it', 'gioco', 'Come si chiamerebbe la nostra band e che genere suoneremmo?')
 on conflict (lang, text) do nothing;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261015163000_nido_event_occasions.sql
+-- ============================================================================
+
+alter table public.events
+  add column if not exists occasion text;
+
+alter table public.events
+  add column if not exists occasion_for uuid references public.profiles (id) on delete set null;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'events_occasion_check'
+  ) then
+    alter table public.events
+      add constraint events_occasion_check check (occasion in ('birthday', 'anniversary'));
+  end if;
+end $$;
