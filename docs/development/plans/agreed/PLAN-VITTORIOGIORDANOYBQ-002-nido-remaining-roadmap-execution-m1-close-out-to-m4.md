@@ -18,16 +18,16 @@ Deliver what remains of PLAN-VITTORIOGIORDANOYBQ-001 — M1 close-out, M2 comple
 
 | Phase | Delivers | Gate |
 | ----- | -------- | ---- |
-| **0 - Close-out** | owner actions: SQL pastes (question bank, events privacy), Supabase Auth URL configuration, two-account pass; then every In-Progress task that only awaited verification closes | live app verified; those tasks moved to Done with a Resolution |
-| 1 - M1 remainder | push notifications (mechanism ADR + delivery), calendar recurrences and reminders, first-run polish (onboarding slides, invite QR), question card in Home, offline evaluation, profile personalization finished (TASK-PROF-VITTORIOGIORDANOYBQ-001) | two-account flows per feature; build + lint green |
-| 2 - M2 completion | question bank to 100, blind decisions, wishlist, gift radar, weekly plan, nudges | hidden data invisible until its reveal condition; two-account flows |
-| 3 - M3 privacy and monetization | E2E document vault, cycle tracker with explicit consent, premium and per-couple entitlement, savings projects, loyalty cards, account deletion | vault: server never sees plaintext; cycle owner-only verified; sandbox purchase; deletion removes account and couple data |
-| 4 - M4 polish and distribution | realtime canvas, home widget, yearly recap, localization IT/ES/EN/DE, Capacitor packaging and store forms | manual pass on the packaged app; i18n coverage check; store listings ready |
+| 0 - Close-out | **done 2026-10-15**: owner actions taken (SQL pastes, Auth URL configuration, two-account pass), 17 In-Progress tasks closed with a Resolution | live app verified |
+| 1 - M1 remainder | **done except the push setup**: recurrences + reminders, first-run polish, question card in Home, profile personalization; push and nudge implemented, waiting for the owner's VAPID deploy + delivery check; offline evaluation deferred (private test) | two-account flows; delivery check on the device for push/nudge |
+| 2 - M2 completion | **done 2026-10-15**: question bank to 100, blind decisions, wishlist, gift radar, weekly plan, nudges | hidden data invisible until its reveal condition; verified |
+| **3 - M3, private-test first** | account deletion (GDPR), couple-data reset (test tool), cycle tracker with explicit consent, savings projects, loyalty cards; E2E vault with its key ADR after those; premium deferred while the app stays a private test | deletion removes the account (and an emptied couple); the reset clears the couple data; cycle owner-only verified; vault: server never sees plaintext |
+| 4 - M4, parked until distribution | realtime canvas, yearly recap; widget and store packaging only if the owner distributes; localization deferred (Italian only in private use) | a manual pass whenever phase 4 resumes |
 
 ## Decisions
 
 1. **Push mechanism:** Web Push (VAPID) is the recommendation — no Firebase project, works in Chromium and in installed PWAs on iOS 16.4+; recorded as ADR-PUSH-VITTORIOGIORDANOYBQ-001 (Proposed). The owner accepts or replaces it before TASK-PUSH-VITTORIOGIORDANOYBQ-001 is claimed; FCM stays a fallback for the packaged app (phase 4).
-2. **Payments path:** RevenueCat versus native IAP decided via ADR when premium is claimed (phase 3); the same answer covers web billing and the packaged app.
+2. **Payments path:** RevenueCat versus native IAP decided via ADR when premium is claimed; the same answer covers web billing and the packaged app. **Deferred**: the owner keeps Nido as a private test app for now, so the decision comes back with distribution.
 3. **Offline:** evaluated in phase 2 on real usage (TASK-OFF-VITTORIOGIORDANOYBQ-001); no persistent cache before evidence, and the outcome is recorded (ADR if architectural).
 4. **Vault keys:** WebCrypto non-extractable keys in IndexedDB, optional recovery phrase, new-device approval — ADR plus a multi-device prototype before the vault task starts (PLAN-001 §Risks).
 5. **Distribution:** one codebase — the web app ships first; Capacitor packaging wraps the same app after private use, and no feature is built store-first (ADR-WEB-VITTORIOGIORDANOYBQ-001).
@@ -54,5 +54,6 @@ Deliver what remains of PLAN-VITTORIOGIORDANOYBQ-001 — M1 close-out, M2 comple
 ## Validation
 
 - State at 2026-10-15: M0 delivered and deployed (Vercel `nido_app`); M1 implemented and pending owner verification; the first M2 slice implemented and pending the question-bank paste and two-account check; TASK-PROF-VITTORIOGIORDANOYBQ-001 claimed but its implementation is not in the repository yet. Nothing else of this plan is delivered.
+- Update (2026-10-15, later): the owner keeps Nido as a private test app for now; M1 and M2 are closed and verified, the last two tasks (push, nudge) wait for the VAPID deploy and a delivery check. Work order agreed: account deletion + couple-data reset first, then cycle, savings and loyalty cards, then the vault with its key ADR; premium, store packaging and localization are parked. KI-VITTORIOGIORDANOYBQ-002 (Realtime channel reuse) was found on the live app and fixed the same day.
 - Owner actions still pending: `supabase/apply-question-bank.sql` and `supabase/apply-events-privacy.sql` pastes, Supabase Authentication URL configuration, the two-account pass on the live app.
 - Not validated: everything the phase table lists as remaining (push delivery, recurrences, the M2 remainder, all of M3 and M4).
