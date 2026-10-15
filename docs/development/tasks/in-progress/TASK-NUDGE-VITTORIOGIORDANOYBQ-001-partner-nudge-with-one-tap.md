@@ -2,12 +2,12 @@
 id: TASK-NUDGE-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: nudges
 severity: Low
 opened: 2026-10-14
 done: null
-next: Blocked by TASK-PUSH-VITTORIOGIORDANOYBQ-001 (delivery channel); claim once push exists.
+next: Implemented (one-tap card with preset messages and the recent list on the hub, bell on list items, Realtime, push through the nudges webhook); pending the device delivery check once push is configured.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-PUSH-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -59,6 +59,9 @@ Impact: it is the feature that makes push worth having — and it is useless wit
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; one-tap nudge riding the push channel.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: `useNudges` (immutable inserts, recent list, Realtime — `nudges` published with TASK-PUSH), `NudgeCard` on the hub (preset message picked at random, "Ti ricordo io 💛", recent list with sender and time) and a bell button on open list items that sends `Ricordati: {titolo}` with `task_id`; the hub's feature entry became the inline card. `npm run build` + `npm run lint` green; the push delivery is the `send-push` webhook's job.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; one-tap nudge riding the push channel.
 
 ## Resolution
 

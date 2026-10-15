@@ -2,12 +2,12 @@
 id: TASK-WEEK-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: weekly plan
 severity: Low
 opened: 2026-10-14
-done: null
-next: Implemented and green (current-week card with accept/decline/alternative, replaced trail, history with status chips, Realtime); pending the owner's two-account check.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -60,7 +60,8 @@ workflow.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; current-week card with accept/decline/alternative plus a short history.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `useWeekPlan` (Monday-based `currentWeekStart`, propose, accept/decline, replace marking the old as `replaced`, Realtime) and `PlanPage` (current-week card, alternative form, replaced trail, past weeks with status chips); route `/us/plan` and the Noi hub card switched to ready. `npm run build` + `npm run lint` green.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; current-week card with accept/decline/alternative plus a short history.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: current-week card (proposal, status, who proposed) with accept / decline / alternative; replacing marks the old as `replaced` (shown struck-through); past weeks with status chips; Realtime. Owner two-account check on 2026-10-15.

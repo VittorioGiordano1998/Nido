@@ -2,18 +2,18 @@
 
 Decisions for this project. New records use `ADR_TEMPLATE.md`; the owner-qualified scheme is `ADR-<AREA>-<OWNER>-<NNN>` and records live in `adr/<status>/` subfolders (proposed, accepted, implemented, deprecated, superseded). This index covers all subfolders.
 
-2 ADRs — 1 Proposed · 1 Accepted · 0 Implemented · 0 Deprecated · 0 Superseded
+2 ADRs — 0 Proposed · 2 Accepted · 0 Implemented · 0 Deprecated · 0 Superseded
 
 ## Proposed
 
 | ID | Title | Date |
 | --- | --- | --- |
-| [ADR-PUSH-VITTORIOGIORDANOYBQ-001](proposed/ADR-PUSH-VITTORIOGIORDANOYBQ-001-push-delivery-web-push-vapid-for-the-web-app.md) | Push delivery: Web Push (VAPID) for the web app | 2026-10-15 |
 
 ## Accepted
 
 | ID | Title | Date |
 | --- | --- | --- |
+| [ADR-PUSH-VITTORIOGIORDANOYBQ-001](accepted/ADR-PUSH-VITTORIOGIORDANOYBQ-001-push-delivery-web-push-vapid-for-the-web-app.md) | Push delivery: Web Push (VAPID) for the web app | 2026-10-15 |
 | [ADR-WEB-VITTORIOGIORDANOYBQ-001](accepted/ADR-WEB-VITTORIOGIORDANOYBQ-001-nido-client-stack-static-web-app-vite-react-ts-on-vercel.md) | Nido client stack - static web app (Vite + React + TS) on Vercel | 2026-10-14 |
 
 ## Implemented

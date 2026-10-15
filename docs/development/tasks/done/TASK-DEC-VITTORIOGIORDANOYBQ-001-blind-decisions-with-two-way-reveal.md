@@ -2,12 +2,12 @@
 id: TASK-DEC-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: decisions
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (list, editor, hidden votes, voluntary reveal with warning, derived agreement, delete, Realtime); pending the owner's two-account check (vote stays hidden, reveal shows both).
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -64,7 +64,8 @@ Impact: it removes the small daily negotiation loop — and it is the second rit
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the list/editor/vote/reveal with a derived agreement.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `useDecisions` (decisions + own votes under RLS, upsert vote, reveal, delete, Realtime on `decisions` and `decision_votes`), `DecisionsPage` (vote chips while hidden, waiting state, reveal with an explicit warning, revealed votes with the agreement highlighted, delete) and `DecisionEditor` (2-4 distinct options, validation); route `/us/decisions` and the Noi hub card switched to ready. `npm run build` + `npm run lint` green.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the list/editor/vote/reveal with a derived agreement.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: decisions list (open and revealed), editor (2-4 distinct options), hidden vote under RLS, voluntary reveal with an explicit warning, revealed votes with the agreement highlighted, delete, Realtime. Owner two-account check on 2026-10-15.

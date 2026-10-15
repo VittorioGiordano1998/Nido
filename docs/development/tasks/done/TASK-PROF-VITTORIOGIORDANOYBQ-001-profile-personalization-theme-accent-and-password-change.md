@@ -2,12 +2,12 @@
 id: TASK-PROF-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: profile and personalization
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (tokens + dark theme + 4 accents, PreferencesProvider, profile cards, password change, migration + apply script); the live project needs the owner's paste of apply-profile-preferences.sql, then a visual pass on two devices.
+done: 2026-10-15
+next: null
 related: []
 superseded_by: null
 ---
@@ -70,7 +70,8 @@ Impact: theme and accent choice is the first thing a couple looks for in a setti
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
 - 2026-10-14 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementation starting (migration + token refactor + provider + profile UI).
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented the slice: semantic tokens (canvas/surface/ink/line) + dark theme + 4 accent presets in `app/src/index.css`, pre-paint script in `app/index.html`, `core/appearance.ts`, `settings/PreferencesProvider.tsx` (optimistic with rollback), profile split into cards (`ProfileCard`, `PersonalizationCard`, `SecurityCard`, `CoupleCard`, `SectionsCard`) with `useProfile`, `changePassword` in `AuthProvider`, migration `20261015101500_nido_profile_preferences.sql` + `apply-profile-preferences.sql` + regenerated `apply-all.sql`; 18 view files migrated off stone/clay/cream literals; `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: semantic tokens (canvas/surface/ink/line) with a dark theme and 4 accent presets, pre-paint script (no flash), `PreferencesProvider` with optimistic updates and rollback, profile split into cards (`ProfileCard`, `PersonalizationCard`, `NotificationsCard`, `SecurityCard`, `CoupleCard`, `SectionsCard`), password change. `apply-profile-preferences.sql` pasted; owner visual pass on two devices on 2026-10-15.

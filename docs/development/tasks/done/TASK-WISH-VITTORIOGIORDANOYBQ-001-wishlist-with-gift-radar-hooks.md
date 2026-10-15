@@ -2,12 +2,12 @@
 id: TASK-WISH-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: wishlist
 severity: Low
 opened: 2026-10-14
-done: null
-next: Implemented and green (partner/own groups, editor with price/link/priority, preso toggle recording the buyer, Realtime); pending the owner's two-account check.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -59,7 +59,8 @@ Impact: it turns the calendar's birthdays and anniversaries into something actio
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the wishlist (CRUD, preso toggle, Realtime).
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented `useWishlist` (couple-wide CRUD, upsert of the `preso` state with `purchased_by`, Realtime), `WishlistPage` (groups "I desideri di {partner}" / "I tuoi", price formatted with Intl, external link, notes, priority, toggle) and `WishlistEditor` (title/link validated http(s)/price/currency/priority/notes); route `/us/wishlist` and the Noi hub card switched to ready. `npm run build` + `npm run lint` green.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the wishlist (CRUD, preso toggle, Realtime).
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: groups "I desideri di {partner}" / "I tuoi", editor (title, validated link, price/currency, priority, notes), "Preso" toggle recording the buyer, Realtime. Owner two-account check on 2026-10-15.

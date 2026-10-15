@@ -2,12 +2,12 @@
 id: TASK-CAL-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: calendar
 severity: High
 opened: 2026-10-14
-done: null
-next: Implemented and green; owner to verify the two-account browser flows (create/edit/delete, private visibility, realtime) and paste `supabase/apply-events-privacy.sql`; then the task can close.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -94,7 +94,8 @@ Impact: the home summary (Fase 1.5) and the gift radar (Fase 2.3) both build on 
   Verified: `npm run build` + `npm run lint` green; live REST probe with the anon key on the
   exact column set answers 200 and `[]` (RLS holds). Pending: owner's two-account browser
   verification and the `apply-events-privacy.sql` paste for the server-side guarantee.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: month grid, day agenda, event editor (all-day, visibility, recurrences, occasion tag), couple/private visibility enforced by RLS (KI-VITTORIOGIORDANOYBQ-001 fixed in this milestone), Realtime. `apply-events-privacy.sql` pasted on the live project; owner two-account pass on 2026-10-15 (create/edit/delete, a private event invisible to the partner, live sync).
