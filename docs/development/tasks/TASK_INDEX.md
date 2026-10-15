@@ -2,17 +2,19 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-32 tasks — 8 Proposed · 0 Ready · 7 In Progress · 0 Blocked · 17 Done · 0 Cancelled
+34 tasks — 10 Proposed · 0 Ready · 7 In Progress · 0 Blocked · 17 Done · 0 Cancelled
 
 ## Proposed
 
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
+| [TASK-CAL-VITTORIOGIORDANOYBQ-003](proposed/TASK-CAL-VITTORIOGIORDANOYBQ-003-calendar-push-reminders-with-a-server-cron.md) | Calendar: push reminders with a server cron | Feature | calendar | Medium | 2026-10-15 | — |
 | [TASK-CANV-VITTORIOGIORDANOYBQ-001](proposed/TASK-CANV-VITTORIOGIORDANOYBQ-001-realtime-canvas.md) | Realtime canvas | Feature | canvas | Medium | 2026-10-15 | — |
 | [TASK-I18N-VITTORIOGIORDANOYBQ-001](proposed/TASK-I18N-VITTORIOGIORDANOYBQ-001-localization-it-es-en-de.md) | Localization: IT, ES, EN, DE | Feature | localization | Medium | 2026-10-15 | — |
 | [TASK-OFF-VITTORIOGIORDANOYBQ-001](proposed/TASK-OFF-VITTORIOGIORDANOYBQ-001-offline-evaluate-a-persistent-cache.md) | Offline: evaluate a persistent cache | Chore | offline | Low | 2026-10-15 | — |
 | [TASK-PACK-VITTORIOGIORDANOYBQ-001](proposed/TASK-PACK-VITTORIOGIORDANOYBQ-001-store-packaging-capacitor-shell-and-store-forms.md) | Store packaging: Capacitor shell and store forms | Feature | store packaging | Medium | 2026-10-15 | — |
 | [TASK-PREM-VITTORIOGIORDANOYBQ-001](proposed/TASK-PREM-VITTORIOGIORDANOYBQ-001-premium-paywall-purchase-and-per-couple-entitlement.md) | Premium: paywall, purchase and per-couple entitlement | Feature | premium | High | 2026-10-15 | — |
+| [TASK-PUSH-VITTORIOGIORDANOYBQ-002](proposed/TASK-PUSH-VITTORIOGIORDANOYBQ-002-push-calendar-activity-notifications.md) | Push: calendar activity notifications | Feature | push | Low | 2026-10-15 | — |
 | [TASK-RECAP-VITTORIOGIORDANOYBQ-001](proposed/TASK-RECAP-VITTORIOGIORDANOYBQ-001-yearly-recap.md) | Yearly recap | Feature | yearly recap | Low | 2026-10-15 | — |
 | [TASK-VAULT-VITTORIOGIORDANOYBQ-001](proposed/TASK-VAULT-VITTORIOGIORDANOYBQ-001-e2e-document-vault.md) | E2E document vault | Feature | vault | High | 2026-10-15 | — |
 | [TASK-WIDG-VITTORIOGIORDANOYBQ-001](proposed/TASK-WIDG-VITTORIOGIORDANOYBQ-001-home-widget-days-together-and-shared-note.md) | Home widget: days together and shared note | Feature | widget | Low | 2026-10-15 | — |
