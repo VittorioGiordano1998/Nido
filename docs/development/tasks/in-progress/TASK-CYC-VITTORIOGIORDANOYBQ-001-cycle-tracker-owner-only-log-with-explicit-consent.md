@@ -2,12 +2,12 @@
 id: TASK-CYC-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: cycle tracker
 severity: Medium
 opened: 2026-10-15
 done: null
-next: Proposed; the consent screen is part of the scope; owner-only RLS already enforces the log.
+next: "Implemented (consent gate on profiles.cycle_consent_at, personal month calendar with the day editor, symptom chips, shareable period summaries); owner step: paste apply-cycle-consent.sql, then the two-account check."
 related: [PLAN-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002, TASK-GDPR-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -51,6 +51,9 @@ M3 / Fase 3.2. Health data: `cycle_logs` is owner-only in RLS since M0; `cycle_s
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; consent gate + owner-only diary + shareable summaries implemented in this session.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261015210000_nido_cycle_consent.sql` (profiles.cycle_consent_at) with `apply-cycle-consent.sql` and `apply-all.sql`; `useCycle` (consent read/write, owner-only logs with upsert by day, shares CRUD); `CyclePage` (consent gate with the privacy explanation and revoke, month grid with dots, day summary, editor with flow/mood/symptoms/notes, "Riepiloghi condivisi" with the summary/dates-only level) + `CycleLogEditor`; `/cycle` route with the entry card in Profilo. `npm run build` + `npm run lint` green; the two-account check is the owner step.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; consent gate + owner-only diary + shareable summaries implemented in this session.
 
 ## Resolution
 
