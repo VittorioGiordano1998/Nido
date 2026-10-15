@@ -28,3 +28,7 @@ Thumbs.db
 # Backups the engine takes before restoring upstream content are local-only.
 /.scaffold/backup/
 # END EXTENSION: core
+
+# ── Project ─────────────────────────────────────────────────────────────────
+# Supabase CLI local state (project link and pooler info), machine-local.
+supabase/.temp/
