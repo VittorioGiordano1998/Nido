@@ -414,6 +414,13 @@ enabled = true
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
 
 [functions.send-push]
-# Called by a database webhook on `nudges` inserts; it authenticates with the
-# shared secret header x-webhook-secret (SEND_PUSH_SECRET), not with a JWT.
+# Called by the database webhooks on `nudges` and `events` inserts; it
+# authenticates with the shared secret header x-webhook-secret
+# (SEND_PUSH_SECRET), not with a JWT.
+verify_jwt = false
+
+[functions.send-reminders]
+# Called every 5 minutes by the pg_cron job `nido-push-reminders` (pg_net); it
+# authenticates with the shared secret header x-webhook-secret
+# (SEND_REMINDERS_SECRET), not with a JWT.
 verify_jwt = false
