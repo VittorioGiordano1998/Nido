@@ -2,12 +2,12 @@
 id: TASK-ONB-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: onboarding
 severity: Low
 opened: 2026-10-15
 done: null
-next: Proposed; ready to claim (M1 first-run polish); decide the seen-flag storage at claim.
+next: Implemented and green (slides overlay with per-account flag and device fallback, invite QR with /pair?code= deep link and login return path); pending the owner's apply-onboarding.sql paste and the first-run check.
 related: [TASK-WEB-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -51,6 +51,8 @@ M0 items 0.2 and 0.3, deferred at M0 close: onboarding slides (what Nido is, pai
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; onboarding slides (per-account flag) + invite QR with a prefilled deep link.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: `OnboardingSlides` (+ `useOnboarding` on `profiles.onboarded_at` with a localStorage fallback), first-run overlay in `AppShell`, reopen from Profilo; invite QR (`react-qr-code`, MIT logged in LEGAL-NOTES) on the pairing page, `/pair?code=` prefills the join form and `RequireAuth`/`LoginPage` return there after sign-in; migration `20261015113000_nido_onboarding.sql` + `apply-onboarding.sql` + `apply-all.sql`; `npm run build` + `npm run lint` green.
 
 ## Resolution
 

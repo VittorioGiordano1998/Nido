@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-31 tasks — 21 Proposed · 0 Ready · 10 In Progress · 0 Blocked · 0 Done · 0 Cancelled
+31 tasks — 20 Proposed · 0 Ready · 11 In Progress · 0 Blocked · 0 Done · 0 Cancelled
 
 ## Proposed
 
@@ -17,7 +17,6 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-LOY-VITTORIOGIORDANOYBQ-001](proposed/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
 | [TASK-NUDGE-VITTORIOGIORDANOYBQ-001](proposed/TASK-NUDGE-VITTORIOGIORDANOYBQ-001-partner-nudge-with-one-tap.md) | Partner nudge with one tap | Feature | nudges | Low | 2026-10-14 | — |
 | [TASK-OFF-VITTORIOGIORDANOYBQ-001](proposed/TASK-OFF-VITTORIOGIORDANOYBQ-001-offline-evaluate-a-persistent-cache.md) | Offline: evaluate a persistent cache | Chore | offline | Low | 2026-10-15 | — |
-| [TASK-ONB-VITTORIOGIORDANOYBQ-001](proposed/TASK-ONB-VITTORIOGIORDANOYBQ-001-first-run-polish-onboarding-slides-and-invite-qr-code.md) | First-run polish: onboarding slides and invite QR code | Feature | onboarding | Low | 2026-10-15 | — |
 | [TASK-PACK-VITTORIOGIORDANOYBQ-001](proposed/TASK-PACK-VITTORIOGIORDANOYBQ-001-store-packaging-capacitor-shell-and-store-forms.md) | Store packaging: Capacitor shell and store forms | Feature | store packaging | Medium | 2026-10-15 | — |
 | [TASK-PREM-VITTORIOGIORDANOYBQ-001](proposed/TASK-PREM-VITTORIOGIORDANOYBQ-001-premium-paywall-purchase-and-per-couple-entitlement.md) | Premium: paywall, purchase and per-couple entitlement | Feature | premium | High | 2026-10-15 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-001](proposed/TASK-PUSH-VITTORIOGIORDANOYBQ-001-push-notifications-partner-changes.md) | Push notifications: partner changes | Feature | push | Medium | 2026-10-14 | — |
@@ -45,6 +44,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-HOME-VITTORIOGIORDANOYBQ-001](in-progress/TASK-HOME-VITTORIOGIORDANOYBQ-001-home-summary-next-events-and-open-tasks.md) | Home summary: next events and open tasks | Feature | home | Medium | 2026-10-14 | — |
 | [TASK-LIST-VITTORIOGIORDANOYBQ-001](in-progress/TASK-LIST-VITTORIOGIORDANOYBQ-001-lists-shared-lists-with-check-items-and-assignment.md) | Lists: shared lists with check items and assignment | Feature | lists | High | 2026-10-14 | — |
 | [TASK-NOTE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NOTE-VITTORIOGIORDANOYBQ-001-notes-shared-notes-with-realtime-editing.md) | Notes: shared notes with realtime editing | Feature | notes | Medium | 2026-10-14 | — |
+| [TASK-ONB-VITTORIOGIORDANOYBQ-001](in-progress/TASK-ONB-VITTORIOGIORDANOYBQ-001-first-run-polish-onboarding-slides-and-invite-qr-code.md) | First-run polish: onboarding slides and invite QR code | Feature | onboarding | Low | 2026-10-15 | — |
 | [TASK-PROF-VITTORIOGIORDANOYBQ-001](in-progress/TASK-PROF-VITTORIOGIORDANOYBQ-001-profile-personalization-theme-accent-and-password-change.md) | Profile personalization: theme, accent and password change | Feature | profile and personalization | Medium | 2026-10-14 | — |
 | [TASK-QOT-VITTORIOGIORDANOYBQ-001](in-progress/TASK-QOT-VITTORIOGIORDANOYBQ-001-question-of-the-day-hidden-answers-and-streak.md) | Question of the day: hidden answers and streak | Feature | question of the day | Medium | 2026-10-14 | — |
 | [TASK-QOT-VITTORIOGIORDANOYBQ-002](in-progress/TASK-QOT-VITTORIOGIORDANOYBQ-002-question-of-the-day-card-on-home.md) | Question of the day: card on Home | Feature | question of the day | Low | 2026-10-15 | — |
