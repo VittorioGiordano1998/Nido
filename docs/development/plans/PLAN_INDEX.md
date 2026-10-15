@@ -2,19 +2,19 @@
 
 This folder holds one plan record per major effort; each record lives in the subfolder matching its status. New plans use `PLAN_TEMPLATE.md` and move subfolders on every status change.
 
-2 plans — 1 Proposed · 1 Agreed · 0 Implemented · 0 Superseded
+2 plans — 0 Proposed · 2 Agreed · 0 Implemented · 0 Superseded
 
 ## Proposed
 
 | ID | Plan | Date |
 | --- | --- | --- |
-| [PLAN-VITTORIOGIORDANOYBQ-002](proposed/PLAN-VITTORIOGIORDANOYBQ-002-nido-remaining-roadmap-execution-m1-close-out-to-m4.md) | Nido - remaining roadmap execution (M1 close-out to M4) | 2026-10-15 |
 
 ## Agreed
 
 | ID | Plan | Date |
 | --- | --- | --- |
 | [PLAN-VITTORIOGIORDANOYBQ-001](agreed/PLAN-VITTORIOGIORDANOYBQ-001-nido-piano-di-prodotto-web-app-supabase-fase-0-4.md) | Nido - product plan (web app + Supabase, Fase 0-4) | 2026-10-14 |
+| [PLAN-VITTORIOGIORDANOYBQ-002](agreed/PLAN-VITTORIOGIORDANOYBQ-002-nido-remaining-roadmap-execution-m1-close-out-to-m4.md) | Nido - remaining roadmap execution (M1 close-out to M4) | 2026-10-15 |
 
 ## Implemented
 
