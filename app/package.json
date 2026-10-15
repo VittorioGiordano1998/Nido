@@ -2,7 +2,9 @@
   "name": "app",
   "private": true,
   "version": "0.0.0",
-  "engines": { "node": "24.x" },
+  "engines": {
+    "node": "24.x"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +18,7 @@
     "motion": "^14.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-qr-code": "^2.2.0",
     "react-router-dom": "^7.18.4",
     "tailwindcss": "^4.3.3"
   },

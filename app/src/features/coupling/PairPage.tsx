@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
+import QRCode from 'react-qr-code'
 
 import {
   Button,
@@ -19,16 +20,25 @@ import { useCouple } from './CoupleProvider'
 export function PairPage() {
   const { session, signOut } = useAuth()
   const { couple, loading, createCouple, joinCouple, refresh } = useCouple()
+  const [searchParams] = useSearchParams()
 
-  const [mode, setMode] = useState<'create' | 'join'>('create')
+  // A scanned invite link (/pair?code=XXXX) opens straight into the join form
+  // with the code prefilled.
+  const [mode, setMode] = useState<'create' | 'join'>(() =>
+    searchParams.get('code') ? 'join' : 'create',
+  )
   const [coupleName, setCoupleName] = useState('Noi')
   const [startedAt, setStartedAt] = useState('')
-  const [code, setCode] = useState('')
+  const [code, setCode] = useState(() => (searchParams.get('code') ?? '').toUpperCase())
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
   const waitingForPartner = couple !== null && couple.members.length < 2
+
+  const inviteUrl = couple?.inviteCode
+    ? `${window.location.origin}/pair?code=${couple.inviteCode}`
+    : ''
 
   useEffect(() => {
     if (!waitingForPartner) return
@@ -91,8 +101,17 @@ export function PairPage() {
         </header>
 
         <Card className="space-y-4 text-center">
+          {inviteUrl && (
+            <div className="mx-auto w-fit rounded-2xl bg-white p-3 ring-1 ring-line-strong">
+              {/* Nero su bianco di proposito: un QR invertito non è leggibile da tutti gli scanner. */}
+              <QRCode value={inviteUrl} size={148} fgColor="#1c1917" bgColor="#ffffff" />
+            </div>
+          )}
           <p className="font-mono text-3xl font-bold tracking-[0.3em] text-accent-ink">
             {couple.inviteCode}
+          </p>
+          <p className="text-xs text-ink-muted">
+            Il partner può inquadrare il codice, oppure inserirlo a mano.
           </p>
           <StarBorder
             as="button"

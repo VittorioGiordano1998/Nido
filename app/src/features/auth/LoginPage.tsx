@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 
 import { Button, Card, ErrorBanner, Field, Screen, TextInput } from '../../ui/components'
 import DotGrid from '../../ui/reactbits/DotGrid'
@@ -8,6 +8,7 @@ import { useAuth } from './AuthProvider'
 
 export function LoginPage() {
   const { session, signIn, signUp, signInWithGoogle } = useAuth()
+  const location = useLocation()
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -16,7 +17,12 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [confirmSent, setConfirmSent] = useState(false)
 
-  if (session) return <Navigate to="/" replace />
+  // RequireAuth remembers where the visitor was headed (e.g. /pair?code=…):
+  // after signing in they land there instead of Home.
+  const from = location.state as { from?: { pathname?: string; search?: string } } | null
+  const target = from?.from?.pathname ? `${from.from.pathname}${from.from.search ?? ''}` : '/'
+
+  if (session) return <Navigate to={target} replace />
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()

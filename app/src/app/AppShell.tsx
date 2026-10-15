@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { useAuth } from '../features/auth/AuthProvider'
+import { OnboardingSlides } from '../features/auth/OnboardingSlides'
+import { useOnboarding } from '../features/auth/useOnboarding'
 import { useCouple } from '../features/coupling/CoupleProvider'
 import { useSettings } from '../features/settings/SettingsProvider'
 import { CalendarIcon, HeartIcon, HomeIcon, ListIcon, UserIcon } from '../ui/icons'
@@ -26,6 +28,7 @@ export function AppShell() {
   const { session } = useAuth()
   const { couple } = useCouple()
   const { enabled } = useSettings()
+  const { status, complete } = useOnboarding()
 
   const myId = session?.user.id
   const partner = couple?.members.find((member) => member.userId !== myId)
@@ -74,6 +77,8 @@ export function AppShell() {
           ))}
         </div>
       </nav>
+
+      {status === 'todo' && <OnboardingSlides onClose={() => void complete()} />}
     </div>
   )
 }
