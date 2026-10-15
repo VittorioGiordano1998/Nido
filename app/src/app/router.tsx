@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { CalendarPage } from '../features/calendar/CalendarPage'
 import { CapsulesPage } from '../features/capsules/CapsulesPage'
+import { DecisionsPage } from '../features/decisions/DecisionsPage'
 import { FactsPage } from '../features/facts/FactsPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { HomePage } from '../features/home/HomePage'
@@ -31,6 +32,7 @@ export function AppRouter() {
               <Route path="/notes" element={<NotesPage />} />
               <Route path="/us" element={<UsPage />} />
               <Route path="/us/question" element={<QuestionPage />} />
+              <Route path="/us/decisions" element={<DecisionsPage />} />
               <Route path="/us/facts" element={<FactsPage />} />
               <Route path="/us/capsules" element={<CapsulesPage />} />
               <Route path="/profile" element={<ProfilePage />} />
