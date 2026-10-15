@@ -83,17 +83,17 @@ export function CapsulesPage() {
     return (
       <li key={capsule.id}>
         <button type="button" onClick={() => openEdit(capsule)} className="w-full">
-          <Card className="w-full text-left transition hover:ring-clay-300">
-            <span className="block truncate text-sm font-semibold text-stone-800">
+          <Card className="w-full text-left transition hover:ring-accent-300">
+            <span className="block truncate text-sm font-semibold text-ink">
               {capsule.title.trim() || 'Senza titolo'}
             </span>
-            <span className="mt-0.5 block text-xs text-stone-500">
+            <span className="mt-0.5 block text-xs text-ink-muted">
               {statusLabel(capsule, todayKey)}
             </span>
             {capsule.body.trim() && (
               <span
                 className={`mt-2 block text-sm ${
-                  open ? 'text-stone-700' : 'text-stone-500 italic'
+                  open ? 'text-ink-soft' : 'text-ink-muted italic'
                 }`}
               >
                 {capsule.body}
@@ -108,15 +108,15 @@ export function CapsulesPage() {
   function renderTheirs(capsule: Capsule) {
     return (
       <li key={capsule.id}>
-        <Card className="ring-sage-300">
-          <span className="block truncate text-sm font-semibold text-stone-800">
+        <Card className="ring-sage-300 dark:ring-sage-700">
+          <span className="block truncate text-sm font-semibold text-ink">
             {capsule.title.trim() || 'Senza titolo'}
           </span>
-          <span className="mt-0.5 block text-xs text-sage-700">
+          <span className="mt-0.5 block text-xs text-sage-700 dark:text-sage-300">
             Aperta il {formatDateIt(capsule.opensAt)}
           </span>
           {capsule.body.trim() && (
-            <span className="mt-2 block whitespace-pre-wrap text-sm text-stone-700">
+            <span className="mt-2 block whitespace-pre-wrap text-sm text-ink-soft">
               {capsule.body}
             </span>
           )}
@@ -132,13 +132,13 @@ export function CapsulesPage() {
           <Link
             to="/us"
             aria-label="Torna a Noi"
-            className="mt-0.5 rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100"
+            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-stone-900">Capsule del tempo</h1>
-            <p className="text-sm text-stone-500">
+            <h1 className="text-2xl font-bold text-ink">Capsule del tempo</h1>
+            <p className="text-sm text-ink-muted">
               Scrivi oggi, leggi il giorno scelto: il partner non può aprirla prima.
             </p>
           </div>
@@ -146,7 +146,7 @@ export function CapsulesPage() {
         <button
           type="button"
           onClick={openNew}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-clay-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-clay-700"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
         >
           <PlusIcon className="h-4 w-4" /> Capsula
         </button>
@@ -166,7 +166,7 @@ export function CapsulesPage() {
       ) : (
         <div className="space-y-4">
           <section className="space-y-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
               Le tue capsule
             </h2>
             {mine.length === 0 ? (
@@ -181,7 +181,7 @@ export function CapsulesPage() {
 
           {theirs.length > 0 && (
             <section className="space-y-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 Capsule aperte del partner
               </h2>
               <ul className="space-y-2">{theirs.map((capsule) => renderTheirs(capsule))}</ul>

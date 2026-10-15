@@ -60,13 +60,13 @@ export function NotesPage() {
     <div className="space-y-5 pt-2">
       <header className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-stone-900">Note</h1>
-          <p className="text-sm text-stone-500">Il blocchetto condiviso della coppia.</p>
+          <h1 className="text-2xl font-bold text-ink">Note</h1>
+          <p className="text-sm text-ink-muted">Il blocchetto condiviso della coppia.</p>
         </div>
         <button
           type="button"
           onClick={openNew}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-clay-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-clay-700"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
         >
           <PlusIcon className="h-4 w-4" /> Nota
         </button>
@@ -88,14 +88,14 @@ export function NotesPage() {
           {notes.map((note) => (
             <li key={note.id}>
               <button type="button" onClick={() => openNote(note)} className="w-full">
-                <Card className="w-full text-left transition hover:ring-clay-300">
-                  <span className="block truncate text-sm font-semibold text-stone-800">
+                <Card className="w-full text-left transition hover:ring-accent-300">
+                  <span className="block truncate text-sm font-semibold text-ink">
                     {note.title.trim() || 'Senza titolo'}
                   </span>
-                  <span className="mt-0.5 block text-xs text-stone-500 line-clamp-2">
+                  <span className="mt-0.5 block text-xs text-ink-muted line-clamp-2">
                     {notePreview(note)}
                   </span>
-                  <span className="mt-1 block text-[11px] text-stone-400">
+                  <span className="mt-1 block text-[11px] text-ink-faint">
                     {formatShortDateIt(note.updatedAt)}
                   </span>
                 </Card>

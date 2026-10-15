@@ -1,29 +1,154 @@
 @import "tailwindcss";
 
+/*
+ * Tema di Nido.
+ *
+ * <html> porta due attributi scritti dal pre-paint in index.html e da
+ * core/appearance.ts: data-theme ("light" | "dark") e data-accent (preset).
+ * - I neutri (canvas/surface/ink/line) si ribaltano con data-theme.
+ * - La scala accent e' un preset: i gradini bassi (50-200) hanno una variante
+ *   scura, piu' sotto, per restare superfici morbide in entrambi i temi.
+ * - sage e red restano scale fisse, con dark: espliciti nei pochi punti d'uso.
+ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 @theme {
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 
-  /* Clay — colore primario di Nido (terracotta caldo, originale) */
-  --color-clay-50: #fdf6f2;
-  --color-clay-100: #fbeae2;
-  --color-clay-200: #f6d3c4;
-  --color-clay-300: #eeb49d;
-  --color-clay-400: #e48f6f;
-  --color-clay-500: #d96f48;
-  --color-clay-600: #c25532;
-  --color-clay-700: #a2432a;
-  --color-clay-800: #833826;
-  --color-clay-900: #6b3022;
+  /* Neutri - valori del tema chiaro, ribaltati sotto [data-theme='dark'] */
+  --color-canvas: #faf7f3;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f5f3f0;
+  --color-surface-muted: #edebe7;
+  --color-ink: #1c1917;
+  --color-ink-soft: #57534e;
+  --color-ink-muted: #78716c;
+  --color-ink-faint: #a8a29e;
+  --color-line: #e7e4e1;
+  --color-line-strong: #d6d3d1;
+  --color-scrim: rgb(28 25 23 / 0.35);
 
-  /* Sage — accento secondario */
+  /* Accent - preset predefinito "terra" (terracotta caldo, originale) */
+  --color-accent-50: #fdf6f2;
+  --color-accent-100: #fbeae2;
+  --color-accent-200: #f6d3c4;
+  --color-accent-300: #eeb49d;
+  --color-accent-400: #e48f6f;
+  --color-accent-500: #d96f48;
+  --color-accent-600: #c25532;
+  --color-accent-700: #a2432a;
+  --color-accent-800: #833826;
+  --color-accent-900: #6b3022;
+
+  /* Testo accent: leggibile su superfici neutre in entrambi i temi */
+  --color-accent-ink: #a2432a;
+  --color-accent-glyph: #c25532;
+
+  /* Sage - accento secondario fisso (dark: nei punti d'uso) */
   --color-sage-100: #eef2ec;
   --color-sage-300: #c3d1bd;
   --color-sage-500: #829a79;
   --color-sage-700: #55684e;
+}
 
-  --color-cream: #faf7f3;
+:root {
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-canvas: #191512;
+  --color-surface: #241f1b;
+  --color-surface-soft: #2e2823;
+  --color-surface-muted: #383129;
+  --color-ink: #f5f2ef;
+  --color-ink-soft: #d6d0ca;
+  --color-ink-muted: #a9a29b;
+  --color-ink-faint: #857e77;
+  --color-line: #3a332e;
+  --color-line-strong: #4a423c;
+  --color-scrim: rgb(0 0 0 / 0.55);
+
+  --color-accent-ink: #eeb49d;
+  --color-accent-glyph: #e48f6f;
+
+  /* Le tinte chiare diventano tinte profonde */
+  --color-accent-50: #2b211c;
+  --color-accent-100: #3a2a21;
+  --color-accent-200: #4c3527;
+}
+
+/* Preset accent: stessa scala, voce diversa (colori originali) */
+[data-accent='oliva'] {
+  --color-accent-50: #f5f7ee;
+  --color-accent-100: #eaf0dc;
+  --color-accent-200: #d5e0ba;
+  --color-accent-300: #b6c98e;
+  --color-accent-400: #96ae67;
+  --color-accent-500: #7a934c;
+  --color-accent-600: #60763a;
+  --color-accent-700: #4c5f30;
+  --color-accent-800: #3e4d2a;
+  --color-accent-900: #354226;
+  --color-accent-ink: #4c5f30;
+  --color-accent-glyph: #60763a;
+}
+
+[data-accent='mare'] {
+  --color-accent-50: #f1f7fa;
+  --color-accent-100: #e0eef5;
+  --color-accent-200: #c1deea;
+  --color-accent-300: #95c5dc;
+  --color-accent-400: #62a5c6;
+  --color-accent-500: #3f88ab;
+  --color-accent-600: #316e8d;
+  --color-accent-700: #2b5972;
+  --color-accent-800: #294a5e;
+  --color-accent-900: #253e50;
+  --color-accent-ink: #2b5972;
+  --color-accent-glyph: #316e8d;
+}
+
+[data-accent='prugna'] {
+  --color-accent-50: #f9f5f9;
+  --color-accent-100: #f1e8f1;
+  --color-accent-200: #e1cfe2;
+  --color-accent-300: #c9a9cb;
+  --color-accent-400: #ac80af;
+  --color-accent-500: #905f93;
+  --color-accent-600: #784c7b;
+  --color-accent-700: #633f66;
+  --color-accent-800: #533755;
+  --color-accent-900: #473047;
+  --color-accent-ink: #633f66;
+  --color-accent-glyph: #784c7b;
+}
+
+[data-theme='dark'][data-accent='oliva'] {
+  --color-accent-50: #212518;
+  --color-accent-100: #2c321f;
+  --color-accent-200: #3a4327;
+  --color-accent-ink: #b6c98e;
+  --color-accent-glyph: #96ae67;
+}
+
+[data-theme='dark'][data-accent='mare'] {
+  --color-accent-50: #17222b;
+  --color-accent-100: #1e2d39;
+  --color-accent-200: #273b4a;
+  --color-accent-ink: #95c5dc;
+  --color-accent-glyph: #62a5c6;
+}
+
+[data-theme='dark'][data-accent='prugna'] {
+  --color-accent-50: #241a24;
+  --color-accent-100: #302130;
+  --color-accent-200: #3f2c3f;
+  --color-accent-ink: #c9a9cb;
+  --color-accent-glyph: #ac80af;
 }
 
 html {
@@ -31,7 +156,7 @@ html {
 }
 
 body {
-  @apply bg-cream text-stone-900 antialiased;
+  @apply bg-canvas text-ink antialiased;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
 }

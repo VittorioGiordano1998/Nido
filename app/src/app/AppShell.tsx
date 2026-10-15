@@ -36,15 +36,15 @@ export function AppShell() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col">
-      <header className="sticky top-0 z-10 flex items-center justify-between bg-cream/90 px-5 py-3 backdrop-blur">
+      <header className="sticky top-0 z-10 flex items-center justify-between bg-canvas/90 px-5 py-3 backdrop-blur">
         <span className="flex items-center gap-2 text-lg font-bold tracking-tight">
-          <span className="h-2.5 w-2.5 rounded-full bg-clay-500" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent-500" />
           Nido
         </span>
         {partner && (
           <span
             title={partner.displayName}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-sage-300 text-xs font-bold text-sage-700"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-sage-300 text-xs font-bold text-sage-700 dark:bg-sage-700 dark:text-sage-100"
           >
             {initials(partner.displayName)}
           </span>
@@ -55,7 +55,7 @@ export function AppShell() {
         <Outlet />
       </main>
 
-      <nav className="sticky bottom-0 z-10 border-t border-stone-200/70 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <nav className="sticky bottom-0 z-10 border-t border-line/70 bg-canvas/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="flex">
           {visibleItems.map((item) => (
             <NavLink
@@ -64,7 +64,7 @@ export function AppShell() {
               end={item.end}
               className={({ isActive }) =>
                 `flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold transition ${
-                  isActive ? 'text-clay-700' : 'text-stone-400 hover:text-stone-600'
+                  isActive ? 'text-accent-ink' : 'text-ink-faint hover:text-ink-soft'
                 }`
               }
             >

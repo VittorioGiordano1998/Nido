@@ -16,6 +16,10 @@ function translateAuthError(message: string): string {
     return 'Troppi tentativi: riprova tra qualche minuto.'
   if (m.includes('provider is not enabled'))
     return 'Accesso Google non ancora abilitato su Supabase.'
+  if (m.includes('should be different'))
+    return 'La nuova password deve essere diversa da quella attuale.'
+  if (m.includes('reauth') || m.includes('nonce'))
+    return 'Per cambiare password devi riaccedere: esci e accedi di nuovo.'
   return message
 }
 
@@ -29,6 +33,7 @@ type AuthContextValue = {
     displayName: string,
   ) => Promise<{ needsEmailConfirm: boolean }>
   signInWithGoogle: () => Promise<void>
+  changePassword: (password: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -79,6 +84,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           provider: 'google',
           options: { redirectTo: window.location.origin },
         })
+        if (error) throw new Error(translateAuthError(error.message))
+      },
+      changePassword: async (password) => {
+        const { error } = await supabase.auth.updateUser({ password })
         if (error) throw new Error(translateAuthError(error.message))
       },
       signOut: async () => {

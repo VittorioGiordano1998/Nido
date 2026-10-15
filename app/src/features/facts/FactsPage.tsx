@@ -63,24 +63,24 @@ function FactEditor({
     <div
       role="presentation"
       onClick={onClose}
-      className="fixed inset-0 z-30 flex items-end justify-center bg-stone-900/30 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="fixed inset-0 z-30 flex items-end justify-center bg-scrim backdrop-blur-[2px] sm:items-center sm:p-6"
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={fact ? 'Modifica scheda' : 'Nuova scheda'}
         onClick={(event) => event.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-cream p-5 shadow-xl sm:rounded-3xl"
+        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-canvas p-5 shadow-xl sm:rounded-3xl"
       >
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-stone-900">
+          <h2 className="text-lg font-bold text-ink">
             {fact ? 'Modifica scheda' : 'Nuova scheda'}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Chiudi"
-            className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600"
+            className="rounded-lg p-1.5 text-ink-faint hover:bg-surface-soft hover:text-ink-soft"
           >
             <CloseIcon className="h-5 w-5" />
           </button>
@@ -115,7 +115,7 @@ function FactEditor({
                     key={suggestion}
                     type="button"
                     onClick={() => setCategory(suggestion)}
-                    className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-600 transition hover:bg-clay-100 hover:text-clay-700"
+                    className="rounded-full bg-surface-soft px-2.5 py-1 text-xs font-semibold text-ink-soft transition hover:bg-accent-100 hover:text-accent-ink"
                   >
                     {suggestion}
                   </button>
@@ -144,7 +144,7 @@ function FactEditor({
                 onClick={() => {
                   if (window.confirm('Eliminare questa scheda?')) void onDelete(fact.id)
                 }}
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
               >
                 <TrashIcon className="h-4 w-4" /> Elimina
               </Button>
@@ -225,8 +225,8 @@ export function FactsPage() {
   function tabClass(active: boolean): string {
     return `rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
       active
-        ? 'bg-clay-600 text-white ring-clay-600'
-        : 'bg-white text-stone-700 ring-stone-200 hover:bg-stone-50'
+        ? 'bg-accent-600 text-white ring-accent-600'
+        : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
     }`
   }
 
@@ -237,13 +237,13 @@ export function FactsPage() {
           <Link
             to="/us"
             aria-label="Torna a Noi"
-            className="mt-0.5 rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100"
+            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-stone-900">Cosa c'è da sapere</h1>
-            <p className="text-sm text-stone-500">
+            <h1 className="text-2xl font-bold text-ink">Cosa c'è da sapere</h1>
+            <p className="text-sm text-ink-muted">
               Le cose utili da ricordare, senza doverle chiedere.
             </p>
           </div>
@@ -255,7 +255,7 @@ export function FactsPage() {
             setEditor({ fact: null, subjectId: activeSubject })
           }}
           disabled={!activeSubject}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-clay-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-clay-700 disabled:cursor-not-allowed disabled:bg-clay-300"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-accent-300"
         >
           <PlusIcon className="h-4 w-4" /> Scheda
         </button>
@@ -297,7 +297,7 @@ export function FactsPage() {
         <div className="space-y-4">
           {groups.map(([category, factsInGroup]) => (
             <section key={category} className="space-y-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 {category}
               </h2>
               <ul className="space-y-2">
@@ -311,12 +311,12 @@ export function FactsPage() {
                       }}
                       className="w-full"
                     >
-                      <Card className="flex items-center justify-between gap-3 text-left transition hover:ring-clay-300">
+                      <Card className="flex items-center justify-between gap-3 text-left transition hover:ring-accent-300">
                         <span className="min-w-0">
-                          <span className="block truncate text-xs font-semibold uppercase tracking-wide text-stone-400">
+                          <span className="block truncate text-xs font-semibold uppercase tracking-wide text-ink-faint">
                             {fact.label}
                           </span>
-                          <span className="block truncate text-sm font-semibold text-stone-800">
+                          <span className="block truncate text-sm font-semibold text-ink">
                             {fact.value || '—'}
                           </span>
                         </span>

@@ -46,13 +46,13 @@ export function QuestionPage() {
         <Link
           to="/us"
           aria-label="Torna a Noi"
-          className="mt-0.5 rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100"
+          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
         >
           <ChevronLeftIcon className="h-5 w-5" />
         </Link>
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-stone-900">Domanda del giorno</h1>
-          <p className="text-sm text-stone-500">
+          <h1 className="text-2xl font-bold text-ink">Domanda del giorno</h1>
+          <p className="text-sm text-ink-muted">
             Rispondete in segreto: le risposte si svelano quando ci siete tutti e due.
           </p>
         </div>
@@ -73,11 +73,11 @@ export function QuestionPage() {
         <>
           <Card className="space-y-3">
             {question.category && (
-              <span className="inline-block rounded-full bg-clay-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-clay-700">
+              <span className="inline-block rounded-full bg-accent-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-accent-ink">
                 {question.category}
               </span>
             )}
-            <p className="text-lg font-semibold text-stone-900">{question.text}</p>
+            <p className="text-lg font-semibold text-ink">{question.text}</p>
 
             {myAnswer === null ? (
               <div className="space-y-3 pt-1">
@@ -103,43 +103,43 @@ export function QuestionPage() {
                   <div
                     key={entry.userId}
                     className={`rounded-xl px-3.5 py-2.5 ${
-                      entry.userId === myId ? 'bg-clay-50' : 'bg-sage-100/70'
+                      entry.userId === myId ? 'bg-accent-50' : 'bg-sage-100/70 dark:bg-sage-700/30'
                     }`}
                   >
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                       {nameOf(entry.userId)}
                     </p>
-                    <p className="text-sm text-stone-800">{entry.answer}</p>
+                    <p className="text-sm text-ink">{entry.answer}</p>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="space-y-2 pt-1">
-                <div className="rounded-xl bg-clay-50 px-3.5 py-2.5">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                <div className="rounded-xl bg-accent-50 px-3.5 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                     La tua risposta
                   </p>
-                  <p className="text-sm text-stone-800">{myAnswer.answer}</p>
+                  <p className="text-sm text-ink">{myAnswer.answer}</p>
                 </div>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-ink-muted">
                   In attesa di {partnerName}… la risposta si svelerà da sola.
                 </p>
               </div>
             )}
           </Card>
 
-          <Card className="flex items-center gap-4 bg-sage-100/70 ring-sage-300">
-            <p className="text-3xl font-bold text-sage-700">{streak}</p>
+          <Card className="flex items-center gap-4 bg-sage-100/70 ring-sage-300 dark:bg-sage-700/30 dark:ring-sage-700">
+            <p className="text-3xl font-bold text-sage-700 dark:text-sage-300">{streak}</p>
             <div>
-              <p className="text-sm font-semibold text-stone-800">
+              <p className="text-sm font-semibold text-ink">
                 {streak === 1 ? 'giorno di fila' : 'giorni di fila'}
               </p>
-              <p className="text-xs text-stone-500">Giorni in cui avete risposto entrambi.</p>
+              <p className="text-xs text-ink-muted">Giorni in cui avete risposto entrambi.</p>
             </div>
           </Card>
 
           <section className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
               Archivio
             </h2>
             {history.length === 0 ? (
@@ -152,15 +152,15 @@ export function QuestionPage() {
                 {history.map((entry) => (
                   <li key={entry.date}>
                     <Card>
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
                         {formatDateIt(entry.date)}
                       </p>
-                      <p className="mt-0.5 text-sm font-semibold text-stone-800">
+                      <p className="mt-0.5 text-sm font-semibold text-ink">
                         {entry.question}
                       </p>
                       <div className="mt-2 space-y-1.5">
                         {entry.answers.map((answer) => (
-                          <p key={answer.userId} className="text-sm text-stone-600">
+                          <p key={answer.userId} className="text-sm text-ink-soft">
                             <span className="font-semibold">{nameOf(answer.userId)}:</span>{' '}
                             {answer.answer}
                           </p>

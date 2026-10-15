@@ -131,24 +131,24 @@ export function EventEditor({
     <div
       role="presentation"
       onClick={onClose}
-      className="fixed inset-0 z-30 flex items-end justify-center bg-stone-900/30 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="fixed inset-0 z-30 flex items-end justify-center bg-scrim backdrop-blur-[2px] sm:items-center sm:p-6"
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={event ? 'Modifica evento' : 'Nuovo evento'}
         onClick={(clickEvent) => clickEvent.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-cream p-5 shadow-xl sm:rounded-3xl"
+        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-canvas p-5 shadow-xl sm:rounded-3xl"
       >
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-stone-900">
+          <h2 className="text-lg font-bold text-ink">
             {event ? 'Modifica evento' : 'Nuovo evento'}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Chiudi"
-            className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600"
+            className="rounded-lg p-1.5 text-ink-faint hover:bg-surface-soft hover:text-ink-soft"
           >
             <CloseIcon className="h-5 w-5" />
           </button>
@@ -164,8 +164,8 @@ export function EventEditor({
             />
           </Field>
 
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-stone-200">
-            <span className="text-sm font-semibold text-stone-700">Tutto il giorno</span>
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-line">
+            <span className="text-sm font-semibold text-ink-soft">Tutto il giorno</span>
             <button
               type="button"
               role="switch"
@@ -173,7 +173,7 @@ export function EventEditor({
               aria-label="Evento tutto il giorno"
               onClick={() => setForm({ ...form, allDay: !form.allDay })}
               className={`h-6 w-11 shrink-0 rounded-full transition ${
-                form.allDay ? 'bg-clay-600' : 'bg-stone-300'
+                form.allDay ? 'bg-accent-600' : 'bg-line-strong'
               }`}
             >
               <span
@@ -241,8 +241,8 @@ export function EventEditor({
                 onClick={() => setForm({ ...form, visibility: 'couple' })}
                 className={`rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
                   form.visibility === 'couple'
-                    ? 'bg-clay-600 text-white ring-clay-600'
-                    : 'bg-white text-stone-700 ring-stone-200 hover:bg-stone-50'
+                    ? 'bg-accent-600 text-white ring-accent-600'
+                    : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
                 }`}
               >
                 Coppia
@@ -252,8 +252,8 @@ export function EventEditor({
                 onClick={() => setForm({ ...form, visibility: 'private' })}
                 className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
                   form.visibility === 'private'
-                    ? 'bg-clay-600 text-white ring-clay-600'
-                    : 'bg-white text-stone-700 ring-stone-200 hover:bg-stone-50'
+                    ? 'bg-accent-600 text-white ring-accent-600'
+                    : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
                 }`}
               >
                 <LockIcon className="h-4 w-4" /> Privato
@@ -279,7 +279,7 @@ export function EventEditor({
                 variant="ghost"
                 onClick={handleDelete}
                 disabled={saving}
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
               >
                 <TrashIcon className="h-4 w-4" /> Elimina
               </Button>

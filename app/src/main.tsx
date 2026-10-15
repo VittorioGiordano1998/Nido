@@ -7,6 +7,7 @@ import { isSupabaseConfigured } from './core/env'
 import { SetupScreen } from './core/SetupScreen'
 import { AuthProvider } from './features/auth/AuthProvider'
 import { CoupleProvider } from './features/coupling/CoupleProvider'
+import { PreferencesProvider } from './features/settings/PreferencesProvider'
 import { SettingsProvider } from './features/settings/SettingsProvider'
 
 const rootEl = document.getElementById('root')
@@ -22,9 +23,11 @@ createRoot(rootEl).render(
     <SetupGate>
       <SettingsProvider>
         <AuthProvider>
-          <CoupleProvider>
-            <AppRouter />
-          </CoupleProvider>
+          <PreferencesProvider>
+            <CoupleProvider>
+              <AppRouter />
+            </CoupleProvider>
+          </PreferencesProvider>
         </AuthProvider>
       </SettingsProvider>
     </SetupGate>
