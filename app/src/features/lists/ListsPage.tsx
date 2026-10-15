@@ -42,8 +42,8 @@ export function ListsPage() {
   return (
     <div className="space-y-5 pt-2">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold text-stone-900">Liste</h1>
-        <p className="text-sm text-stone-500">
+        <h1 className="text-2xl font-bold text-ink">Liste</h1>
+        <p className="text-sm text-ink-muted">
           Spesa, film, valigie: tutto quello che fate insieme.
         </p>
       </header>
@@ -68,7 +68,7 @@ export function ListsPage() {
         </div>
       ) : lists.length === 0 ? (
         <EmptyState
-          icon={<ListIcon className="h-8 w-8 text-stone-300" />}
+          icon={<ListIcon className="h-8 w-8 text-ink-faint" />}
           title="Nessuna lista"
           description="Create la prima: spesa, film da vedere, valigie…"
         />
@@ -79,16 +79,16 @@ export function ListsPage() {
             return (
               <li key={list.id}>
                 <Link to={`/lists/${list.id}`} className="block">
-                  <Card className="flex items-center justify-between gap-3 transition hover:ring-clay-300">
+                  <Card className="flex items-center justify-between gap-3 transition hover:ring-accent-300">
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold text-stone-800">
+                      <span className="block truncate text-sm font-semibold text-ink">
                         {list.title}
                       </span>
-                      <span className="block text-xs text-stone-500">
+                      <span className="block text-xs text-ink-muted">
                         {count.open} da fare · {count.total} in totale
                       </span>
                     </span>
-                    <ChevronRightIcon className="h-5 w-5 shrink-0 text-stone-400" />
+                    <ChevronRightIcon className="h-5 w-5 shrink-0 text-ink-faint" />
                   </Card>
                 </Link>
               </li>

@@ -62,11 +62,11 @@ export function ListView() {
           <Link
             to="/lists"
             aria-label="Torna alle liste"
-            className="rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100"
+            className="rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
-          <h1 className="text-2xl font-bold text-stone-900">Lista</h1>
+          <h1 className="text-2xl font-bold text-ink">Lista</h1>
         </header>
         <EmptyState title="Lista non trovata" description="Potrebbe essere stata eliminata." />
       </div>
@@ -159,7 +159,7 @@ export function ListView() {
             className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 transition ${
               task.done
                 ? 'bg-sage-500 text-white ring-sage-500'
-                : 'bg-white text-transparent ring-stone-300 hover:text-clay-200 hover:ring-clay-400'
+                : 'bg-surface text-transparent ring-line-strong hover:text-accent-glyph hover:ring-accent-400'
             }`}
           >
             <CheckIcon className="h-3.5 w-3.5" />
@@ -167,13 +167,13 @@ export function ListView() {
           <span className="min-w-0 flex-1">
             <span
               className={`block truncate text-sm font-semibold ${
-                task.done ? 'text-stone-400 line-through' : 'text-stone-800'
+                task.done ? 'text-ink-faint line-through' : 'text-ink'
               }`}
             >
               {task.title}
             </span>
             {task.done && doneBy && (
-              <span className="block text-xs text-stone-400">fatto da {doneBy.displayName}</span>
+              <span className="block text-xs text-ink-faint">fatto da {doneBy.displayName}</span>
             )}
           </span>
           {!task.done && (
@@ -187,9 +187,9 @@ export function ListView() {
               className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition ${
                 assignee
                   ? assignee.userId === myId
-                    ? 'bg-clay-100 text-clay-700'
-                    : 'bg-sage-100 text-sage-700'
-                  : 'bg-stone-100 text-stone-400 hover:bg-stone-200'
+                    ? 'bg-accent-100 text-accent-ink'
+                    : 'bg-sage-100 text-sage-700 dark:bg-sage-700/30 dark:text-sage-300'
+                  : 'bg-surface-soft text-ink-faint hover:bg-surface-muted'
               }`}
             >
               {assignee ? initials(assignee.displayName) : '—'}
@@ -199,7 +199,7 @@ export function ListView() {
             type="button"
             aria-label={`Elimina ${task.title}`}
             onClick={() => void handleDeleteTask(task.id)}
-            className="rounded-lg p-1.5 text-stone-300 transition hover:bg-red-50 hover:text-red-500"
+            className="rounded-lg p-1.5 text-ink-faint transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/60 dark:hover:text-red-400"
           >
             <TrashIcon className="h-4 w-4" />
           </button>
@@ -214,7 +214,7 @@ export function ListView() {
         <Link
           to="/lists"
           aria-label="Torna alle liste"
-          className="mt-0.5 rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100"
+          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
         >
           <ChevronLeftIcon className="h-5 w-5" />
         </Link>
@@ -224,7 +224,7 @@ export function ListView() {
               type="button"
               onClick={() => setTitleDraft(list.title)}
               title="Rinomina"
-              className="max-w-full truncate text-left text-2xl font-bold text-stone-900"
+              className="max-w-full truncate text-left text-2xl font-bold text-ink"
             >
               {list.title}
             </button>
@@ -240,7 +240,7 @@ export function ListView() {
               className="text-lg font-bold"
             />
           )}
-          <p className="text-sm text-stone-500">
+          <p className="text-sm text-ink-muted">
             {openTasks.length} da fare · {doneTasks.length} completate
           </p>
         </div>
@@ -267,7 +267,7 @@ export function ListView() {
           <ul className="space-y-2">{openTasks.map((task) => renderTask(task))}</ul>
           {doneTasks.length > 0 && (
             <div className="space-y-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 Completati
               </h2>
               <ul className="space-y-2">{doneTasks.map((task) => renderTask(task))}</ul>
@@ -278,7 +278,7 @@ export function ListView() {
 
       <Button
         variant="ghost"
-        className="w-full text-red-600 hover:bg-red-50"
+        className="w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
         onClick={() => void handleDeleteList()}
       >
         <TrashIcon className="h-4 w-4" /> Elimina lista

@@ -52,8 +52,8 @@ export function UsPage() {
   return (
     <div className="space-y-5 pt-2">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold text-stone-900">Noi</h1>
-        <p className="text-sm text-stone-500">
+        <h1 className="text-2xl font-bold text-ink">Noi</h1>
+        <p className="text-sm text-ink-muted">
           Piccoli rituali quotidiani da fare in due.
         </p>
       </header>
@@ -63,27 +63,27 @@ export function UsPage() {
           feature.ready ? (
             <li key={feature.to}>
               <Link to={feature.to} className="block">
-                <Card className="flex items-center justify-between gap-3 transition hover:ring-clay-300">
+                <Card className="flex items-center justify-between gap-3 transition hover:ring-accent-300">
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-stone-800">
+                    <span className="block text-sm font-semibold text-ink">
                       {feature.title}
                     </span>
-                    <span className="block text-xs text-stone-500">{feature.description}</span>
+                    <span className="block text-xs text-ink-muted">{feature.description}</span>
                   </span>
-                  <ChevronRightIcon className="h-5 w-5 shrink-0 text-stone-400" />
+                  <ChevronRightIcon className="h-5 w-5 shrink-0 text-ink-faint" />
                 </Card>
               </Link>
             </li>
           ) : (
             <li key={feature.to}>
-              <Card className="flex items-center justify-between gap-3 bg-white/60">
+              <Card className="flex items-center justify-between gap-3 bg-surface/60">
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-stone-500">
+                  <span className="block text-sm font-semibold text-ink-muted">
                     {feature.title}
                   </span>
-                  <span className="block text-xs text-stone-400">{feature.description}</span>
+                  <span className="block text-xs text-ink-faint">{feature.description}</span>
                 </span>
-                <span className="shrink-0 rounded-full bg-stone-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                <span className="shrink-0 rounded-full bg-surface-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                   presto
                 </span>
               </Card>
@@ -92,9 +92,9 @@ export function UsPage() {
         )}
       </ul>
 
-      <Card className="flex items-center gap-4 bg-clay-50 ring-clay-200">
-        <HeartIcon className="h-8 w-8 shrink-0 text-clay-500" />
-        <p className="text-xs text-stone-500">
+      <Card className="flex items-center gap-4 bg-accent-50 ring-accent-200">
+        <HeartIcon className="h-8 w-8 shrink-0 text-accent-glyph" />
+        <p className="text-xs text-ink-muted">
           Le sezioni si accendono con calma, una alla volta: quando una è pronta compare qui.
         </p>
       </Card>

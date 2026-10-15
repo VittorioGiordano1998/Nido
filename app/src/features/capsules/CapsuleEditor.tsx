@@ -51,24 +51,24 @@ export function CapsuleEditor({
     <div
       role="presentation"
       onClick={onClose}
-      className="fixed inset-0 z-30 flex items-end justify-center bg-stone-900/30 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="fixed inset-0 z-30 flex items-end justify-center bg-scrim backdrop-blur-[2px] sm:items-center sm:p-6"
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={capsule ? 'Modifica capsula' : 'Nuova capsula'}
         onClick={(event) => event.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-cream p-5 shadow-xl sm:rounded-3xl"
+        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-canvas p-5 shadow-xl sm:rounded-3xl"
       >
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-stone-900">
+          <h2 className="text-lg font-bold text-ink">
             {capsule ? 'Modifica capsula' : 'Nuova capsula'}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Chiudi"
-            className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600"
+            className="rounded-lg p-1.5 text-ink-faint hover:bg-surface-soft hover:text-ink-soft"
           >
             <CloseIcon className="h-5 w-5" />
           </button>
@@ -119,7 +119,7 @@ export function CapsuleEditor({
                 variant="ghost"
                 disabled={saving}
                 onClick={handleDelete}
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
               >
                 <TrashIcon className="h-4 w-4" /> Elimina
               </Button>

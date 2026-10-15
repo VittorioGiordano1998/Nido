@@ -7,6 +7,33 @@
     <meta name="theme-color" content="#faf7f3" />
     <meta name="description" content="Nido — lo spazio privato della vostra coppia." />
     <title>Nido</title>
+    <script>
+      // Pre-paint: applica tema e accento dalla cache locale prima del primo
+      // render, così il reload non mostra un lampo chiaro. Chiave e formato
+      // sono condivisi con app/src/core/appearance.ts ('nido.appearance.v1').
+      ;(function () {
+        try {
+          var raw = window.localStorage.getItem('nido.appearance.v1')
+          var prefs = raw ? JSON.parse(raw) : null
+          var theme =
+            prefs && (prefs.theme === 'light' || prefs.theme === 'dark' || prefs.theme === 'system')
+              ? prefs.theme
+              : 'system'
+          var accent = prefs && typeof prefs.accent === 'string' ? prefs.accent : 'terra'
+          var resolved =
+            theme === 'system'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+              : theme
+          var el = document.documentElement
+          el.setAttribute('data-theme', resolved)
+          el.setAttribute('data-accent', accent)
+        } catch (error) {
+          // Cache assente o illeggibile: valgono i default del CSS.
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

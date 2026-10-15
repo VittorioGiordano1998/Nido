@@ -51,18 +51,18 @@ export function LoginPage() {
         />
       </div>
       <header className="space-y-2 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-clay-600">Nido</p>
-        <h1 className="text-3xl font-bold text-stone-900">
+        <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
+        <h1 className="text-3xl font-bold text-ink">
           {mode === 'signin' ? 'Bentornato' : 'Crea il vostro nido'}
         </h1>
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-ink-muted">
           Lo spazio privato dove la vostra coppia tiene le cose importanti.
         </p>
       </header>
 
       {confirmSent ? (
         <Card>
-          <p className="text-sm text-stone-700">
+          <p className="text-sm text-ink-soft">
             Ti abbiamo inviato un'email di conferma a <strong>{email.trim()}</strong>: aprila per
             attivare l'account, poi torna qui ad accedere.
           </p>
@@ -109,10 +109,10 @@ export function LoginPage() {
             </Button>
           </form>
 
-          <div className="flex items-center gap-3 text-xs text-stone-400">
-            <span className="h-px flex-1 bg-stone-200" />
+          <div className="flex items-center gap-3 text-xs text-ink-faint">
+            <span className="h-px flex-1 bg-line" />
             oppure
-            <span className="h-px flex-1 bg-stone-200" />
+            <span className="h-px flex-1 bg-line" />
           </div>
 
           <Button
@@ -128,11 +128,11 @@ export function LoginPage() {
             Continua con Google
           </Button>
 
-          <p className="text-center text-sm text-stone-500">
+          <p className="text-center text-sm text-ink-muted">
             {mode === 'signin' ? 'Non hai un account?' : 'Hai già un account?'}{' '}
             <button
               type="button"
-              className="font-semibold text-clay-700 hover:underline"
+              className="font-semibold text-accent-ink hover:underline"
               onClick={() => {
                 setMode(mode === 'signin' ? 'signup' : 'signin')
                 setError(null)

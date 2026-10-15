@@ -112,8 +112,8 @@ export function CalendarPage() {
     <div className="space-y-5 pt-2">
       <header className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-stone-900">Calendario</h1>
-          <p className="text-sm text-stone-500">
+          <h1 className="text-2xl font-bold text-ink">Calendario</h1>
+          <p className="text-sm text-ink-muted">
             Gli appuntamenti della coppia, con quelli che restano solo tuoi.
           </p>
         </div>
@@ -121,7 +121,7 @@ export function CalendarPage() {
           type="button"
           onClick={openNew}
           disabled={!hasCouple}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-clay-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-clay-700 disabled:cursor-not-allowed disabled:bg-clay-300"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-accent-300"
         >
           <PlusIcon className="h-4 w-4" /> Evento
         </button>
@@ -135,18 +135,18 @@ export function CalendarPage() {
             type="button"
             aria-label="Mese precedente"
             onClick={() => setMonth((current) => addMonths(current, -1))}
-            className="rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100 hover:text-stone-700"
+            className="rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft hover:text-ink"
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold capitalize text-stone-800">
+            <h2 className="text-sm font-semibold capitalize text-ink">
               {formatMonthYearIt(month)}
             </h2>
             <button
               type="button"
               onClick={goToday}
-              className="rounded-full bg-clay-100 px-2.5 py-1 text-[11px] font-semibold text-clay-700 transition hover:bg-clay-200"
+              className="rounded-full bg-accent-100 px-2.5 py-1 text-[11px] font-semibold text-accent-ink transition hover:bg-accent-200"
             >
               Oggi
             </button>
@@ -155,13 +155,13 @@ export function CalendarPage() {
             type="button"
             aria-label="Mese successivo"
             onClick={() => setMonth((current) => addMonths(current, 1))}
-            className="rounded-lg p-1.5 text-stone-500 transition hover:bg-stone-100 hover:text-stone-700"
+            className="rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft hover:text-ink"
           >
             <ChevronRightIcon className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 text-center text-[11px] font-semibold uppercase tracking-wide text-stone-400">
+        <div className="grid grid-cols-7 text-center text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
           {WEEKDAYS.map((weekday) => (
             <span key={weekday}>{weekday}</span>
           ))}
@@ -181,12 +181,12 @@ export function CalendarPage() {
                 aria-pressed={isSelected}
                 className={`flex flex-col items-center rounded-xl py-1.5 text-sm font-medium transition ${
                   isSelected
-                    ? 'bg-clay-600 text-white'
+                    ? 'bg-accent-600 text-white'
                     : isToday
-                      ? 'bg-clay-100 text-clay-800 hover:bg-clay-200'
+                      ? 'bg-accent-100 text-accent-ink hover:bg-accent-200'
                       : cell.inMonth
-                        ? 'text-stone-700 hover:bg-stone-100'
-                        : 'text-stone-300 hover:bg-stone-50'
+                        ? 'text-ink-soft hover:bg-surface-soft'
+                        : 'text-ink-faint hover:bg-surface-soft'
                 }`}
               >
                 <span>{cell.date.getDate()}</span>
@@ -198,7 +198,7 @@ export function CalendarPage() {
                         isSelected
                           ? 'bg-white'
                           : event.createdBy === myId
-                            ? 'bg-clay-500'
+                            ? 'bg-accent-500'
                             : 'bg-sage-500'
                       }`}
                     />
@@ -211,7 +211,7 @@ export function CalendarPage() {
       </Card>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
           {formatDateIt(selectedKey)}
         </h2>
 
@@ -233,22 +233,22 @@ export function CalendarPage() {
             {selectedEvents.map((event) => (
               <li key={event.id}>
                 <button type="button" onClick={() => openEdit(event)} className="w-full">
-                  <Card className="flex w-full items-center gap-3 text-left transition hover:ring-clay-300">
+                  <Card className="flex w-full items-center gap-3 text-left transition hover:ring-accent-300">
                     <span
                       className={`h-9 w-1.5 shrink-0 rounded-full ${
-                        event.createdBy === myId ? 'bg-clay-400' : 'bg-sage-500'
+                        event.createdBy === myId ? 'bg-accent-400' : 'bg-sage-500'
                       }`}
                     />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-1.5">
-                        <span className="truncate text-sm font-semibold text-stone-800">
+                        <span className="truncate text-sm font-semibold text-ink">
                           {event.title}
                         </span>
                         {event.visibility === 'private' && (
-                          <LockIcon className="h-3.5 w-3.5 shrink-0 text-stone-400" />
+                          <LockIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
                         )}
                       </span>
-                      <span className="block text-xs text-stone-500">
+                      <span className="block text-xs text-ink-muted">
                         {timeLabel(event)}
                         {event.location ? ` · ${event.location}` : ''}
                         {event.createdBy !== myId ? ' · del partner' : ''}

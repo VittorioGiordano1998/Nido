@@ -82,16 +82,16 @@ export function PairPage() {
     return (
       <Screen className="justify-center gap-6 px-6 py-10">
         <header className="space-y-2 text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-clay-600">Nido</p>
-          <h1 className="text-2xl font-bold text-stone-900">Invita il tuo partner</h1>
-          <p className="text-sm text-stone-500">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
+          <h1 className="text-2xl font-bold text-ink">Invita il tuo partner</h1>
+          <p className="text-sm text-ink-muted">
             Fai entrare {couple.name ? `"${couple.name}"` : 'la vostra coppia'} nell'app con questo
             codice:
           </p>
         </header>
 
         <Card className="space-y-4 text-center">
-          <p className="font-mono text-3xl font-bold tracking-[0.3em] text-clay-700">
+          <p className="font-mono text-3xl font-bold tracking-[0.3em] text-accent-ink">
             {couple.inviteCode}
           </p>
           <StarBorder
@@ -116,7 +116,7 @@ export function PairPage() {
             {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
             {copied ? 'Copiato' : 'Copia codice'}
           </StarBorder>
-          <p className="text-xs text-stone-400">
+          <p className="text-xs text-ink-faint">
             In attesa che il partner lo inserisca… l'app si aggiorna da sola.
           </p>
         </Card>
@@ -128,7 +128,7 @@ export function PairPage() {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="text-center text-xs text-stone-400 hover:text-stone-600"
+          className="text-center text-xs text-ink-faint hover:text-ink-soft"
         >
           Esci ({session?.user.email})
         </button>
@@ -139,21 +139,21 @@ export function PairPage() {
   return (
     <Screen className="justify-center gap-6 px-6 py-10">
       <header className="space-y-2 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-clay-600">Nido</p>
-        <h1 className="text-2xl font-bold text-stone-900">Create il vostro spazio</h1>
-        <p className="text-sm text-stone-500">
+        <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
+        <h1 className="text-2xl font-bold text-ink">Create il vostro spazio</h1>
+        <p className="text-sm text-ink-muted">
           Crea una nuova coppia e invita il partner, oppure inserisci il codice che ti ha mandato.
         </p>
       </header>
 
-      <div className="flex rounded-xl bg-stone-200/60 p-1 text-sm font-semibold">
+      <div className="flex rounded-xl bg-surface-muted p-1 text-sm font-semibold">
         <button
           type="button"
           onClick={() => {
             setMode('create')
             setError(null)
           }}
-          className={`flex-1 rounded-lg py-2 transition ${mode === 'create' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500'}`}
+          className={`flex-1 rounded-lg py-2 transition ${mode === 'create' ? 'bg-surface text-ink shadow-sm' : 'text-ink-muted'}`}
         >
           Crea una coppia
         </button>
@@ -163,7 +163,7 @@ export function PairPage() {
             setMode('join')
             setError(null)
           }}
-          className={`flex-1 rounded-lg py-2 transition ${mode === 'join' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500'}`}
+          className={`flex-1 rounded-lg py-2 transition ${mode === 'join' ? 'bg-surface text-ink shadow-sm' : 'text-ink-muted'}`}
         >
           Ho un codice
         </button>
@@ -216,7 +216,7 @@ export function PairPage() {
       <button
         type="button"
         onClick={() => void signOut()}
-        className="text-center text-xs text-stone-400 hover:text-stone-600"
+        className="text-center text-xs text-ink-faint hover:text-ink-soft"
       >
         Esci ({session?.user.email})
       </button>
