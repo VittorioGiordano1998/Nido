@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { Card } from '../../ui/components'
 import { ChevronRightIcon, HeartIcon } from '../../ui/icons'
+import { NudgeCard } from '../nudges/NudgeCard'
 
 const FEATURES = [
   {
@@ -39,12 +40,6 @@ const FEATURES = [
     title: 'Piano settimanale',
     description: 'Una proposta a settimana da fare insieme.',
     ready: true,
-  },
-  {
-    to: '/us/nudges',
-    title: 'Promemoria al partner',
-    description: 'Un tocco per ricordargli qualcosa.',
-    ready: false,
   },
 ] as const
 
@@ -91,6 +86,8 @@ export function UsPage() {
           ),
         )}
       </ul>
+
+      <NudgeCard />
 
       <Card className="flex items-center gap-4 bg-accent-50 ring-accent-200">
         <HeartIcon className="h-8 w-8 shrink-0 text-accent-glyph" />

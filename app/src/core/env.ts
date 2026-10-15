@@ -1,5 +1,6 @@
 const rawUrl = import.meta.env.VITE_SUPABASE_URL
 const rawAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const rawVapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY
 
 /**
  * Configurazione da `.env.local` (vedi `.env.example`).
@@ -8,6 +9,7 @@ const rawAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 export const env = {
   supabaseUrl: typeof rawUrl === 'string' ? rawUrl.trim() : '',
   supabaseAnonKey: typeof rawAnonKey === 'string' ? rawAnonKey.trim() : '',
+  vapidPublicKey: typeof rawVapidPublicKey === 'string' ? rawVapidPublicKey.trim() : '',
 }
 
 export const isSupabaseConfigured =
