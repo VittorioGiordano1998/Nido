@@ -11,6 +11,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "check:recurrence": "node scripts/check-recurrence.ts",
+    "check:channels": "node scripts/check-channel-reuse.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

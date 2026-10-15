@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -99,7 +100,7 @@ export function useCapsules() {
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
-      .channel(`capsules-${coupleId}`)
+      .channel(uniqueChannelTopic(`capsules-${coupleId}`))
       .on(
         'postgres_changes',
         {
