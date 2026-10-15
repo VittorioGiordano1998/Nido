@@ -2,12 +2,12 @@
 id: TASK-QOT-VITTORIOGIORDANOYBQ-003
 owner: VITTORIOGIORDANOYBQ
 type: Chore
-status: In Progress
+status: Done
 area: question of the day
 severity: Low
 opened: 2026-10-15
-done: null
-next: Implemented and verified (40 new original questions, 100 total; the three artifacts are byte-identical per the consistency check); pending the owner's paste of apply-question-bank.sql.
+done: 2026-10-15
+next: null
 related: [TASK-QOT-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -51,7 +51,8 @@ PLAN-VITTORIOGIORDANOYBQ-001 targets a 100-question bank (Fase 2.1 and §Risks: 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; second batch of 40 original questions with a consistency check across the artifacts.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261015160000_nido_question_bank_seed_100.sql` (40 original questions, 8 per category: ricordi/noi/desideri/futuro/gioco, same idempotent pattern), `apply-question-bank.sql` and `apply-all.sql` extended; a Node check over the three artifacts passes (60+40 = 100 unique, byte-identical texts, no mojibake). No client change (the pick hashes over the ordered bank).
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; second batch of 40 original questions with a consistency check across the artifacts.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: 40 new original questions (8 per category) in `20261015160000_nido_question_bank_seed_100.sql`, `apply-question-bank.sql` and `apply-all.sql` extended; a Node consistency check confirms 60+40 = 100 unique questions, byte-identical across the three artifacts. The owner pasted the updated apply script on 2026-10-15.

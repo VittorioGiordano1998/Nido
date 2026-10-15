@@ -2,12 +2,12 @@
 id: TASK-WEB-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: web app
 severity: High
 opened: 2026-10-14
-done: null
-next: Deployed and live at https://nidoapp-sage.vercel.app (Vercel project `nido_app`; every push on main auto-deploys). Last owner steps: Supabase Authentication URL Configuration (Site URL + Redirect URLs) and a quick check of the live app; then M0 can close.
+done: 2026-10-15
+next: null
 related: [ADR-WEB-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -81,7 +81,8 @@ Deferred (not in this task; tracked as follow-ups): onboarding slides, push noti
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Vercel prep: `app/vercel.json` (SPA catch-all rewrite), `engines.node = 24.x` in `package.json`, README §Deploy su Vercel (CLI steps + post-deploy Supabase URL configuration). Deploy left to the owner.
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — plan converted into `PLAN-VITTORIOGIORDANOYBQ-001` (agreed, `docs/development/plans/agreed/`) and the root `Piano-App-Coppie.md` removed (git history keeps it); README and `RULES.local.md` point to the record. KI-001 fixed in the same pass: `supabase/migrations/20261014161502_nido_events_privacy.sql` enforces `visibility = 'private'` in the events policies, `supabase/apply-events-privacy.sql` is the idempotent one-shot for the live project, `apply-all.sql` regenerated. Owner step: paste `apply-events-privacy.sql` in the SQL Editor.
 - 2026-10-14 — opencode (DeepSeek V4.1 Flash) — Vercel deploy live: rebuilt the project settings (`nido_app`, Root Directory `app`, Vite preset, `npm run build`, output `dist`, `VITE_*` vars for Production and Preview), then triggered a Git deployment from `main` (`READY`): `/` and `/calendar` answer 200, assets served from `/assets/`, SPA rewrite active on the production alias `https://nidoapp-sage.vercel.app`. README §Deploy su Vercel rewritten around the push-to-deploy flow. Remaining owner step: Supabase Authentication URL Configuration.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+M0 delivered and deployed (`nido_app` on Vercel, Supabase project `fvhqirvfyehyyucvwjjz`): auth (email + Google), profile, couple create/join with invite code (max 2), home shell with 5 tabs, per-section switches, full schema + RLS, pairing RPCs, keep-alive. The last owner steps (Supabase Auth URL configuration, live check) and the two-account pass were done on 2026-10-15.

@@ -1,9 +1,9 @@
 ---
 id: ADR-PUSH-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
-status: Proposed
+status: Accepted
 date: 2026-10-15
-accepted: null
+accepted: 2026-10-15
 deciders: [Vittorio Giordano]
 superseded_by: null
 ---
@@ -37,3 +37,4 @@ and commit, and how it was verified. Leave empty while the ADR is Proposed or Ac
 ## Touch History
 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Approved by the owner; implementation follows in TASK-PUSH-VITTORIOGIORDANOYBQ-001.

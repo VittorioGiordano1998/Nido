@@ -24,6 +24,7 @@ sviluppata da zero: codice, testi, grafica e brand originali.
 | --- | --- | --- | --- |
 | 2026-10-14 | [React Bits](https://reactbits.dev) (`DavidHDev/react-bits`) | MIT + Commons Clause (uso personale e commerciale; vieta solo la rivendita della libreria) | Sorgenti dei componenti `CountUp`, `BlurText`, `StarBorder`, `DotGrid` in `app/src/ui/reactbits/`, con provenienza nell'header di ogni file |
 | 2026-10-15 | [react-qr-code](https://github.com/rosskhanas/react-qr-code) | MIT | QR del codice invito nella pagina di pairing (SVG locale, nessun servizio esterno) |
+| 2026-10-15 | [web-push](https://github.com/web-push-libs/web-push) | MIT | Firma e invio delle notifiche Web Push nella Edge Function `send-push` (server-side; il client usa le API native del browser) |
 
 ## Da fare quando si pubblicherà
 

@@ -2,12 +2,12 @@
 id: TASK-NOTE-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: notes
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (notes index + editor, Realtime, last write wins); pending the owner's two-account check on the live site after the next push.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -65,7 +65,8 @@ that the Fase 2 features reuse.
   `updated_at`, create/update/delete, Realtime), `NotesPage` + `NoteEditor` (title, body,
   delete, Esc/backdrop close), route `/notes`, shared `notePreview` helper, Home entry
   point on the latest note. Verified: `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: notes index + editor, Realtime on `notes`, last write wins. Owner two-account check on 2026-10-15.

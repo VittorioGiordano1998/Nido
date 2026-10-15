@@ -2,12 +2,12 @@
 id: TASK-CAL-VITTORIOGIORDANOYBQ-002
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: calendar
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (hand-rolled RRULE subset with a runnable check, occurrences in grid/agenda/Home, editor recurrence fields, in-app reminders while the app is open); pending the owner's two-account check.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-001, TASK-PUSH-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -71,7 +71,8 @@ recurrences they have to be re-entered by hand.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; decision taken: hand-rolled RRULE subset (DAILY/WEEKLY/MONTHLY/YEARLY + INTERVAL/UNTIL/COUNT), no dependency.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: `recurrence.ts` (subset parser/serializer, DST-safe wall-clock expansion, documented monthly clamp, fast-forward) + `app/scripts/check-recurrence.ts` (`npm run check:recurrence`, all assertions pass); occurrences wired into CalendarPage, HomePage and `useUpcomingEvents`; editor recurrence fields (frequency, interval, until/count) with a missing `Select` added to the shared components; `reminders.ts` fires a Notification 15 minutes before (9:00 for all-day) while the app is open, with `NotificationsCard` in Profilo and `remindersEnabled` in SettingsProvider; `rrule` added to `useEvents`. `npm run build` + `npm run lint` green.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; decision taken: hand-rolled RRULE subset (DAILY/WEEKLY/MONTHLY/YEARLY + INTERVAL/UNTIL/COUNT), no dependency.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: hand-rolled RRULE subset (FREQ/INTERVAL/UNTIL/COUNT, monthly clamp documented) with the runnable `npm run check:recurrence` (all assertions pass), occurrence expansion in the month grid, day agenda and Home, editor recurrence fields, and in-app reminders via the Notification API (15 minutes before; 9:00 for all-day) with the Profilo switch and the `remindersEnabled` device preference. Owner two-account pass on 2026-10-15. Limitation: notifications fire only while the app is open — delivery with the app closed is push territory (TASK-PUSH-VITTORIOGIORDANOYBQ-001).

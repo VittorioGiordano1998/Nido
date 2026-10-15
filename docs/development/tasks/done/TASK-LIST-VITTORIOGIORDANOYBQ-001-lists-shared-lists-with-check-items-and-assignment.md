@@ -2,12 +2,12 @@
 id: TASK-LIST-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: lists
 severity: High
 opened: 2026-10-14
-done: null
-next: Implemented and green (lists index + detail, items, check-off, assignment, Realtime); pending the owner's two-account check on the live site after the next push.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-HOME-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -73,7 +73,8 @@ same tables.
   counts), `ListView` (`/lists/:id`: add item, check-off that records `done_by`/`done_at`,
   assignment cycle me → partner → none, delete item/list, rename inline), `useOpenTasks`
   selector for Home, router route. Verified: `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: lists index + detail, items with check-off and assignment, Realtime on `task_lists`/`tasks`. Owner two-account check on 2026-10-15.

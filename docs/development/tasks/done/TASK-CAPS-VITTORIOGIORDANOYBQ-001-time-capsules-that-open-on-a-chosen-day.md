@@ -2,12 +2,12 @@
 id: TASK-CAPS-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: capsules
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (own capsules, opened partner capsules read-only, Realtime); pending the owner's two-account check after the next push.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -67,7 +67,8 @@ showcase of what the couple-only database can do.
   the partner sees only opened capsules through RLS), `CapsulesPage` + `CapsuleEditor` (seal
   with an opening date, countdown, the creator keeps reading the text), route `/us/capsules`.
   Verified: `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: own capsules, opened partner capsules read-only, Realtime on `time_capsules`. Owner two-account check on 2026-10-15.

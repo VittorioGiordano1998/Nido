@@ -2,12 +2,12 @@
 id: TASK-WISH-VITTORIOGIORDANOYBQ-002
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: wishlist
 severity: Low
 opened: 2026-10-15
-done: null
-next: Implemented and green (occasion/occasion_for on events, editor fields, radar section in the wishlist with a 30-day window and wish hints); pending the owner's two-account check.
+done: 2026-10-15
+next: null
 related: [TASK-WISH-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-002, TASK-PUSH-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -51,7 +51,8 @@ The gift radar deferred in TASK-WISH-VITTORIOGIORDANOYBQ-001 (Notes): occasions 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; occasion tag on events (birthday/anniversary + target) and the radar section.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261015163000_nido_event_occasions.sql` (`events.occasion`/`occasion_for` + check) with `apply-occasions.sql` and `apply-all.sql`; `useEvents` carries the fields; the event editor gained "Occasione speciale" + "Per" (members) and the agenda labels "· compleanno/anniversario"; the Wishlist page gained the radar (30-day window over expanded occurrences, days-left chip, the tagged person's untaken wishes as hints). `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: `events.occasion`/`occasion_for` with the editor fields ("Occasione speciale" + "Per") and agenda labels, and the radar section in the Wishlist page (30-day window over expanded occurrences, days-left chip, the tagged person's untaken wishes as hints). `apply-occasions.sql` pasted; owner check on 2026-10-15. The push digest remains future work with TASK-PUSH-VITTORIOGIORDANOYBQ-001.

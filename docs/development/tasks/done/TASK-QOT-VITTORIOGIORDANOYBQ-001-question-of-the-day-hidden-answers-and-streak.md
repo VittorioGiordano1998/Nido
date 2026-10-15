@@ -2,12 +2,12 @@
 id: TASK-QOT-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: question of the day
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (hub, deterministic pick, hidden answers, streak, archive); the bank seed awaits the owner's `apply-question-bank.sql` paste, then the two-account check.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -87,7 +87,8 @@ Impact: it is the flagship of the "Noi" tab and the first daily ritual of the ap
   two hand-assembled apply files: `apply-question-bank.sql` and `apply-all.sql` carried
   `Qual Ã¨`/`piÃ¹`/`perchÃ©` instead of `Qual è`/`più`/`perché`; all 60 question lines now
   match the seed migration byte-for-byte and no non-ASCII mojibake remains.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: the "Noi" hub, the deterministic daily pick, answers hidden by RLS until both answer, streak and 30-day archive, Realtime. The bank is applied on the live project (100 questions after TASK-QOT-VITTORIOGIORDANOYBQ-003); owner two-account check on 2026-10-15.

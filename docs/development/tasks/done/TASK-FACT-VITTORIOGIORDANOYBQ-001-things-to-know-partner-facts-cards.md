@@ -2,12 +2,12 @@
 id: TASK-FACT-VITTORIOGIORDANOYBQ-001
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: In Progress
+status: Done
 area: facts
 severity: Medium
 opened: 2026-10-14
-done: null
-next: Implemented and green (tabs partner/me, grouped cards, Realtime); pending the owner's two-account check after the next push.
+done: 2026-10-15
+next: null
 related: [PLAN-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -65,7 +65,8 @@ lives in scattered notes — and a natural consumer of the notes-free browsing f
   `updated_by = auth.uid()` on writes, Realtime), `FactsPage` (tabs "Su {partner}" / "Su di
   me", category groups with suggestions, editor overlay), route `/us/facts` from the hub.
   Verified: `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — Owner verification passed on the live app (two-account pass, 2026-10-15); closed in the phase close-out.
 
 ## Resolution
 
-[When completed, describe what has been done, how it was verified and any remaining limitations.]
+Implemented: partner/me tabs, grouped fact cards, editor, Realtime on `partner_facts`. Owner two-account check on 2026-10-15.
