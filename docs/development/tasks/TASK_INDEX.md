@@ -2,14 +2,13 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-32 tasks — 11 Proposed · 0 Ready · 4 In Progress · 0 Blocked · 17 Done · 0 Cancelled
+32 tasks — 10 Proposed · 0 Ready · 5 In Progress · 0 Blocked · 17 Done · 0 Cancelled
 
 ## Proposed
 
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CANV-VITTORIOGIORDANOYBQ-001](proposed/TASK-CANV-VITTORIOGIORDANOYBQ-001-realtime-canvas.md) | Realtime canvas | Feature | canvas | Medium | 2026-10-15 | — |
-| [TASK-CYC-VITTORIOGIORDANOYBQ-001](proposed/TASK-CYC-VITTORIOGIORDANOYBQ-001-cycle-tracker-owner-only-log-with-explicit-consent.md) | Cycle tracker: owner-only log with explicit consent | Feature | cycle tracker | Medium | 2026-10-15 | — |
 | [TASK-I18N-VITTORIOGIORDANOYBQ-001](proposed/TASK-I18N-VITTORIOGIORDANOYBQ-001-localization-it-es-en-de.md) | Localization: IT, ES, EN, DE | Feature | localization | Medium | 2026-10-15 | — |
 | [TASK-LOY-VITTORIOGIORDANOYBQ-001](proposed/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
 | [TASK-OFF-VITTORIOGIORDANOYBQ-001](proposed/TASK-OFF-VITTORIOGIORDANOYBQ-001-offline-evaluate-a-persistent-cache.md) | Offline: evaluate a persistent cache | Chore | offline | Low | 2026-10-15 | — |
@@ -29,6 +28,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
+| [TASK-CYC-VITTORIOGIORDANOYBQ-001](in-progress/TASK-CYC-VITTORIOGIORDANOYBQ-001-cycle-tracker-owner-only-log-with-explicit-consent.md) | Cycle tracker: owner-only log with explicit consent | Feature | cycle tracker | Medium | 2026-10-15 | — |
 | [TASK-GDPR-VITTORIOGIORDANOYBQ-001](in-progress/TASK-GDPR-VITTORIOGIORDANOYBQ-001-gdpr-account-deletion.md) | GDPR: account deletion | Feature | gdpr | Medium | 2026-10-15 | — |
 | [TASK-NUDGE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NUDGE-VITTORIOGIORDANOYBQ-001-partner-nudge-with-one-tap.md) | Partner nudge with one tap | Feature | nudges | Low | 2026-10-14 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-001](in-progress/TASK-PUSH-VITTORIOGIORDANOYBQ-001-push-notifications-partner-changes.md) | Push notifications: partner changes | Feature | push | Medium | 2026-10-14 | — |
