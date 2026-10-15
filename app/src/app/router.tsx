@@ -13,6 +13,7 @@ import { PairPage } from '../features/coupling/PairPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { QuestionPage } from '../features/question/QuestionPage'
 import { UsPage } from '../features/us/UsPage'
+import { WishlistPage } from '../features/wishlist/WishlistPage'
 import { AppShell } from './AppShell'
 import { RequireAuth, RequireCouple } from './guards'
 
@@ -33,6 +34,7 @@ export function AppRouter() {
               <Route path="/us" element={<UsPage />} />
               <Route path="/us/question" element={<QuestionPage />} />
               <Route path="/us/decisions" element={<DecisionsPage />} />
+              <Route path="/us/wishlist" element={<WishlistPage />} />
               <Route path="/us/facts" element={<FactsPage />} />
               <Route path="/us/capsules" element={<CapsulesPage />} />
               <Route path="/profile" element={<ProfilePage />} />

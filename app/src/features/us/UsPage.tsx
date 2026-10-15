@@ -32,7 +32,7 @@ const FEATURES = [
     to: '/us/wishlist',
     title: 'Wishlist',
     description: 'I desideri di ognuno, con il radar regali in arrivo.',
-    ready: false,
+    ready: true,
   },
   {
     to: '/us/plan',
