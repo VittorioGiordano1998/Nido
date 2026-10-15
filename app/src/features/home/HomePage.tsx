@@ -10,6 +10,7 @@ import { useUpcomingEvents } from '../calendar/useEvents'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useOpenTasks } from '../lists/useLists'
 import { notePreview, useNotes } from '../notes/useNotes'
+import { DailyQuestionCard } from '../question/DailyQuestionCard'
 import { useSettings } from '../settings/SettingsProvider'
 
 const todayLabel = new Intl.DateTimeFormat('it-IT', {
@@ -90,6 +91,8 @@ export function HomePage() {
           </div>
         </Card>
       )}
+
+      {enabled.us && <DailyQuestionCard />}
 
       {enabled.calendar && (
         <section className="space-y-2">
