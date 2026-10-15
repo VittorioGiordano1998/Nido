@@ -1369,3 +1369,31 @@ insert into public.question_bank (lang, category, text) values
   ('it', 'gioco', 'Qual è il costume perfetto per noi due a Carnevale?'),
   ('it', 'gioco', 'Cosa ci farebbe ridere per ore anche a una cena noiosa?')
 on conflict (lang, text) do nothing;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261015101500_nido_profile_preferences.sql
+-- ============================================================================
+
+alter table public.profiles
+  add column if not exists theme text not null default 'system';
+
+alter table public.profiles
+  add column if not exists accent text not null default 'terra';
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'profiles_theme_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_theme_check check (theme in ('light', 'dark', 'system'));
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint where conname = 'profiles_accent_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_accent_check
+      check (accent in ('terra', 'oliva', 'mare', 'prugna'));
+  end if;
+end $$;
