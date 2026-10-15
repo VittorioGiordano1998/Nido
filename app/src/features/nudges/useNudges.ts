@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -90,7 +91,7 @@ export function useNudges() {
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
-      .channel(`nudges-${coupleId}`)
+      .channel(uniqueChannelTopic(`nudges-${coupleId}`))
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'nudges', filter: `couple_id=eq.${coupleId}` },

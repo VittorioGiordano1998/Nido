@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { toDateKey } from '../../core/dates'
+import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -100,7 +101,7 @@ export function useWeekPlan() {
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
-      .channel(`week-plans-${coupleId}`)
+      .channel(uniqueChannelTopic(`week-plans-${coupleId}`))
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'week_plans', filter: `couple_id=eq.${coupleId}` },

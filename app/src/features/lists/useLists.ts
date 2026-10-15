@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -155,7 +156,7 @@ export function useLists() {
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
-      .channel(`lists-${coupleId}`)
+      .channel(uniqueChannelTopic(`lists-${coupleId}`))
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'task_lists', filter: `couple_id=eq.${coupleId}` },

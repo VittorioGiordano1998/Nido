@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -105,7 +106,7 @@ export function useFacts() {
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
-      .channel(`facts-${coupleId}`)
+      .channel(uniqueChannelTopic(`facts-${coupleId}`))
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'partner_facts', filter: `couple_id=eq.${coupleId}` },

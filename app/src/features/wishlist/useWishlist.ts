@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -107,7 +108,7 @@ export function useWishlist() {
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
-      .channel(`wishlist-${coupleId}`)
+      .channel(uniqueChannelTopic(`wishlist-${coupleId}`))
       .on(
         'postgres_changes',
         {
