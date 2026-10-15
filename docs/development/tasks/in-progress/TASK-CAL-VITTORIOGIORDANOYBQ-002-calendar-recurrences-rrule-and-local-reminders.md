@@ -2,12 +2,12 @@
 id: TASK-CAL-VITTORIOGIORDANOYBQ-002
 owner: VITTORIOGIORDANOYBQ
 type: Feature
-status: Proposed
+status: In Progress
 area: calendar
 severity: Medium
 opened: 2026-10-14
 done: null
-next: Split out of TASK-CAL-VITTORIOGIORDANOYBQ-001; pick up after the calendar core closes. Decide the RRULE approach (hand-rolled subset vs `rrule` npm) first.
+next: Implemented and green (hand-rolled RRULE subset with a runnable check, occurrences in grid/agenda/Home, editor recurrence fields, in-app reminders while the app is open); pending the owner's two-account check.
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-001, TASK-PUSH-VITTORIOGIORDANOYBQ-001]
 superseded_by: null
 ---
@@ -68,6 +68,9 @@ recurrences they have to be re-entered by hand.
 ## Touch History
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created (split from TASK-CAL-VITTORIOGIORDANOYBQ-001)
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; decision taken: hand-rolled RRULE subset (DAILY/WEEKLY/MONTHLY/YEARLY + INTERVAL/UNTIL/COUNT), no dependency.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: `recurrence.ts` (subset parser/serializer, DST-safe wall-clock expansion, documented monthly clamp, fast-forward) + `app/scripts/check-recurrence.ts` (`npm run check:recurrence`, all assertions pass); occurrences wired into CalendarPage, HomePage and `useUpcomingEvents`; editor recurrence fields (frequency, interval, until/count) with a missing `Select` added to the shared components; `reminders.ts` fires a Notification 15 minutes before (9:00 for all-day) while the app is open, with `NotificationsCard` in Profilo and `remindersEnabled` in SettingsProvider; `rrule` added to `useEvents`. `npm run build` + `npm run lint` green.
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; decision taken: hand-rolled RRULE subset (DAILY/WEEKLY/MONTHLY/YEARLY + INTERVAL/UNTIL/COUNT), no dependency.
 
 ## Resolution
 
