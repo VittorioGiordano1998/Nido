@@ -4,6 +4,7 @@ import { Button } from '../../ui/components'
 import { useAuth } from '../auth/AuthProvider'
 import { OnboardingSlides } from '../auth/OnboardingSlides'
 import { CoupleCard } from './CoupleCard'
+import { CycleCard } from './CycleCard'
 import { DeleteAccountCard } from './DeleteAccountCard'
 import { NotificationsCard } from './NotificationsCard'
 import { PersonalizationCard } from './PersonalizationCard'
@@ -29,6 +30,7 @@ export function ProfilePage() {
       <PersonalizationCard />
       <NotificationsCard />
       <SecurityCard />
+      <CycleCard />
       <CoupleCard />
       <SectionsCard />
       <TestToolsCard />
