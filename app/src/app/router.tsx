@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { CalendarPage } from '../features/calendar/CalendarPage'
 import { CapsulesPage } from '../features/capsules/CapsulesPage'
+import { CyclePage } from '../features/cycle/CyclePage'
 import { DecisionsPage } from '../features/decisions/DecisionsPage'
 import { FactsPage } from '../features/facts/FactsPage'
 import { LoginPage } from '../features/auth/LoginPage'
@@ -40,6 +41,7 @@ export function AppRouter() {
               <Route path="/us/facts" element={<FactsPage />} />
               <Route path="/us/capsules" element={<CapsulesPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/cycle" element={<CyclePage />} />
             </Route>
           </Route>
         </Route>
