@@ -2,12 +2,13 @@
 
 This folder holds one plan record per major effort; each record lives in the subfolder matching its status. New plans use `PLAN_TEMPLATE.md` and move subfolders on every status change.
 
-1 plan — 0 Proposed · 1 Agreed · 0 Implemented · 0 Superseded
+2 plans — 1 Proposed · 1 Agreed · 0 Implemented · 0 Superseded
 
 ## Proposed
 
 | ID | Plan | Date |
 | --- | --- | --- |
+| [PLAN-VITTORIOGIORDANOYBQ-002](proposed/PLAN-VITTORIOGIORDANOYBQ-002-nido-remaining-roadmap-execution-m1-close-out-to-m4.md) | Nido - remaining roadmap execution (M1 close-out to M4) | 2026-10-15 |
 
 ## Agreed
 

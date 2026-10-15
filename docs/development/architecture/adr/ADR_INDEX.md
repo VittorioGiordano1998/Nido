@@ -2,12 +2,13 @@
 
 Decisions for this project. New records use `ADR_TEMPLATE.md`; the owner-qualified scheme is `ADR-<AREA>-<OWNER>-<NNN>` and records live in `adr/<status>/` subfolders (proposed, accepted, implemented, deprecated, superseded). This index covers all subfolders.
 
-1 ADR — 0 Proposed · 1 Accepted · 0 Implemented · 0 Deprecated · 0 Superseded
+2 ADRs — 1 Proposed · 1 Accepted · 0 Implemented · 0 Deprecated · 0 Superseded
 
 ## Proposed
 
 | ID | Title | Date |
 | --- | --- | --- |
+| [ADR-PUSH-VITTORIOGIORDANOYBQ-001](proposed/ADR-PUSH-VITTORIOGIORDANOYBQ-001-push-delivery-web-push-vapid-for-the-web-app.md) | Push delivery: Web Push (VAPID) for the web app | 2026-10-15 |
 
 ## Accepted
 
