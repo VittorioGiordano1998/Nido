@@ -26,7 +26,7 @@ const FEATURES = [
     to: '/us/decisions',
     title: 'Decisioni alla cieca',
     description: 'Votate di nascosto, poi la scelta si svela.',
-    ready: false,
+    ready: true,
   },
   {
     to: '/us/wishlist',
