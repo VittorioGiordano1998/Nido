@@ -7,7 +7,7 @@ area: profile and personalization
 severity: Medium
 opened: 2026-10-14
 done: null
-next: Implementation in progress; live project will need the owner's paste of apply-profile-preferences.sql, then a visual pass.
+next: Implemented and green (tokens + dark theme + 4 accents, PreferencesProvider, profile cards, password change, migration + apply script); the live project needs the owner's paste of apply-profile-preferences.sql, then a visual pass on two devices.
 related: []
 superseded_by: null
 ---
@@ -69,6 +69,7 @@ Impact: theme and accent choice is the first thing a couple looks for in a setti
 
 - 2026-10-14 — VITTORIOGIORDANOYBQ — created
 - 2026-10-14 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementation starting (migration + token refactor + provider + profile UI).
+- 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented the slice: semantic tokens (canvas/surface/ink/line) + dark theme + 4 accent presets in `app/src/index.css`, pre-paint script in `app/index.html`, `core/appearance.ts`, `settings/PreferencesProvider.tsx` (optimistic with rollback), profile split into cards (`ProfileCard`, `PersonalizationCard`, `SecurityCard`, `CoupleCard`, `SectionsCard`) with `useProfile`, `changePassword` in `AuthProvider`, migration `20261015101500_nido_profile_preferences.sql` + `apply-profile-preferences.sql` + regenerated `apply-all.sql`; 18 view files migrated off stone/clay/cream literals; `npm run build` + `npm run lint` green.
 
 ## Resolution
 

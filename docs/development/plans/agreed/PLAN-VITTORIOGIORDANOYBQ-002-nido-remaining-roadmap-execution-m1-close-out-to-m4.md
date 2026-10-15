@@ -2,7 +2,7 @@
 id: PLAN-VITTORIOGIORDANOYBQ-002
 owner: VITTORIOGIORDANOYBQ
 type: Major
-status: Proposed
+status: Agreed
 date: 2026-10-15
 supersedes: null
 superseded_by: null
