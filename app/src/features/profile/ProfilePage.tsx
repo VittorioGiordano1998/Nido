@@ -4,11 +4,13 @@ import { Button } from '../../ui/components'
 import { useAuth } from '../auth/AuthProvider'
 import { OnboardingSlides } from '../auth/OnboardingSlides'
 import { CoupleCard } from './CoupleCard'
+import { DeleteAccountCard } from './DeleteAccountCard'
 import { NotificationsCard } from './NotificationsCard'
 import { PersonalizationCard } from './PersonalizationCard'
 import { ProfileCard } from './ProfileCard'
 import { SectionsCard } from './SectionsCard'
 import { SecurityCard } from './SecurityCard'
+import { TestToolsCard } from './TestToolsCard'
 
 export function ProfilePage() {
   const { session, signOut } = useAuth()
@@ -29,6 +31,8 @@ export function ProfilePage() {
       <SecurityCard />
       <CoupleCard />
       <SectionsCard />
+      <TestToolsCard />
+      <DeleteAccountCard />
 
       <Button variant="ghost" className="w-full" onClick={() => setIntroOpen(true)}>
         Rivedi l'introduzione
