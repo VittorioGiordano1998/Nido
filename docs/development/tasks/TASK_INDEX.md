@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-32 tasks — 10 Proposed · 0 Ready · 5 In Progress · 0 Blocked · 17 Done · 0 Cancelled
+32 tasks — 8 Proposed · 0 Ready · 7 In Progress · 0 Blocked · 17 Done · 0 Cancelled
 
 ## Proposed
 
@@ -10,12 +10,10 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CANV-VITTORIOGIORDANOYBQ-001](proposed/TASK-CANV-VITTORIOGIORDANOYBQ-001-realtime-canvas.md) | Realtime canvas | Feature | canvas | Medium | 2026-10-15 | — |
 | [TASK-I18N-VITTORIOGIORDANOYBQ-001](proposed/TASK-I18N-VITTORIOGIORDANOYBQ-001-localization-it-es-en-de.md) | Localization: IT, ES, EN, DE | Feature | localization | Medium | 2026-10-15 | — |
-| [TASK-LOY-VITTORIOGIORDANOYBQ-001](proposed/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
 | [TASK-OFF-VITTORIOGIORDANOYBQ-001](proposed/TASK-OFF-VITTORIOGIORDANOYBQ-001-offline-evaluate-a-persistent-cache.md) | Offline: evaluate a persistent cache | Chore | offline | Low | 2026-10-15 | — |
 | [TASK-PACK-VITTORIOGIORDANOYBQ-001](proposed/TASK-PACK-VITTORIOGIORDANOYBQ-001-store-packaging-capacitor-shell-and-store-forms.md) | Store packaging: Capacitor shell and store forms | Feature | store packaging | Medium | 2026-10-15 | — |
 | [TASK-PREM-VITTORIOGIORDANOYBQ-001](proposed/TASK-PREM-VITTORIOGIORDANOYBQ-001-premium-paywall-purchase-and-per-couple-entitlement.md) | Premium: paywall, purchase and per-couple entitlement | Feature | premium | High | 2026-10-15 | — |
 | [TASK-RECAP-VITTORIOGIORDANOYBQ-001](proposed/TASK-RECAP-VITTORIOGIORDANOYBQ-001-yearly-recap.md) | Yearly recap | Feature | yearly recap | Low | 2026-10-15 | — |
-| [TASK-SAV-VITTORIOGIORDANOYBQ-001](proposed/TASK-SAV-VITTORIOGIORDANOYBQ-001-savings-projects.md) | Savings projects | Feature | savings | Medium | 2026-10-15 | — |
 | [TASK-VAULT-VITTORIOGIORDANOYBQ-001](proposed/TASK-VAULT-VITTORIOGIORDANOYBQ-001-e2e-document-vault.md) | E2E document vault | Feature | vault | High | 2026-10-15 | — |
 | [TASK-WIDG-VITTORIOGIORDANOYBQ-001](proposed/TASK-WIDG-VITTORIOGIORDANOYBQ-001-home-widget-days-together-and-shared-note.md) | Home widget: days together and shared note | Feature | widget | Low | 2026-10-15 | — |
 
@@ -30,8 +28,10 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CYC-VITTORIOGIORDANOYBQ-001](in-progress/TASK-CYC-VITTORIOGIORDANOYBQ-001-cycle-tracker-owner-only-log-with-explicit-consent.md) | Cycle tracker: owner-only log with explicit consent | Feature | cycle tracker | Medium | 2026-10-15 | — |
 | [TASK-GDPR-VITTORIOGIORDANOYBQ-001](in-progress/TASK-GDPR-VITTORIOGIORDANOYBQ-001-gdpr-account-deletion.md) | GDPR: account deletion | Feature | gdpr | Medium | 2026-10-15 | — |
+| [TASK-LOY-VITTORIOGIORDANOYBQ-001](in-progress/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
 | [TASK-NUDGE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NUDGE-VITTORIOGIORDANOYBQ-001-partner-nudge-with-one-tap.md) | Partner nudge with one tap | Feature | nudges | Low | 2026-10-14 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-001](in-progress/TASK-PUSH-VITTORIOGIORDANOYBQ-001-push-notifications-partner-changes.md) | Push notifications: partner changes | Feature | push | Medium | 2026-10-14 | — |
+| [TASK-SAV-VITTORIOGIORDANOYBQ-001](in-progress/TASK-SAV-VITTORIOGIORDANOYBQ-001-savings-projects.md) | Savings projects | Feature | savings | Medium | 2026-10-15 | — |
 | [TASK-TEST-VITTORIOGIORDANOYBQ-001](in-progress/TASK-TEST-VITTORIOGIORDANOYBQ-001-test-tooling-reset-couple-data.md) | Test tooling: reset couple data | Feature | test tooling | Low | 2026-10-15 | — |
 
 ## Blocked
