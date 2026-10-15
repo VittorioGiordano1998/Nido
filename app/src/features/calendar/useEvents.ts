@@ -6,6 +6,7 @@ import { useCouple } from '../coupling/CoupleProvider'
 import { expandOccurrences, occurrenceEndMs } from './recurrence'
 
 export type EventVisibility = 'couple' | 'private'
+export type EventOccasion = 'birthday' | 'anniversary'
 
 export interface CalendarEvent {
   id: string
@@ -21,6 +22,10 @@ export interface CalendarEvent {
   updatedAt: string
   /** iCal text (FREQ/INTERVAL/UNTIL/COUNT subset); null = single event. */
   rrule: string | null
+  /** Gift radar tag; null = ordinary event. */
+  occasion: EventOccasion | null
+  /** Who the occasion is for. */
+  occasionFor: string | null
 }
 
 export interface EventInput {
@@ -32,6 +37,8 @@ export interface EventInput {
   allDay: boolean
   visibility: EventVisibility
   rrule: string | null
+  occasion: EventOccasion | null
+  occasionFor: string | null
 }
 
 interface EventRow {
@@ -47,10 +54,12 @@ interface EventRow {
   created_by: string
   updated_at: string
   rrule: string | null
+  occasion: string | null
+  occasion_for: string | null
 }
 
 const EVENT_COLUMNS =
-  'id, couple_id, title, description, location, start_at, end_at, all_day, visibility, created_by, updated_at, rrule'
+  'id, couple_id, title, description, location, start_at, end_at, all_day, visibility, created_by, updated_at, rrule, occasion, occasion_for'
 
 function rowToEvent(row: EventRow): CalendarEvent {
   return {
@@ -66,6 +75,9 @@ function rowToEvent(row: EventRow): CalendarEvent {
     createdBy: row.created_by,
     updatedAt: row.updated_at,
     rrule: row.rrule,
+    occasion:
+      row.occasion === 'birthday' || row.occasion === 'anniversary' ? row.occasion : null,
+    occasionFor: row.occasion_for,
   }
 }
 
@@ -159,6 +171,8 @@ export function useEvents() {
           all_day: input.allDay,
           visibility: input.visibility,
           rrule: input.rrule,
+          occasion: input.occasion,
+          occasion_for: input.occasionFor,
         })
         .select(EVENT_COLUMNS)
         .single()
@@ -180,6 +194,8 @@ export function useEvents() {
         all_day: input.allDay,
         visibility: input.visibility,
         rrule: input.rrule,
+        occasion: input.occasion,
+        occasion_for: input.occasionFor,
       })
       .eq('id', id)
       .select(EVENT_COLUMNS)

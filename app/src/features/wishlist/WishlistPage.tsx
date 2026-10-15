@@ -1,13 +1,18 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { formatDateIt, fromDateKey, toDateKey } from '../../core/dates'
 import { Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
 import { CheckIcon, ChevronLeftIcon, PlusIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
+import { expandOccurrences } from '../calendar/recurrence'
+import { useEvents } from '../calendar/useEvents'
 import { useCouple } from '../coupling/CoupleProvider'
 import { WishlistEditor } from './WishlistEditor'
 import { useWishlist } from './useWishlist'
 import type { WishInput, WishItem } from './useWishlist'
+
+const RADAR_DAYS = 31
 
 function formatPrice(price: number, currency: string): string {
   try {
@@ -17,11 +22,32 @@ function formatPrice(price: number, currency: string): string {
   }
 }
 
+function daysLeft(iso: string): number {
+  const date = new Date(iso)
+  const today = new Date()
+  const target = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  const now = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+  return Math.max(0, Math.round((target - now) / 86_400_000))
+}
+
 export function WishlistPage() {
   const { session } = useAuth()
   const { couple } = useCouple()
   const { items, loading, error, createItem, updateItem, togglePurchased, deleteItem } =
     useWishlist()
+  const { events } = useEvents()
+
+  const [todayKey] = useState(() => toDateKey(new Date()))
+
+  // Gift radar: tagged occasions (birthdays/anniversaries) in the next 30 days,
+  // expanded from the calendar, with the right wishes as hints.
+  const occasions = useMemo(() => {
+    const start = fromDateKey(todayKey)
+    const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + RADAR_DAYS)
+    return expandOccurrences(events, start, end)
+      .filter((occurrence) => occurrence.event.occasion !== null)
+      .slice(0, 6)
+  }, [events, todayKey])
 
   const [editor, setEditor] = useState<{ item: WishItem | null } | null>(null)
   const [saving, setSaving] = useState(false)
@@ -187,6 +213,57 @@ export function WishlistPage() {
 
       {error && <ErrorBanner message={error} />}
       {formError && <ErrorBanner message={formError} />}
+
+      <section className="space-y-2">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+          Radar regali
+        </h2>
+        {occasions.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-line-strong bg-surface/60 px-4 py-4 text-center text-xs text-ink-faint">
+            Nessuna occasione nei prossimi 30 giorni: segna compleanni e anniversari nel calendario
+            (Occasione speciale) e compariranno qui.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {occasions.map((occurrence) => {
+              const days = daysLeft(occurrence.startAt)
+              const occasionName =
+                occurrence.event.occasion === 'anniversary' ? 'Anniversario' : 'Compleanno'
+              const forWhom = occurrence.event.occasionFor
+              const hints = forWhom
+                ? items
+                    .filter((item) => item.ownerId === forWhom && !item.purchased)
+                    .slice(0, 3)
+                : []
+              return (
+                <li key={occurrence.key}>
+                  <Card className="space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-ink">
+                          {occurrence.event.title}
+                        </span>
+                        <span className="block text-xs text-ink-muted">
+                          {occasionName} · {formatDateIt(occurrence.startAt.slice(0, 10))}
+                        </span>
+                      </span>
+                      <span className="shrink-0 rounded-full bg-accent-100 px-2.5 py-1 text-[11px] font-semibold text-accent-ink">
+                        {days <= 0 ? 'oggi' : days === 1 ? 'domani' : `tra ${days} giorni`}
+                      </span>
+                    </div>
+                    {hints.length > 0 && (
+                      <p className="text-xs text-ink-muted">
+                        <span className="font-semibold text-ink-soft">{nameOf(forWhom ?? '')}</span>{' '}
+                        desidera: {hints.map((item) => item.title).join(' · ')}
+                      </p>
+                    )}
+                  </Card>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
 
       {loading ? (
         <div className="flex justify-center py-8">

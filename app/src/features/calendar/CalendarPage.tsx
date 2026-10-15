@@ -32,6 +32,12 @@ function occurrenceLabel(occurrence: EventOccurrence): string {
   return occurrence.endAt ? `${start} – ${formatTimeIt(occurrence.endAt)}` : start
 }
 
+function occasionLabel(event: CalendarEvent): string {
+  if (event.occasion === 'birthday') return ' · compleanno'
+  if (event.occasion === 'anniversary') return ' · anniversario'
+  return ''
+}
+
 export function CalendarPage() {
   const { couple } = useCouple()
   const { session } = useAuth()
@@ -268,6 +274,7 @@ export function CalendarPage() {
                         {occurrenceLabel(occurrence)}
                         {occurrence.event.location ? ` · ${occurrence.event.location}` : ''}
                         {occurrence.recurring ? ' · si ripete' : ''}
+                        {occasionLabel(occurrence.event)}
                         {occurrence.event.createdBy !== myId ? ' · del partner' : ''}
                       </span>
                     </span>
@@ -284,6 +291,11 @@ export function CalendarPage() {
           key={editor.event?.id ?? 'new'}
           event={editor.event}
           defaultDateKey={selectedKey}
+          members={(couple?.members ?? []).map((member) => ({
+            userId: member.userId,
+            displayName: member.displayName,
+          }))}
+          myId={myId ?? null}
           saving={saving}
           error={formError}
           onSave={handleSave}
