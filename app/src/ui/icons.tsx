@@ -132,3 +132,30 @@ export function BellIcon({ className = 'h-5 w-5' }: IconProps) {
     </svg>
   )
 }
+
+export function PaperclipIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M20 11.5 12.3 19a4.7 4.7 0 0 1-6.6-6.6l7.6-7.6a3.1 3.1 0 0 1 4.4 4.4l-7.6 7.6a1.6 1.6 0 0 1-2.2-2.2l7-7" />
+    </svg>
+  )
+}
+
+export function ImageIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <rect x="4" y="5" width="16" height="14" rx="2.5" />
+      <circle cx="9" cy="10" r="1.5" />
+      <path d="m5.5 17 4.5-4.5 3 3 2.5-2.5 3 3" />
+    </svg>
+  )
+}
+
+export function LinkIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M10.5 13.5a4 4 0 0 1 0-5.6l2-2a4 4 0 0 1 5.6 5.6l-1.4 1.4" />
+      <path d="M13.5 10.5a4 4 0 0 1 0 5.6l-2 2a4 4 0 0 1-5.6-5.6l1.4-1.4" />
+    </svg>
+  )
+}
