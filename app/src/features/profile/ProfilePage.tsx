@@ -12,10 +12,12 @@ import { ProfileCard } from './ProfileCard'
 import { SectionsCard } from './SectionsCard'
 import { SecurityCard } from './SecurityCard'
 import { TestToolsCard } from './TestToolsCard'
+import { useProfile } from './useProfile'
 
 export function ProfilePage() {
   const { session, signOut } = useAuth()
   const [introOpen, setIntroOpen] = useState(false)
+  const profile = useProfile()
 
   return (
     <div className="space-y-5 pt-2">
@@ -26,11 +28,11 @@ export function ProfilePage() {
         </p>
       </header>
 
-      <ProfileCard />
+      <ProfileCard profile={profile} />
       <PersonalizationCard />
       <NotificationsCard />
       <SecurityCard />
-      <CycleCard />
+      <CycleCard visible={!profile.loading && profile.sex !== 'male'} />
       <CoupleCard />
       <SectionsCard />
       <TestToolsCard />

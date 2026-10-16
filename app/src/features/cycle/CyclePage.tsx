@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import {
   addMonths,
@@ -29,12 +29,15 @@ export function CyclePage() {
   const { couple } = useCouple()
   const {
     consentAt,
+    calendarShare,
+    sex,
     consentLoading,
     logs,
     shares,
     loading,
     error,
     setConsent,
+    setCalendarShare,
     saveLog,
     deleteLog,
     sharePeriod,
@@ -47,6 +50,7 @@ export function CyclePage() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [consentBusy, setConsentBusy] = useState(false)
+  const [shareBusy, setShareBusy] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [shareStart, setShareStart] = useState('')
   const [shareEnd, setShareEnd] = useState('')
@@ -62,6 +66,7 @@ export function CyclePage() {
   }, [logs])
 
   const selectedLog = byDay.get(selectedKey) ?? null
+  const manualShares = shares.filter((share) => share.source === 'manual')
 
   function nameOf(userId: string): string {
     return couple?.members.find((member) => member.userId === userId)?.displayName ?? '—'
@@ -124,6 +129,24 @@ export function CyclePage() {
     }
   }
 
+  async function handleCalendarShare(on: boolean) {
+    if (
+      !on &&
+      !window.confirm('Le date spariscono dal calendario condiviso. Puoi riattivarle quando vuoi.')
+    ) {
+      return
+    }
+    setShareBusy(true)
+    setFormError(null)
+    try {
+      await setCalendarShare(on)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Errore di salvataggio.')
+    } finally {
+      setShareBusy(false)
+    }
+  }
+
   async function handleShare() {
     if (!shareStart) {
       setFormError('Serve la data di inizio.')
@@ -164,6 +187,10 @@ export function CyclePage() {
         <Spinner />
       </div>
     )
+  }
+
+  if (sex === 'male') {
+    return <Navigate to="/profile" replace />
   }
 
   if (consentAt === null) {
@@ -340,18 +367,44 @@ export function CyclePage() {
         )}
       </section>
 
+      <Card className="flex items-center justify-between gap-3">
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold text-ink">Mostra nel calendario</span>
+          <span className="block text-xs text-ink-muted">
+            Il partner vede solo le date dei periodi: mai flusso, sintomi o note.
+          </span>
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={calendarShare}
+          aria-label="Mostra il ciclo nel calendario condiviso"
+          disabled={shareBusy || loading}
+          onClick={() => void handleCalendarShare(!calendarShare)}
+          className={`h-6 w-11 shrink-0 rounded-full transition disabled:opacity-50 ${
+            calendarShare ? 'bg-accent-600' : 'bg-line-strong'
+          }`}
+        >
+          <span
+            className={`block h-5 w-5 rounded-full bg-white shadow transition ${
+              calendarShare ? 'translate-x-[22px]' : 'translate-x-0.5'
+            }`}
+          />
+        </button>
+      </Card>
+
       <section className="space-y-2">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
           Riepiloghi condivisi
         </h2>
 
-        {shares.length === 0 ? (
+        {manualShares.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-line-strong bg-surface/60 px-4 py-4 text-center text-xs text-ink-faint">
             Nessun riepilogo condiviso.
           </p>
         ) : (
           <ul className="space-y-2">
-            {shares.map((share) => (
+            {manualShares.map((share) => (
               <li key={share.id}>
                 <Card className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
