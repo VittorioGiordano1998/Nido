@@ -3,8 +3,12 @@ import { Link } from 'react-router-dom'
 import { Card } from '../../ui/components'
 import { ChevronRightIcon } from '../../ui/icons'
 
-/** Profilo entry point for the personal cycle diary (consent-gated page). */
-export function CycleCard() {
+/** Profilo entry point for the personal cycle diary (consent-gated page).
+ *  Hidden for a male profile (TASK-CYC-...-002); unset keeps it visible so
+ *  rolling out never hides an existing diary before the profile is set. */
+export function CycleCard({ visible = true }: { visible?: boolean }) {
+  if (!visible) return null
+
   return (
     <Link to="/cycle" className="block">
       <Card className="flex items-center justify-between gap-3 transition hover:ring-accent-300">

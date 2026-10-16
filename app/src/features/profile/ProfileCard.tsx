@@ -1,21 +1,25 @@
-import { Button, Card, ErrorBanner, Field, TextInput } from '../../ui/components'
+import { Button, Card, ErrorBanner, Field, Select, TextInput } from '../../ui/components'
 import { CheckIcon } from '../../ui/icons'
 import { useCouple } from '../coupling/CoupleProvider'
-import { useProfile } from './useProfile'
+import type { ProfileState } from './useProfile'
 
-export function ProfileCard() {
+/** Editable profile fields; the state lives in ProfilePage so the CycleCard
+ *  can gate on the same `sex` value without a second fetch. */
+export function ProfileCard({ profile }: { profile: ProfileState }) {
   const { refresh } = useCouple()
   const {
     displayName,
     setDisplayName,
     birthDate,
     setBirthDate,
+    sex,
+    setSex,
     loading,
     saving,
     saved,
     error,
     save,
-  } = useProfile()
+  } = profile
 
   async function handleSave() {
     if (await save()) await refresh()
@@ -43,6 +47,13 @@ export function ProfileCard() {
             onChange={(e) => setBirthDate(e.target.value)}
             disabled={loading}
           />
+        </Field>
+        <Field label="Sesso" hint="Mostra le sezioni pensate per te, come il ciclo.">
+          <Select value={sex} onChange={(e) => setSex(e.target.value)} disabled={loading}>
+            <option value="">Non indicato</option>
+            <option value="male">Maschio</option>
+            <option value="female">Femmina</option>
+          </Select>
         </Field>
         <Button onClick={() => void handleSave()} loading={saving} className="w-full">
           {saved ? (

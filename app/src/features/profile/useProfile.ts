@@ -4,9 +4,9 @@ import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 
 /**
- * Loads and saves the signed-in user's profile row (display name, birthday).
+ * Loads and saves the signed-in user's profile row (display name, birthday, sex).
  * State layer: the profile view must not touch Supabase directly
- * (RULES.local, Layers).
+ * (RULES.local, Layers). `sex` gates the cycle section (TASK-CYC-...-002).
  */
 export function useProfile() {
   const { session } = useAuth()
@@ -14,6 +14,7 @@ export function useProfile() {
 
   const [displayName, setDisplayName] = useState('')
   const [birthDate, setBirthDate] = useState('')
+  const [sex, setSex] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -25,7 +26,7 @@ export function useProfile() {
     void (async () => {
       const { data, error: loadError } = await supabase
         .from('profiles')
-        .select('display_name, birth_date')
+        .select('display_name, birth_date, sex')
         .eq('id', userId)
         .single()
       if (!active) return
@@ -34,6 +35,7 @@ export function useProfile() {
       } else if (data) {
         setDisplayName((data.display_name as string | null) ?? '')
         setBirthDate((data.birth_date as string | null) ?? '')
+        setSex((data.sex as string | null) ?? '')
       }
       setLoading(false)
     })()
@@ -51,6 +53,7 @@ export function useProfile() {
       .update({
         display_name: displayName.trim() || 'Senza nome',
         birth_date: birthDate || null,
+        sex: sex || null,
       })
       .eq('id', userId)
     setSaving(false)
@@ -68,6 +71,8 @@ export function useProfile() {
     setDisplayName,
     birthDate,
     setBirthDate,
+    sex,
+    setSex,
     loading,
     saving,
     saved,
@@ -75,3 +80,5 @@ export function useProfile() {
     save,
   }
 }
+
+export type ProfileState = ReturnType<typeof useProfile>

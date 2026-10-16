@@ -29,6 +29,7 @@ const shortDateIt = new Intl.DateTimeFormat('it-IT', {
   day: 'numeric',
   month: 'short',
 })
+const dayMonthIt = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short' })
 const monthYearIt = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' })
 
 /** Chiave locale `YYYY-MM-DD` di una data (il giorno del calendario, non l'istante UTC). */
@@ -76,6 +77,12 @@ export function formatTimeIt(iso: string): string {
 
 export function formatShortDateIt(iso: string): string {
   return shortDateIt.format(new Date(iso))
+}
+
+/** `16 ott` di una data ISO, per etichette compatte (es. intervalli del ciclo). */
+export function formatDayMonthIt(iso: string): string {
+  const date = parseIsoDate(iso)
+  return date ? dayMonthIt.format(date) : iso
 }
 
 export function formatMonthYearIt(date: Date): string {

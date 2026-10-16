@@ -18,6 +18,7 @@ import {
 } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
+import { periodDayKeys, periodLabel, useCycleCalendar } from '../cycle/useCycleCalendar'
 import { EventEditor } from './EventEditor'
 import { expandOccurrences } from './recurrence'
 import type { EventOccurrence } from './recurrence'
@@ -42,6 +43,7 @@ export function CalendarPage() {
   const { couple } = useCouple()
   const { session } = useAuth()
   const { events, loading, error, createEvent, updateEvent, deleteEvent } = useEvents()
+  const { periods, loading: cycleLoading, error: cycleError } = useCycleCalendar()
 
   const [month, setMonth] = useState(() => startOfMonth(new Date()))
   const [selectedKey, setSelectedKey] = useState(() => toDateKey(new Date()))
@@ -74,8 +76,25 @@ export function CalendarPage() {
     return map
   }, [occurrences])
 
+  const onDayCycle = useMemo(() => {
+    const map = new Map<string, (typeof periods)[number][]>()
+    for (const period of periods) {
+      for (const key of periodDayKeys(period)) {
+        const list = map.get(key)
+        if (list) list.push(period)
+        else map.set(key, [period])
+      }
+    }
+    return map
+  }, [periods])
+
   const selectedOccurrences = byDay.get(selectedKey) ?? []
+  const selectedCycle = onDayCycle.get(selectedKey) ?? []
   const hasCouple = couple !== null
+
+  function nameOf(userId: string): string {
+    return couple?.members.find((member) => member.userId === userId)?.displayName ?? '—'
+  }
 
   function openNew() {
     setFormError(null)
@@ -146,6 +165,7 @@ export function CalendarPage() {
       </header>
 
       {error && <ErrorBanner message={error} />}
+      {cycleError && <ErrorBanner message={cycleError} />}
 
       <Card className="space-y-3">
         <div className="flex items-center justify-between">
@@ -221,6 +241,12 @@ export function CalendarPage() {
                       }`}
                     />
                   ))}
+                  {(onDayCycle.get(cell.key)?.length ?? 0) > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className={`h-1 w-1 rounded-full ${isSelected ? 'bg-rose-200' : 'bg-rose-400'}`}
+                    />
+                  )}
                 </span>
               </button>
             )
@@ -233,11 +259,11 @@ export function CalendarPage() {
           {formatDateIt(selectedKey)}
         </h2>
 
-        {loading ? (
+        {loading || cycleLoading ? (
           <div className="flex justify-center py-6">
             <Spinner />
           </div>
-        ) : selectedOccurrences.length === 0 ? (
+        ) : selectedOccurrences.length === 0 && selectedCycle.length === 0 ? (
           <EmptyState
             title="Nessun evento"
             description={
@@ -247,42 +273,70 @@ export function CalendarPage() {
             }
           />
         ) : (
-          <ul className="space-y-2">
-            {selectedOccurrences.map((occurrence) => (
-              <li key={occurrence.key}>
-                <button
-                  type="button"
-                  onClick={() => openEdit(occurrence.event)}
-                  className="w-full"
-                >
-                  <Card className="flex w-full items-center gap-3 text-left transition hover:ring-accent-300">
-                    <span
-                      className={`h-9 w-1.5 shrink-0 rounded-full ${
-                        occurrence.event.createdBy === myId ? 'bg-accent-400' : 'bg-sage-500'
-                      }`}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1.5">
-                        <span className="truncate text-sm font-semibold text-ink">
-                          {occurrence.event.title}
+          <div className="space-y-2">
+            {selectedCycle.length > 0 && (
+              <ul className="space-y-2">
+                {selectedCycle.map((period) => (
+                  <li key={period.id}>
+                    <Card className="flex items-center gap-3">
+                      <span className="h-9 w-1.5 shrink-0 rounded-full bg-rose-400" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold text-ink">
+                          {period.userId === myId
+                            ? 'Il tuo ciclo'
+                            : `Ciclo di ${nameOf(period.userId)}`}
                         </span>
-                        {occurrence.event.visibility === 'private' && (
-                          <LockIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
-                        )}
+                        <span className="block text-xs text-ink-muted">
+                          {periodLabel(period)} · date condivise
+                        </span>
                       </span>
-                      <span className="block text-xs text-ink-muted">
-                        {occurrenceLabel(occurrence)}
-                        {occurrence.event.location ? ` · ${occurrence.event.location}` : ''}
-                        {occurrence.recurring ? ' · si ripete' : ''}
-                        {occasionLabel(occurrence.event)}
-                        {occurrence.event.createdBy !== myId ? ' · del partner' : ''}
-                      </span>
-                    </span>
-                  </Card>
-                </button>
-              </li>
-            ))}
-          </ul>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {selectedOccurrences.length === 0 ? (
+              <p className="px-1 text-xs text-ink-faint">Nessun evento per questo giorno.</p>
+            ) : (
+              <ul className="space-y-2">
+                {selectedOccurrences.map((occurrence) => (
+                  <li key={occurrence.key}>
+                    <button
+                      type="button"
+                      onClick={() => openEdit(occurrence.event)}
+                      className="w-full"
+                    >
+                      <Card className="flex w-full items-center gap-3 text-left transition hover:ring-accent-300">
+                        <span
+                          className={`h-9 w-1.5 shrink-0 rounded-full ${
+                            occurrence.event.createdBy === myId ? 'bg-accent-400' : 'bg-sage-500'
+                          }`}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-1.5">
+                            <span className="truncate text-sm font-semibold text-ink">
+                              {occurrence.event.title}
+                            </span>
+                            {occurrence.event.visibility === 'private' && (
+                              <LockIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
+                            )}
+                          </span>
+                          <span className="block text-xs text-ink-muted">
+                            {occurrenceLabel(occurrence)}
+                            {occurrence.event.location ? ` · ${occurrence.event.location}` : ''}
+                            {occurrence.recurring ? ' · si ripete' : ''}
+                            {occasionLabel(occurrence.event)}
+                            {occurrence.event.createdBy !== myId ? ' · del partner' : ''}
+                          </span>
+                        </span>
+                      </Card>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
       </section>
 

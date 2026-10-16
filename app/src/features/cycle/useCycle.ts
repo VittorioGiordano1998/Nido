@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { fromDateKey } from '../../core/dates'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 
 /**
  * Cycle tracker (state layer). Health data: the logs are owner-only in RLS;
- * only the explicit summaries the owner creates (`cycle_shares`) are visible
- * to the partner. Everything stays behind `profiles.cycle_consent_at`.
+ * the couple only ever sees `cycle_shares` — the manual summaries the owner
+ * creates, and, while `profiles.cycle_calendar_share` is on, the date ranges
+ * reconciled from her own logs (source = 'auto', dates only).
  */
 
 export interface CycleLog {
@@ -27,6 +29,7 @@ export interface CycleLogInput {
 }
 
 export type ShareLevel = 'summary' | 'dates_only'
+export type ShareSource = 'manual' | 'auto'
 
 export interface CycleShare {
   id: string
@@ -34,6 +37,7 @@ export interface CycleShare {
   periodStart: string
   periodEnd: string | null
   shareLevel: ShareLevel
+  source: ShareSource
 }
 
 interface CycleLogRow {
@@ -51,10 +55,11 @@ interface CycleShareRow {
   period_start: string
   period_end: string | null
   share_level: string
+  source: string
 }
 
 const LOG_COLUMNS = 'id, log_date, flow, mood, symptoms, notes'
-const SHARE_COLUMNS = 'id, user_id, period_start, period_end, share_level'
+const SHARE_COLUMNS = 'id, user_id, period_start, period_end, share_level, source'
 
 function asSymptoms(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
@@ -78,7 +83,29 @@ function rowToShare(row: CycleShareRow): CycleShare {
     periodStart: row.period_start,
     periodEnd: row.period_end,
     shareLevel: row.share_level === 'dates_only' ? 'dates_only' : 'summary',
+    source: row.source === 'auto' ? 'auto' : 'manual',
   }
+}
+
+const DAY_MS = 86_400_000
+
+function daysBetween(a: string, b: string): number {
+  return Math.round((fromDateKey(b).getTime() - fromDateKey(a).getTime()) / DAY_MS)
+}
+
+/**
+ * Periods computed from the owner's logs: runs of consecutive days with a
+ * flow value; a single missing day inside a run stays part of the same period.
+ */
+export function periodRanges(logs: CycleLog[]): Array<{ start: string; end: string }> {
+  const days = [...new Set(logs.filter((log) => log.flow !== null).map((log) => log.logDate))].sort()
+  const ranges: Array<{ start: string; end: string }> = []
+  for (const day of days) {
+    const last = ranges[ranges.length - 1]
+    if (last && daysBetween(last.end, day) <= 2) last.end = day
+    else ranges.push({ start: day, end: day })
+  }
+  return ranges
 }
 
 export function useCycle() {
@@ -88,11 +115,23 @@ export function useCycle() {
   const userId = session?.user.id ?? null
 
   const [consentAt, setConsentAt] = useState<string | null>(null)
+  const [calendarShare, setCalendarShareState] = useState(false)
+  const [sex, setSex] = useState<string | null>(null)
   const [consentLoading, setConsentLoading] = useState(true)
   const [logs, setLogs] = useState<CycleLog[]>([])
   const [shares, setShares] = useState<CycleShare[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const reloadShares = useCallback(async () => {
+    const { data, error: sharesError } = await supabase
+      .from('cycle_shares')
+      .select(SHARE_COLUMNS)
+      .order('period_start', { ascending: false })
+      .limit(100)
+    if (sharesError) throw new Error(sharesError.message)
+    setShares(((data ?? []) as unknown as CycleShareRow[]).map(rowToShare))
+  }, [])
 
   const refresh = useCallback(async () => {
     if (!userId) {
@@ -103,11 +142,16 @@ export function useCycle() {
 
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('cycle_consent_at')
+      .select('cycle_consent_at, cycle_calendar_share, sex')
       .eq('id', userId)
       .single()
-    if (profileError) setError(profileError.message)
-    else setConsentAt((profile?.cycle_consent_at as string | null) ?? null)
+    if (profileError) {
+      setError(profileError.message)
+    } else {
+      setConsentAt((profile?.cycle_consent_at as string | null) ?? null)
+      setCalendarShareState(Boolean(profile?.cycle_calendar_share))
+      setSex((profile?.sex as string | null) ?? null)
+    }
     setConsentLoading(false)
 
     const { data: logRows, error: logsError } = await supabase
@@ -122,19 +166,14 @@ export function useCycle() {
       setLogs(((logRows ?? []) as unknown as CycleLogRow[]).map(rowToLog))
     }
 
-    const { data: shareRows, error: sharesError } = await supabase
-      .from('cycle_shares')
-      .select(SHARE_COLUMNS)
-      .order('period_start', { ascending: false })
-      .limit(50)
-    if (sharesError) {
-      setError(sharesError.message)
-    } else {
-      setShares(((shareRows ?? []) as unknown as CycleShareRow[]).map(rowToShare))
+    try {
+      await reloadShares()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Errore di caricamento dei riepiloghi.')
     }
 
     setLoading(false)
-  }, [userId])
+  }, [reloadShares, userId])
 
   useEffect(() => {
     void refresh()
@@ -152,6 +191,95 @@ export function useCycle() {
       setConsentAt(stamp)
     },
     [userId],
+  )
+
+  /**
+   * Reconciles the couple-visible `source = 'auto'` shares with the periods
+   * computed from the owner's logs. Manual summaries are never touched; only
+   * dates are published.
+   */
+  const syncCalendarShares = useCallback(
+    async (sourceLogs: CycleLog[]) => {
+      if (!userId || !coupleId) return
+      const desired = periodRanges(sourceLogs)
+      const desiredByStart = new Map(desired.map((range) => [range.start, range]))
+
+      const { data, error: readError } = await supabase
+        .from('cycle_shares')
+        .select(SHARE_COLUMNS)
+        .eq('user_id', userId)
+        .eq('source', 'auto')
+      if (readError) throw new Error(readError.message)
+      const auto = ((data ?? []) as unknown as CycleShareRow[]).map(rowToShare)
+
+      const stale = auto.filter((share) => !desiredByStart.has(share.periodStart))
+      const changed = auto.filter((share) => {
+        const want = desiredByStart.get(share.periodStart)
+        return want !== undefined && (share.periodEnd ?? share.periodStart) !== want.end
+      })
+      const missing = desired.filter(
+        (range) => !auto.some((share) => share.periodStart === range.start),
+      )
+
+      for (const share of stale) {
+        const { error: deleteError } = await supabase
+          .from('cycle_shares')
+          .delete()
+          .eq('id', share.id)
+        if (deleteError) throw new Error(deleteError.message)
+      }
+      for (const share of changed) {
+        const want = desiredByStart.get(share.periodStart)
+        if (!want) continue
+        const { error: updateError } = await supabase
+          .from('cycle_shares')
+          .update({ period_end: want.end, share_level: 'dates_only' })
+          .eq('id', share.id)
+        if (updateError) throw new Error(updateError.message)
+      }
+      if (missing.length > 0) {
+        const { error: insertError } = await supabase.from('cycle_shares').insert(
+          missing.map((range) => ({
+            couple_id: coupleId,
+            user_id: userId,
+            period_start: range.start,
+            period_end: range.end,
+            share_level: 'dates_only',
+            source: 'auto',
+          })),
+        )
+        if (insertError) throw new Error(insertError.message)
+      }
+      if (stale.length > 0 || changed.length > 0 || missing.length > 0) await reloadShares()
+    },
+    [coupleId, reloadShares, userId],
+  )
+
+  const clearCalendarShares = useCallback(async () => {
+    if (!userId) return
+    const { error: deleteError } = await supabase
+      .from('cycle_shares')
+      .delete()
+      .eq('user_id', userId)
+      .eq('source', 'auto')
+    if (deleteError) throw new Error(deleteError.message)
+    await reloadShares()
+  }, [reloadShares, userId])
+
+  /** The explicit, revocable "show the cycle on the shared calendar" switch. */
+  const setCalendarShare = useCallback(
+    async (on: boolean) => {
+      if (!userId) throw new Error('Sessione non ancora caricata.')
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ cycle_calendar_share: on })
+        .eq('id', userId)
+      if (updateError) throw new Error(updateError.message)
+      setCalendarShareState(on)
+      if (on) await syncCalendarShares(logs)
+      else await clearCalendarShares()
+    },
+    [clearCalendarShares, logs, syncCalendarShares, userId],
   )
 
   const saveLog = useCallback(
@@ -175,16 +303,43 @@ export function useCycle() {
         .single()
       if (saveError) throw new Error(saveError.message)
       const saved = rowToLog(data as unknown as CycleLogRow)
-      setLogs((current) => [saved, ...current.filter((log) => log.logDate !== logDate)])
+      const nextLogs = [saved, ...logs.filter((log) => log.logDate !== logDate)]
+      setLogs(nextLogs)
+      if (calendarShare) {
+        try {
+          await syncCalendarShares(nextLogs)
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Il calendario condiviso non è stato aggiornato.',
+          )
+        }
+      }
     },
-    [coupleId, userId],
+    [calendarShare, coupleId, logs, syncCalendarShares, userId],
   )
 
-  const deleteLog = useCallback(async (id: string) => {
-    const { error: deleteError } = await supabase.from('cycle_logs').delete().eq('id', id)
-    if (deleteError) throw new Error(deleteError.message)
-    setLogs((current) => current.filter((log) => log.id !== id))
-  }, [])
+  const deleteLog = useCallback(
+    async (id: string) => {
+      const { error: deleteError } = await supabase.from('cycle_logs').delete().eq('id', id)
+      if (deleteError) throw new Error(deleteError.message)
+      const nextLogs = logs.filter((log) => log.id !== id)
+      setLogs(nextLogs)
+      if (calendarShare) {
+        try {
+          await syncCalendarShares(nextLogs)
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Il calendario condiviso non è stato aggiornato.',
+          )
+        }
+      }
+    },
+    [calendarShare, logs, syncCalendarShares],
+  )
 
   const sharePeriod = useCallback(
     async (periodStart: string, periodEnd: string | null, shareLevel: ShareLevel) => {
@@ -197,6 +352,7 @@ export function useCycle() {
           period_start: periodStart,
           period_end: periodEnd,
           share_level: shareLevel,
+          source: 'manual',
         })
         .select(SHARE_COLUMNS)
         .single()
@@ -214,6 +370,8 @@ export function useCycle() {
 
   return {
     consentAt,
+    calendarShare,
+    sex,
     consentLoading,
     logs,
     shares,
@@ -221,6 +379,7 @@ export function useCycle() {
     error,
     refresh,
     setConsent,
+    setCalendarShare,
     saveLog,
     deleteLog,
     sharePeriod,
