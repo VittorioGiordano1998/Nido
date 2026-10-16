@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-37 tasks — 8 Proposed · 0 Ready · 12 In Progress · 0 Blocked · 17 Done · 0 Cancelled
+38 tasks — 8 Proposed · 0 Ready · 13 In Progress · 0 Blocked · 17 Done · 0 Cancelled
 
 ## Proposed
 
@@ -31,6 +31,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-CYC-VITTORIOGIORDANOYBQ-002](in-progress/TASK-CYC-VITTORIOGIORDANOYBQ-002-cycle-sex-gate-in-profile-and-opt-in-calendar-sharing.md) | Cycle: sex gate in profile and opt-in calendar sharing | Feature | cycle tracker | Medium | 2026-10-16 | — |
 | [TASK-GDPR-VITTORIOGIORDANOYBQ-001](in-progress/TASK-GDPR-VITTORIOGIORDANOYBQ-001-gdpr-account-deletion.md) | GDPR: account deletion | Feature | gdpr | Medium | 2026-10-15 | — |
 | [TASK-LIST-VITTORIOGIORDANOYBQ-002](in-progress/TASK-LIST-VITTORIOGIORDANOYBQ-002-lists-attachments-for-items-photos-links-notes.md) | Lists: attachments for items (photos, links, notes) | Feature | lists | Medium | 2026-10-16 | — |
+| [TASK-LIST-VITTORIOGIORDANOYBQ-003](in-progress/TASK-LIST-VITTORIOGIORDANOYBQ-003-lists-photo-backdrops-for-items-and-covers-for-lists.md) | Lists: photo backdrops for items and covers for lists | Feature | lists | Medium | 2026-10-16 | — |
 | [TASK-LOY-VITTORIOGIORDANOYBQ-001](in-progress/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
 | [TASK-NOTIF-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NOTIF-VITTORIOGIORDANOYBQ-001-calendar-reminders-by-email-brevo.md) | Calendar reminders by email (Brevo) | Feature | notifications | Medium | 2026-10-16 | — |
 | [TASK-NUDGE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NUDGE-VITTORIOGIORDANOYBQ-001-partner-nudge-with-one-tap.md) | Partner nudge with one tap | Feature | nudges | Low | 2026-10-14 | — |
