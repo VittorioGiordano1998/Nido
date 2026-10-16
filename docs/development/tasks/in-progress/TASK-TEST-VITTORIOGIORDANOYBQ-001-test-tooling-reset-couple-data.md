@@ -55,6 +55,8 @@ Not a product feature: if Nido ever ships to others, this is the first thing to 
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; reset_couple_data RPC + the Zona test card.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261015200000_nido_reset_couple.sql` (SECURITY DEFINER RPC, member check, clears every couple-scoped feature table including cycle data, keeps couple/members/profiles/question bank) with `apply-reset-couple.sql` and `apply-all.sql`, and `TestToolsCard` in Profilo (typed `RESET` confirmation, friendly error when the RPC is missing, reload on success). `npm run build` + `npm run lint` green; the two-account trial is the owner step.
 
+- 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — reset updated to v2 (`20261016190000_nido_reset_couple_v2.sql` + regenerated `apply-reset-couple.sql`): clears moods, stickies, bucket items, memories and the couple hero too; the updated script was applied on the live project (probed 2026-10-16).
+
 ## Resolution
 
 [When completed, describe what has been done, how it was verified and any remaining limitations.]

@@ -66,6 +66,16 @@ npm run lint     # oxlint
     copertina delle liste
 17. `*_nido_avatars_bucket.sql` — bucket privato `avatars` per le foto profilo
     (`profiles.avatar_url`, che esiste dalla migrazione iniziale)
+18. `*_nido_moods.sql` — check-in "Come stai oggi?" (`moods`: un umore 1–5 per membro e
+    giorno, con nota facoltativa; Realtime)
+19. `*_nido_stickies.sql` — bigliettini veloci tra partner (`stickies`; Realtime)
+20. `*_nido_bucket_items.sql` — bucket list delle esperienze (da spuntare, con data)
+21. `*_nido_memories.sql` — Ricordi: diario fotografico (`memories`, con legame alla
+    bucket list) + bucket privato `memories`
+22. `*_nido_reset_couple_v2.sql` — reset di coppia aggiornato: svuota anche moods,
+    stickies, bucket e Ricordi e toglie la copertina
+23. `*_nido_couple_hero.sql` — copertina della Home su `couples` (percorso + inquadratura;
+    pubblica `couples` su Realtime)
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
@@ -77,7 +87,10 @@ es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-push-nudges.sql`, `supabase/apply-push-events.sql`,
 `supabase/apply-push-reminders.sql`, `supabase/apply-profile-sex.sql`,
 `supabase/apply-cycle-calendar.sql`, `supabase/apply-list-attachments.sql`,
-`supabase/apply-list-backdrops.sql` o `supabase/apply-avatars-bucket.sql`).
+`supabase/apply-list-backdrops.sql`, `supabase/apply-avatars-bucket.sql`,
+`supabase/apply-moods.sql`, `supabase/apply-stickies.sql`, `supabase/apply-bucket.sql`,
+`supabase/apply-memories.sql` (dopo `apply-bucket.sql`, c'è la chiave esterna),
+`supabase/apply-reset-couple.sql` o `supabase/apply-couple-hero.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -235,4 +248,18 @@ foto (modificabile) che appare anche nel cerchio in alto dell'app. Passi owner:
 `apply-profile-sex.sql`, `apply-cycle-calendar.sql`, `apply-list-attachments.sql`,
 `apply-list-backdrops.sql` e `apply-avatars-bucket.sql` (vedi Database), poi il giro di
 prova a due account. Restano cassaforte E2E, premium, risparmi e tessere.
+
+Novità di questo giro: il **check-in "Come stai oggi?"** (un tocco al giorno, con streak e
+storico di 7 giorni, visibile al partner sulla Home), i **bigliettini veloci** (sticky note
+effimere tra partner, con Realtime), i **Ricordi** (diario fotografico a griglia polaroid,
+filtro per anno, dettaglio con eliminazione e annulla), la **bucket list** delle esperienze
+(con spunta e ricordo collegato) e **Scegli per noi** (estrazione casuale da liste,
+wishlist, piani o tra i due). In più: la **copertina della Home** (gradiente caldo o foto di
+coppia, con inquadratura dal Profilo), una passata di rifinitura UI — toast con "Annulla"
+sulle azioni distruttive, skeleton al posto degli spinner, empty state illustrati con call to
+action, icone e tile nell'hub "Noi", titoli di pagina per rotta (scheda del browser),
+numeri tabellari e transizioni morbide tra pagine (View Transitions, con rispetto di
+`prefers-reduced-motion`). Passi owner: `apply-moods.sql`, `apply-stickies.sql`,
+`apply-bucket.sql`, `apply-memories.sql` (dopo `apply-bucket.sql`), `apply-reset-couple.sql`
+(v2) e `apply-couple-hero.sql`, poi il giro di prova a due account.
 Record in `docs/development/tasks/`.
