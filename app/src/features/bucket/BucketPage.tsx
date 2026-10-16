@@ -8,8 +8,8 @@ import { ChevronLeftIcon, TrashIcon } from '../../ui/icons'
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { useToast } from '../../ui/toast'
 import { MemoryEditor } from '../memories/MemoryEditor'
+import type { MemoryEditorInput } from '../memories/MemoryEditor'
 import { useMemories } from '../memories/useMemories'
-import type { MemoryInput } from '../memories/useMemories'
 import { BucketDoneSheet } from './BucketDoneSheet'
 import { useBucket } from './useBucket'
 import type { BucketItem } from './useBucket'
@@ -109,12 +109,17 @@ export function BucketPage() {
     }
   }
 
-  async function handleSaveMemory(input: MemoryInput) {
-    if (!memoryFor) return
+  async function handleSaveMemory(input: MemoryEditorInput) {
+    if (!memoryFor || !input.file) return
     setSavingMemory(true)
     setFormError(null)
     try {
-      await createMemory({ ...input, bucketItemId: memoryFor.id })
+      await createMemory({
+        file: input.file,
+        caption: input.caption,
+        takenOn: input.takenOn,
+        bucketItemId: memoryFor.id,
+      })
       setMemoryFor(null)
       showToast({ message: 'Ricordo salvato.', tone: 'success' })
     } catch (err) {

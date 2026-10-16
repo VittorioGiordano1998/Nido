@@ -1,34 +1,53 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { toDateKey } from '../../core/dates'
 import { Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { CameraIllustration } from '../../ui/illustrations'
 import { ChevronLeftIcon, PlusIcon } from '../../ui/icons'
+import { SearchField } from '../../ui/SearchField'
 import { GridSkeleton } from '../../ui/Skeleton'
 import { useToast } from '../../ui/toast'
 import { useCouple } from '../coupling/CoupleProvider'
 import { MemoryCard } from './MemoryCard'
 import { MemoryDetail } from './MemoryDetail'
 import { MemoryEditor } from './MemoryEditor'
+import type { MemoryEditorInput } from './MemoryEditor'
 import { useMemories } from './useMemories'
-import type { Memory, MemoryInput } from './useMemories'
+import type { Memory } from './useMemories'
 
 const ALL = 'all'
 
 /** Ricordi (TASK-MEMO-…-001): the couple's photo journal, polaroid grid,
- *  year filter, detail sheet with delete + undo. */
+ *  year filter, "un anno fa oggi" strip, search, detail with edit/delete. */
 export function MemoriesPage() {
   const { couple } = useCouple()
-  const { memories, urls, loading, error, createMemory, deleteMemory, restoreMemory, purgePhoto } =
-    useMemories()
+  const {
+    memories,
+    urls,
+    loading,
+    error,
+    createMemory,
+    updateMemory,
+    deleteMemory,
+    restoreMemory,
+    purgePhoto,
+  } = useMemories()
   const { showToast } = useToast()
 
   const [editorOpen, setEditorOpen] = useState(false)
+  const [editing, setEditing] = useState<Memory | null>(null)
   const [detailId, setDetailId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [busy, setBusy] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [year, setYear] = useState<string>(ALL)
+  const [query, setQuery] = useState('')
+  // Captured once: "today" must not be recomputed on every render.
+  const [today] = useState(() => {
+    const now = new Date()
+    return { monthDay: toDateKey(now).slice(5), year: now.getFullYear() }
+  })
 
   const detail = memories.find((memory) => memory.id === detailId) ?? null
 
@@ -39,22 +58,65 @@ export function MemoriesPage() {
       ),
     [memories],
   )
+
+  const normalizedQuery = query.trim().toLowerCase()
   const visible = useMemo(
-    () => (year === ALL ? memories : memories.filter((memory) => memory.takenOn.startsWith(year))),
-    [memories, year],
+    () =>
+      memories.filter(
+        (memory) =>
+          (year === ALL || memory.takenOn.startsWith(year)) &&
+          (!normalizedQuery || memory.caption.toLowerCase().includes(normalizedQuery)),
+      ),
+    [memories, year, normalizedQuery],
   )
+
+  // "Un anno fa oggi": same calendar day, earlier years (TASK-MEMO-…-002).
+  const onThisDay = useMemo(
+    () =>
+      memories
+        .filter(
+          (memory) =>
+            memory.takenOn.slice(5) === today.monthDay &&
+            Number(memory.takenOn.slice(0, 4)) < today.year,
+        )
+        .sort((a, b) => b.takenOn.localeCompare(a.takenOn)),
+    [memories, today],
+  )
+  const yearsAgo = onThisDay[0]
+    ? Math.max(1, today.year - Number(onThisDay[0].takenOn.slice(0, 4)))
+    : 0
 
   function nameOf(userId: string): string {
     return couple?.members.find((member) => member.userId === userId)?.displayName ?? '—'
   }
 
-  async function handleSave(input: MemoryInput) {
+  async function handleCreate(input: MemoryEditorInput) {
+    if (!input.file) return
     setSaving(true)
     setFormError(null)
     try {
-      await createMemory(input)
+      await createMemory({
+        file: input.file,
+        caption: input.caption,
+        takenOn: input.takenOn,
+      })
       setEditorOpen(false)
       showToast({ message: 'Ricordo salvato.', tone: 'success' })
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Errore di salvataggio.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handleUpdate(input: MemoryEditorInput) {
+    if (!editing) return
+    setSaving(true)
+    setFormError(null)
+    try {
+      await updateMemory(editing.id, { caption: input.caption, takenOn: input.takenOn })
+      setEditing(null)
+      showToast({ message: 'Ricordo aggiornato.', tone: 'success' })
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di salvataggio.')
     } finally {
@@ -116,6 +178,43 @@ export function MemoriesPage() {
 
       {error && <ErrorBanner message={error} />}
 
+      {onThisDay.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            {yearsAgo === 1 ? 'Un anno fa oggi' : `${yearsAgo} anni fa oggi`}
+          </h2>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {onThisDay.map((memory) => (
+              <button
+                key={memory.id}
+                type="button"
+                onClick={() => setDetailId(memory.id)}
+                className="flex w-40 shrink-0 items-center gap-2 rounded-2xl bg-surface p-2 text-left shadow-sm ring-1 ring-line/70 transition hover:ring-accent-300"
+              >
+                <span className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-surface-muted">
+                  {urls[memory.photoPath] ? (
+                    <img
+                      src={urls[memory.photoPath]}
+                      alt=""
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : null}
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-xs font-semibold text-ink">
+                    {memory.caption.trim() || 'Un ricordo'}
+                  </span>
+                  <span className="block text-[11px] text-ink-muted">
+                    {memory.takenOn.slice(0, 4)}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
       {years.length > 1 && (
         <div className="flex flex-wrap gap-1.5">
           {[ALL, ...years].map((value) => (
@@ -136,16 +235,25 @@ export function MemoriesPage() {
         </div>
       )}
 
+      {memories.length >= 4 && (
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder="Cerca tra le didascalie…"
+          label="Cerca tra i ricordi"
+        />
+      )}
+
       {loading ? (
         <GridSkeleton cells={4} />
       ) : visible.length === 0 ? (
         <EmptyState
           illustration={<CameraIllustration className="h-14 w-14 text-accent-glyph" />}
-          title={memories.length === 0 ? 'Nessun ricordo' : 'Nessun ricordo in questo anno'}
+          title={memories.length === 0 ? 'Nessun ricordo' : 'Nessun ricordo qui'}
           description={
             memories.length === 0
               ? 'Salvate il primo momento: una foto e una riga bastano.'
-              : 'Scegli un altro anno o aggiungi un ricordo.'
+              : 'Scegli un altro anno, un altro testo, o aggiungi un ricordo.'
           }
           action={
             <button
@@ -184,8 +292,22 @@ export function MemoriesPage() {
         <MemoryEditor
           saving={saving}
           error={formError}
-          onSave={(input) => void handleSave(input)}
+          onSave={(input) => void handleCreate(input)}
           onClose={() => setEditorOpen(false)}
+        />
+      )}
+
+      {editing && (
+        <MemoryEditor
+          memory={editing}
+          photoUrl={urls[editing.photoPath] ?? null}
+          saving={saving}
+          error={formError}
+          onSave={(input) => void handleUpdate(input)}
+          onClose={() => {
+            setEditing(null)
+            setFormError(null)
+          }}
         />
       )}
 
@@ -195,6 +317,11 @@ export function MemoriesPage() {
           url={urls[detail.photoPath] ?? null}
           authorName={nameOf(detail.createdBy)}
           busy={busy}
+          onEdit={() => {
+            setFormError(null)
+            setEditing(detail)
+            setDetailId(null)
+          }}
           onDelete={() => void handleDelete(detail)}
           onClose={() => setDetailId(null)}
         />

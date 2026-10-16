@@ -8,12 +8,21 @@ interface MemoryDetailProps {
   url: string | null
   authorName: string
   busy: boolean
+  onEdit: () => void
   onDelete: () => void
   onClose: () => void
 }
 
-/** Detail sheet: the full photo, caption, date, author; delete lives here. */
-export function MemoryDetail({ memory, url, authorName, busy, onDelete, onClose }: MemoryDetailProps) {
+/** Detail sheet: the full photo, caption, date, author; edit and delete live here. */
+export function MemoryDetail({
+  memory,
+  url,
+  authorName,
+  busy,
+  onEdit,
+  onDelete,
+  onClose,
+}: MemoryDetailProps) {
   return (
     <div
       role="presentation"
@@ -59,6 +68,14 @@ export function MemoryDetail({ memory, url, authorName, busy, onDelete, onClose 
           </p>
 
           <div className="flex items-center gap-2 pt-1">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={busy}
+              onClick={onEdit}
+            >
+              Modifica
+            </Button>
             <Button
               type="button"
               variant="ghost"
