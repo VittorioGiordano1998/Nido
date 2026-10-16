@@ -7,6 +7,7 @@ import { CoupleCard } from './CoupleCard'
 import { CoverCard } from './CoverCard'
 import { CycleCard } from './CycleCard'
 import { DeleteAccountCard } from './DeleteAccountCard'
+import { ExportCard } from './ExportCard'
 import { NotificationsCard } from './NotificationsCard'
 import { PersonalizationCard } from './PersonalizationCard'
 import { ProfileCard } from './ProfileCard'
@@ -38,6 +39,7 @@ export function ProfilePage() {
       <CoupleCard />
       <SectionsCard />
       <TestToolsCard />
+      <ExportCard />
       <DeleteAccountCard />
 
       <Button variant="ghost" className="w-full" onClick={() => setIntroOpen(true)}>
