@@ -7,7 +7,7 @@ area: push
 severity: Low
 opened: 2026-10-15
 done: null
-next: "Implemented; owner steps remain: redeploy send-push, paste apply-push-events.sql (project ref + SEND_PUSH_SECRET), two-account check (partner event arrives, private silent)."
+next: "Implemented and wired live 2026-10-16 (apply-push-wiring supersedes apply-push-events); the two-account delivery check remains."
 related: [TASK-PUSH-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-001, PLAN-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -58,6 +58,8 @@ Two calendar push behaviours exist, deliberately split: **activity** (this task:
 - 2026-10-15 — VITTORIOGIORDANOYBQ — created
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; implementing the send-push source discriminator, the events webhook trigger and the README steps.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: send-push accepts both webhook sources (`payload.table`), events shape a couple event as "{Nome} ha aggiunto «Titolo»" with Italian date/time, private events skipped server-side, no partner = nothing; new migration 20261015220000_nido_push_events.sql + apply-push-events.sql create the `send_push_on_event` trigger (guarded placeholders) and apply-all.sql carries them. `npm run build` + `npm run lint` green. Owner steps remain: redeploy send-push, run apply-push-events.sql with the project ref and SEND_PUSH_SECRET, then the two-account check.
+
+- 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — wired live through the SQL-only bridge (see TASK-PUSH-…-001): `send_push_on_event` (couple visibility only) created via `apply-push-wiring.sql` on 2026-10-16, after the Dashboard route turned out absent.
 
 ## Resolution
 

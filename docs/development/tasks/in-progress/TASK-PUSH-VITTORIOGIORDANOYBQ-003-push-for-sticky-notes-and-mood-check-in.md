@@ -7,7 +7,7 @@ area: push
 severity: Low
 opened: 2026-10-16
 done: null
-next: "Implemented; owner step: paste apply-push-moments.sql (placeholders substituted) and redeploy send-push."
+next: "Implemented and wired live 2026-10-16 (SQL-only bridge; secret rotated, functions redeployed); the device delivery check remains."
 related: [TASK-STICK-VITTORIOGIORDANOYBQ-001, TASK-MOOD-VITTORIOGIORDANOYBQ-001, TASK-PUSH-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -50,6 +50,8 @@ Stickies and the mood check-in wait on Home with no notification (the gap noted 
 - 2026-10-16 — status Proposed → In Progress
 
 - 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261016210000_nido_push_moments.sql` (+ `apply-push-moments.sql`, `apply-all.sql`) with the `send_push_on_sticky` and `send_push_on_mood` triggers (guarded placeholders, supabase_functions pattern); `send-push` gained `pushSticky` (text capped at 140) and `pushMood` (label+emoji, note, `/`), insert-only so same-day mood edits do not re-notify; both respect the per-type preferences.
+
+- 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — wired live (2026-10-16): `send_push_on_sticky` and `send_push_on_mood` created via `apply-push-wiring.sql` (the `supabase_functions` route never existed); `apply-push-moments.sql` kept but marked superseded; probes green.
 
 ## Resolution
 

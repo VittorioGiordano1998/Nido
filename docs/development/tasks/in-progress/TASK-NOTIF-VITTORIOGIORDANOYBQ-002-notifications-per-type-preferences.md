@@ -7,7 +7,7 @@ area: notifications
 severity: Medium
 opened: 2026-10-16
 done: null
-next: "Implemented; owner step: paste apply-notification-prefs.sql and redeploy send-push and send-reminders."
+next: "Implemented and applied live 2026-10-16 (column present, both functions redeployed); a mute-pass check remains."
 related: [TASK-PUSH-VITTORIOGIORDANOYBQ-003]
 superseded_by: null
 ---
@@ -50,6 +50,8 @@ The push switch is all-or-nothing: there is no way to keep reminders but mute ch
 - 2026-10-16 — status Proposed → In Progress
 
 - 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261016220000_nido_notification_prefs.sql` (+ `apply-notification-prefs.sql`, `apply-all.sql`) with `profiles.notification_prefs` (five keys, all on, jsonb object check); `features/settings/notificationPrefs.ts` (optimistic toggle with rollback) and five switches under "Cosa mi avvisa" in `NotificationsCard`; `send-push` skips muted types per recipient and `send-reminders` skips `reminders: false` on both push and email.
+
+- 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — applied live (2026-10-16): `profiles.notification_prefs` exists on the project and `send-push`/`send-reminders` were redeployed so they read it.
 
 ## Resolution
 

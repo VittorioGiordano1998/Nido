@@ -98,7 +98,8 @@ es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-moods.sql`, `supabase/apply-stickies.sql`, `supabase/apply-bucket.sql`,
 `supabase/apply-memories.sql` (dopo `apply-bucket.sql`, c'è la chiave esterna),
 `supabase/apply-reset-couple.sql`, `supabase/apply-couple-hero.sql`,
-`supabase/apply-push-moments.sql` (dopo aver sostituito i segnaposto),
+`supabase/apply-push-wiring.sql` (dopo aver sostituito i segnaposto; sostituisce
+`apply-push-events.sql` e `apply-push-moments.sql`),
 `supabase/apply-notification-prefs.sql` o `supabase/apply-event-reminders.sql`).
 
 ### Keep-alive (piano gratuito)
@@ -170,21 +171,20 @@ Le notifiche push usano Web Push con VAPID (decisione in
    `supabase functions deploy send-reminders` (serve `supabase login` e il link al
    progetto; `verify_jwt = false` è già in `supabase/config.toml`, l'autorizzazione è
    l'header segreto).
-4. **Database Webhook nudge** (Supabase → Database → Webhooks → nuovo): tabella `nudges`,
-   evento **Insert**, tipo HTTP, URL `https://<project-ref>.supabase.co/functions/v1/send-push`,
-   header `x-webhook-secret: <SEND_PUSH_SECRET>`.
-5. **Webhook eventi (SQL, una volta)**: incolla `supabase/apply-push-events.sql` nell'SQL
-   Editor sostituendo `<project-ref>` e `<SEND_PUSH_SECRET>`: quando il partner crea un
-   evento di coppia arriva "{Nome} ha aggiunto «Titolo»" con data e ora; gli eventi
-   privati non avvisano e le modifiche restano silenziose.
-6. **Promemoria a app chiusa (SQL, una volta)**: assicurati che pg_cron (Dashboard →
+4. **Trigger push (SQL, una volta)**: incolla `supabase/apply-push-wiring.sql` nell'SQL
+   Editor sostituendo `<project-ref>` e `<SEND_PUSH_SECRET>`: crea la funzione ponte su
+   pg_net e i quattro trigger che avvisano ad app chiusa — novità del calendario
+   («{Nome} ha aggiunto «Titolo»»), campanelli dalle liste, bigliettini e check-in del
+   partner; gli eventi privati non avvisano. **Non** creare webhook dal Dashboard per
+   queste quattro tabelle: se ne esiste già uno, rimuovilo o la notifica partirà due volte.
+5. **Promemoria a app chiusa (SQL, una volta)**: assicurati che pg_cron (Dashboard →
    Integrations → Cron) e pg_net (Dashboard → Database → Extensions) siano abilitati, poi
    incolla `supabase/apply-push-reminders.sql` sostituendo `<project-ref>` e
    `SEND_REMINDERS_SECRET`: il job `nido-push-reminders` ogni 5 minuti consegna i
    promemoria che l'app ha materializzato.
-7. **Vercel**: aggiungi `VITE_VAPID_PUBLIC_KEY` (chiave pubblica) tra le Environment
+6. **Vercel**: aggiungi `VITE_VAPID_PUBLIC_KEY` (chiave pubblica) tra le Environment
    Variables e rifai il deploy (basta un push).
-8. **Prova**: Profilo → Notifiche → attiva "Notifiche push" sui dispositivi; dall'altro
+7. **Prova**: Profilo → Notifiche → attiva "Notifiche push" sui dispositivi; dall'altro
    account manda un promemoria (Noi → Promemoria al partner, o la campanella su una voce
    di lista) e la notifica arriva. Su iPhone serve prima aggiungere l'app alla schermata
    Home (Safari → Condividi → Aggiungi a Home); con l'app chiusa la notifica arriva solo
@@ -281,7 +281,9 @@ tipo** (eventi, promemoria, bigliettini, check-in, campanelli) lette dal server;
 in note, liste e Ricordi; **"un anno fa oggi"** nei Ricordi e **modifica di didascalia e
 data** di un ricordo; **promemoria personalizzato per evento** (nessuno, 15 min, 1 ora, 1
 giorno…); **"Riusa lista"** per la spesa ricorrente; **export dei dati** (ZIP con JSON e
-foto) dal Profilo. Passi owner: `apply-push-moments.sql` (con i segnaposto sostituiti),
-`apply-notification-prefs.sql` e `apply-event-reminders.sql`, poi il redeploy di `send-push`
-e `send-reminders` (ora leggono le preferenze) e il giro a due account.
+foto) dal Profilo. Passi owner fatti il 2026-10-16: cablaggio push applicato
+(`apply-push-wiring.sql`, percorso solo-SQL senza webhook dal Dashboard; il
+`SEND_PUSH_SECRET` è stato ruotato), `apply-notification-prefs.sql` e
+`apply-event-reminders.sql` eseguiti, `send-push` e `send-reminders` rideployate; resta il
+giro di prova a due account.
 Record in `docs/development/tasks/`.
