@@ -7,7 +7,7 @@ area: push
 severity: Medium
 opened: 2026-10-14
 done: null
-next: Implemented (service worker + subscribe path with VAPID, push_tokens upsert, send-push Edge Function, README setup); owner steps remain: VAPID keys and secrets, function deploy, database webhook on nudges, VITE_VAPID_PUBLIC_KEY on Vercel, then the device delivery check.
+next: "Implemented and wired live 2026-10-16 (SQL-only bridge, nudge trigger included; secret rotated, functions redeployed); the delivery check on the device remains."
 related: [PLAN-VITTORIOGIORDANOYBQ-001, TASK-CAL-VITTORIOGIORDANOYBQ-002]
 superseded_by: null
 ---
@@ -76,6 +76,8 @@ on this transport.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; ADR-PUSH-VITTORIOGIORDANOYBQ-001 accepted (Web Push VAPID). Client subscribe + send-push Edge Function + owner secrets.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: `app/public/sw.js` (push + notificationclick only, no caching), `features/settings/push.ts` (support checks, VAPID conversion, `PushManager.subscribe`, `push_tokens` upsert/delete by endpoint), the "Notifiche push" switch in `NotificationsCard`, `VITE_VAPID_PUBLIC_KEY` through `core/env.ts` (+ `.env.example`), migration `20261015180000_nido_push_nudges.sql` (`push_tokens.keys` + `nudges` on Realtime) with `apply-push-nudges.sql`/`apply-all.sql`, and the `send-push` Edge Function (secret-header auth, partner fan-out, 404/410 pruning) with `[functions.send-push] verify_jwt = false`; README documents the setup. `npm run build` + `npm run lint` green. Delivery check pending the owner's keys/deploy/webhook.
 - 2026-10-15 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — claimed; ADR-PUSH-VITTORIOGIORDANOYBQ-001 accepted (Web Push VAPID). Client subscribe + send-push Edge Function + owner secrets.
+
+- 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — push chain wired live (2026-10-16): the project never had the Dashboard webhook (`supabase_functions` was absent), so every source was silent; replaced with the SQL-only bridge `public.nido_http_request` (pg_net) + the four triggers (events, nudges, stickies, moods) via `apply-push-wiring.sql`; `SEND_PUSH_SECRET` rotated, `send-push` and `send-reminders` redeployed through the linked CLI; E2E probes: sticky/mood/nudge 200 {"sent":0}, request without secret 401.
 
 ## Resolution
 

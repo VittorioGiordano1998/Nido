@@ -7,7 +7,7 @@ area: calendar
 severity: Medium
 opened: 2026-10-16
 done: null
-next: "Implemented; owner step: paste apply-event-reminders.sql, then a scheduling check."
+next: "Implemented and applied live 2026-10-16 (events.remind_minutes present); a scheduling check remains."
 related: [TASK-CAL-VITTORIOGIORDANOYBQ-003]
 superseded_by: null
 ---
@@ -50,6 +50,8 @@ Every reminder is 15 minutes before (9:00 for all-day): no way to be warned the 
 - 2026-10-16 — status Proposed → In Progress
 
 - 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — implemented: migration `20261016230000_nido_event_reminders.sql` (+ `apply-event-reminders.sql`, `apply-all.sql`) with `events.remind_minutes` (null default, 0 none, ≤ 10080); `useEvents` carries the column; `EventEditor` gained the «Promemoria» select over `REMINDER_OPTIONS`; `reminderAtMs` returns null for muted events and counts the custom lead back from 9:00 for all-day; local timers and the `push_reminders` materialization skip muted events (email follows).
+
+- 2026-10-16 — VITTORIOGIORDANOYBQ — opencode (DeepSeek V4.1 Flash) — applied live (2026-10-16): `events.remind_minutes` exists on the project; the materialization path is already deployed.
 
 ## Resolution
 
