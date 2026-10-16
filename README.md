@@ -64,6 +64,8 @@ npm run lint     # oxlint
     bucket privato `list-photos`
 16. `*_nido_list_photo_backdrops.sql` — foto di sfondo delle voci (scelta e inquadratura) e
     copertina delle liste
+17. `*_nido_avatars_bucket.sql` — bucket privato `avatars` per le foto profilo
+    (`profiles.avatar_url`, che esiste dalla migrazione iniziale)
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
@@ -74,8 +76,8 @@ es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-onboarding.sql`, `supabase/apply-occasions.sql`,
 `supabase/apply-push-nudges.sql`, `supabase/apply-push-events.sql`,
 `supabase/apply-push-reminders.sql`, `supabase/apply-profile-sex.sql`,
-`supabase/apply-cycle-calendar.sql`, `supabase/apply-list-attachments.sql` o
-`supabase/apply-list-backdrops.sql`).
+`supabase/apply-cycle-calendar.sql`, `supabase/apply-list-attachments.sql`,
+`supabase/apply-list-backdrops.sql` o `supabase/apply-avatars-bucket.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -228,8 +230,9 @@ prova di consegna sul dispositivo e i passi owner ancora aperti (vedi "Push").
 Prossimo: **Fase 3** (cassaforte E2E, tracker ciclo, premium, risparmi, tessere) — avviata:
 il **ciclo** ha il diario con consenso esplicito, la scelta maschio/femmina nel profilo e la
 condivisione opt-in sul calendario; le **liste** hanno gli allegati (foto, link, note) su
-ogni voce, la foto di sfondo delle card e la copertina della lista. Passi owner:
-`apply-profile-sex.sql`, `apply-cycle-calendar.sql`, `apply-list-attachments.sql` e
-`apply-list-backdrops.sql` (vedi Database), poi il giro di prova a due account. Restano
-cassaforte E2E, premium, risparmi e tessere.
+ogni voce, la foto di sfondo delle card e la copertina della lista; nel **profilo** c'è la
+foto (modificabile) che appare anche nel cerchio in alto dell'app. Passi owner:
+`apply-profile-sex.sql`, `apply-cycle-calendar.sql`, `apply-list-attachments.sql`,
+`apply-list-backdrops.sql` e `apply-avatars-bucket.sql` (vedi Database), poi il giro di
+prova a due account. Restano cassaforte E2E, premium, risparmi e tessere.
 Record in `docs/development/tasks/`.
