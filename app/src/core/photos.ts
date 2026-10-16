@@ -91,7 +91,16 @@ export async function uploadPhoto(
   const { error } = await supabase.storage
     .from(bucket)
     .upload(path, prepared, { contentType: prepared.type })
-  if (error) throw new Error(error.message)
+  if (error) {
+    // Storage answers "Bucket not found" when the bucket was never created on
+    // the project: point at the setup step instead of the raw API message.
+    if (/bucket not found/i.test(error.message)) {
+      throw new Error(
+        `Il bucket «${bucket}» non esiste su Supabase: applica lo script apply dedicato nel SQL Editor.`,
+      )
+    }
+    throw new Error(error.message)
+  }
   return path
 }
 
