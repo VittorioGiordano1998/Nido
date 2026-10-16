@@ -216,26 +216,38 @@ Deno.serve(async (req) => {
     }
 
     // Recipient addresses come from Auth; the `to` name from the profile.
+    // `notification_prefs.reminders === false` mutes the reminder for that
+    // account on both channels (TASK-NOTIF-…-002).
     const emailByUser = new Map<string, EmailTarget>()
-    if (emailConfig && userIds.length > 0) {
+    const mutedReminders = new Set<string>()
+    if (userIds.length > 0) {
       const { data: profiles, error: profileError } = await supabase
         .from('profiles')
-        .select('id, display_name')
+        .select('id, display_name, notification_prefs')
         .in('id', userIds)
       if (profileError) {
         console.warn('send-reminders: profile names unavailable:', profileError.message)
       }
       const nameById = new Map<string, string>()
-      for (const profile of profiles ?? []) nameById.set(profile.id, profile.display_name)
+      for (const profile of profiles ?? []) {
+        nameById.set(profile.id, profile.display_name)
+        const prefs = (profile.notification_prefs ?? {}) as Record<string, unknown>
+        if (prefs.reminders === false) mutedReminders.add(profile.id)
+      }
 
-      for (const userId of userIds) {
-        const { data, error } = await supabase.auth.admin.getUserById(userId)
-        const address = data?.user?.email
-        if (error || !address) {
-          console.error(`send-reminders: no email address for ${userId}:`, error ?? 'missing email')
-          continue
+      if (emailConfig) {
+        for (const userId of userIds) {
+          const { data, error } = await supabase.auth.admin.getUserById(userId)
+          const address = data?.user?.email
+          if (error || !address) {
+            console.error(
+              `send-reminders: no email address for ${userId}:`,
+              error ?? 'missing email',
+            )
+            continue
+          }
+          emailByUser.set(userId, { email: address, name: nameById.get(userId) || undefined })
         }
-        emailByUser.set(userId, { email: address, name: nameById.get(userId) || undefined })
       }
     }
 
@@ -252,6 +264,7 @@ Deno.serve(async (req) => {
         url: '/calendar',
       })
       for (const userId of recipients) {
+        if (mutedReminders.has(userId)) continue
         for (const token of tokens.get(userId) ?? []) {
           if (!token.keys) continue
           try {
@@ -271,6 +284,7 @@ Deno.serve(async (req) => {
       if (emailConfig) {
         const { subject, html, text } = emailContent(row, appUrl)
         for (const userId of recipients) {
+          if (mutedReminders.has(userId)) continue
           const target = emailByUser.get(userId)
           if (!target) continue
           try {
