@@ -1,6 +1,10 @@
 -- ============================================================================
 -- Nido - push sulle novita' del calendario (idempotente)
 --
+-- SUPERATO da supabase/apply-push-wiring.sql (percorso solo-SQL, senza webhook
+-- dal Dashboard): il cablaggio live usa i trigger verso public.nido_http_request.
+-- Questo file resta per i progetti che seguono la via Dashboard.
+--
 -- Da usare su un progetto dove la migrazione iniziale e' applicata: aggiunge
 -- il trigger che chiama send-push quando nasce un evento di coppia.
 --

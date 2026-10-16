@@ -1,7 +1,13 @@
 -- ============================================================================
 -- Nido - push per bigliettini e check-in (idempotente)
 --
--- Da usare su un progetto dove le migrazioni sono applicate: aggiunge i trigger send_push_on_sticky e send_push_on_mood che chiamano send-push (TASK-PUSH-VITTORIOGIORDANOYBQ-003). Si puo'
+-- SUPERATO da supabase/apply-push-wiring.sql (percorso solo-SQL, senza webhook
+-- dal Dashboard): il cablaggio live usa i trigger verso public.nido_http_request.
+-- Questo file resta per i progetti che seguono la via Dashboard.
+--
+-- Da usare su un progetto dove le migrazioni sono applicate: aggiunge i trigger
+-- send_push_on_sticky e send_push_on_mood che chiamano send-push
+-- (TASK-PUSH-VITTORIOGIORDANOYBQ-003). Si puo'
 -- rilanciare quante volte si vuole.
 --
 -- Alla fine mostra lo stato risultante (ultimo SELECT), per verifica.
