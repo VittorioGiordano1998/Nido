@@ -4,6 +4,8 @@ import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
+import { clampFraming, removePhotoIfUnused, uploadListPhoto } from './photos'
+import type { Framing } from './photos'
 
 export interface TaskList {
   id: string
@@ -12,6 +14,11 @@ export interface TaskList {
   position: number
   createdBy: string
   createdAt: string
+  /** Cover photo (storage path) and its framing, when set. */
+  coverPath: string | null
+  coverX: number
+  coverY: number
+  coverZoom: number
 }
 
 export interface Task {
@@ -35,6 +42,10 @@ interface ListRow {
   position: number
   created_by: string
   created_at: string
+  cover_path: string | null
+  cover_x: number | null
+  cover_y: number | null
+  cover_zoom: number | null
 }
 
 interface TaskRow {
@@ -51,7 +62,8 @@ interface TaskRow {
   updated_at: string
 }
 
-const LIST_COLUMNS = 'id, couple_id, title, position, created_by, created_at'
+const LIST_COLUMNS =
+  'id, couple_id, title, position, created_by, created_at, cover_path, cover_x, cover_y, cover_zoom'
 const TASK_COLUMNS =
   'id, list_id, couple_id, title, done, done_by, done_at, assigned_to, position, created_by, updated_at'
 
@@ -63,6 +75,10 @@ function listRowToList(row: ListRow): TaskList {
     position: row.position,
     createdBy: row.created_by,
     createdAt: row.created_at,
+    coverPath: row.cover_path,
+    coverX: row.cover_x ?? 50,
+    coverY: row.cover_y ?? 50,
+    coverZoom: row.cover_zoom ?? 1,
   }
 }
 
@@ -230,6 +246,73 @@ export function useLists() {
     setTasks((current) => current.filter((task) => task.listId !== id))
   }, [])
 
+  /** Uploads a cover file (downscaled) and returns the stored path. */
+  const uploadCover = useCallback(
+    async (file: File) => {
+      if (!coupleId) throw new Error('Coppia non ancora caricata.')
+      return uploadListPhoto(coupleId, file)
+    },
+    [coupleId],
+  )
+
+  /** Stores the cover photo and its framing on the list. */
+  const setCover = useCallback(
+    async (listId: string, path: string, framing: Framing) => {
+      const clean = clampFraming(framing)
+      const previous = lists.find((list) => list.id === listId)?.coverPath ?? null
+      const { data, error: updateError } = await supabase
+        .from('task_lists')
+        .update({
+          cover_path: path,
+          cover_x: Math.round(clean.x),
+          cover_y: Math.round(clean.y),
+          cover_zoom: clean.zoom,
+        })
+        .eq('id', listId)
+        .select(LIST_COLUMNS)
+        .single()
+      if (updateError) throw new Error(updateError.message)
+      setLists((current) => upsertList(current, listRowToList(data as unknown as ListRow)))
+      if (previous && previous !== path) await removePhotoIfUnused(previous)
+    },
+    [lists],
+  )
+
+  const clearCover = useCallback(
+    async (listId: string) => {
+      const previous = lists.find((list) => list.id === listId)?.coverPath ?? null
+      const { data, error: updateError } = await supabase
+        .from('task_lists')
+        .update({ cover_path: null, cover_x: null, cover_y: null, cover_zoom: null })
+        .eq('id', listId)
+        .select(LIST_COLUMNS)
+        .single()
+      if (updateError) throw new Error(updateError.message)
+      setLists((current) => upsertList(current, listRowToList(data as unknown as ListRow)))
+      if (previous) await removePhotoIfUnused(previous)
+    },
+    [lists],
+  )
+
+  /** Best-effort cleanup of an upload the user cancelled. */
+  const discardPhoto = useCallback(async (path: string) => {
+    await removePhotoIfUnused(path)
+  }, [])
+
+  /** Clears the cover of any list using this photo, before deleting the photo. */
+  const releaseCoversForPath = useCallback(async (path: string) => {
+    const { data, error: updateError } = await supabase
+      .from('task_lists')
+      .update({ cover_path: null, cover_x: null, cover_y: null, cover_zoom: null })
+      .eq('cover_path', path)
+      .select(LIST_COLUMNS)
+    if (updateError) throw new Error(updateError.message)
+    const rows = ((data ?? []) as unknown as ListRow[]).map(listRowToList)
+    if (rows.length > 0) {
+      setLists((current) => current.map((list) => rows.find((row) => row.id === list.id) ?? list))
+    }
+  }, [])
+
   const addTask = useCallback(
     async (listId: string, title: string) => {
       if (!coupleId || !userId) throw new Error('Coppia non ancora caricata.')
@@ -294,6 +377,11 @@ export function useLists() {
       toggleTask,
       setTaskAssignee,
       deleteTask,
+      uploadCover,
+      setCover,
+      clearCover,
+      discardPhoto,
+      releaseCoversForPath,
     }),
     [
       lists,
@@ -308,6 +396,11 @@ export function useLists() {
       toggleTask,
       setTaskAssignee,
       deleteTask,
+      uploadCover,
+      setCover,
+      clearCover,
+      discardPhoto,
+      releaseCoversForPath,
     ],
   )
   return value

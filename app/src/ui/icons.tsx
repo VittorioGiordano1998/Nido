@@ -82,6 +82,14 @@ export function PlusIcon({ className = 'h-5 w-5' }: IconProps) {
   )
 }
 
+export function MinusIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M5 12h14" />
+    </svg>
+  )
+}
+
 export function LockIcon({ className = 'h-5 w-5' }: IconProps) {
   return (
     <svg {...baseProps(className)}>
