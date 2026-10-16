@@ -3,12 +3,22 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Button, Card, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
-import { BellIcon, CheckIcon, ChevronLeftIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import {
+  BellIcon,
+  CheckIcon,
+  ChevronLeftIcon,
+  LinkIcon,
+  PaperclipIcon,
+  PlusIcon,
+  TrashIcon,
+} from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useNudges } from '../nudges/useNudges'
+import { TaskAttachmentsSheet } from './TaskAttachmentsSheet'
 import { useLists } from './useLists'
 import type { Task } from './useLists'
+import { useTaskAttachments } from './useTaskAttachments'
 
 function initials(name: string): string {
   return name
@@ -37,11 +47,20 @@ export function ListView() {
     deleteList,
     renameList,
   } = useLists()
+  const {
+    byTask,
+    photoUrls,
+    addAttachment,
+    attachPhoto,
+    deleteAttachment,
+    removeStoredPhotos,
+  } = useTaskAttachments()
 
   const [newTitle, setNewTitle] = useState('')
   const [adding, setAdding] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [titleDraft, setTitleDraft] = useState<string | null>(null)
+  const [attachmentsTask, setAttachmentsTask] = useState<Task | null>(null)
 
   const myId = session?.user.id
   const partner = couple?.members.find((member) => member.userId !== myId) ?? null
@@ -138,6 +157,7 @@ export function ListView() {
 
   async function handleDeleteTask(taskId: string) {
     try {
+      await removeStoredPhotos(byTask.get(taskId) ?? [])
       await deleteTask(taskId)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di eliminazione.')
@@ -148,6 +168,10 @@ export function ListView() {
     if (!list) return
     if (!window.confirm(`Eliminare la lista "${list.title}" e i suoi elementi?`)) return
     try {
+      const listTaskIds = new Set(tasks.filter((task) => task.listId === list.id).map((task) => task.id))
+      await removeStoredPhotos(
+        [...listTaskIds].flatMap((taskId) => byTask.get(taskId) ?? []),
+      )
       await deleteList(list.id)
       navigate('/lists')
     } catch (err) {
@@ -162,6 +186,10 @@ export function ListView() {
     const doneBy = task.doneBy
       ? couple?.members.find((member) => member.userId === task.doneBy)
       : undefined
+    const taskAttachments = byTask.get(task.id) ?? []
+    const photos = taskAttachments.filter((attachment) => attachment.kind === 'photo')
+    const links = taskAttachments.filter((attachment) => attachment.kind === 'link')
+    const notes = taskAttachments.filter((attachment) => attachment.kind === 'note')
     return (
       <li key={task.id}>
         <Card className="flex items-center gap-3 py-3">
@@ -190,6 +218,60 @@ export function ListView() {
             {task.done && doneBy && (
               <span className="block text-xs text-ink-faint">fatto da {doneBy.displayName}</span>
             )}
+            {taskAttachments.length > 0 && (
+              <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                {photos.slice(0, 3).map((photo) =>
+                  photoUrls[photo.value] ? (
+                    <a
+                      key={photo.id}
+                      href={photoUrls[photo.value]}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0"
+                    >
+                      <img
+                        src={photoUrls[photo.value]}
+                        alt={photo.caption ?? 'Allegato'}
+                        className="h-9 w-9 rounded-lg object-cover ring-1 ring-line"
+                      />
+                    </a>
+                  ) : (
+                    <span
+                      key={photo.id}
+                      className="h-9 w-9 shrink-0 animate-pulse rounded-lg bg-surface-muted"
+                    />
+                  ),
+                )}
+                {photos.length > 3 && (
+                  <span className="text-[11px] font-semibold text-ink-faint">
+                    +{photos.length - 3}
+                  </span>
+                )}
+                {links.slice(0, 2).map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.value}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex max-w-[10rem] items-center gap-1 rounded-full bg-surface-soft px-2 py-0.5 text-[11px] text-ink-soft hover:bg-surface-muted"
+                  >
+                    <LinkIcon className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{link.caption ?? link.value}</span>
+                  </a>
+                ))}
+                {links.length > 2 && (
+                  <span className="text-[11px] font-semibold text-ink-faint">
+                    +{links.length - 2}
+                  </span>
+                )}
+                {notes.length > 0 && (
+                  <span className="w-full truncate text-xs text-ink-muted">
+                    {notes[0]?.value}
+                    {notes.length > 1 ? ` · +${notes.length - 1}` : ''}
+                  </span>
+                )}
+              </span>
+            )}
           </span>
           {!task.done && (
             <button
@@ -210,6 +292,23 @@ export function ListView() {
               {assignee ? initials(assignee.displayName) : '—'}
             </button>
           )}
+          <button
+            type="button"
+            aria-label={
+              taskAttachments.length > 0
+                ? `Allegati (${taskAttachments.length}): ${task.title}`
+                : `Aggiungi allegati: ${task.title}`
+            }
+            onClick={() => setAttachmentsTask(task)}
+            className="relative shrink-0 rounded-lg p-1.5 text-ink-muted transition hover:bg-accent-50 hover:text-accent-ink"
+          >
+            <PaperclipIcon className="h-4 w-4" />
+            {taskAttachments.length > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-accent-600 px-0.5 text-[9px] font-bold text-white">
+                {taskAttachments.length}
+              </span>
+            )}
+          </button>
           {!task.done && partner && (
             <button
               type="button"
@@ -308,6 +407,20 @@ export function ListView() {
       >
         <TrashIcon className="h-4 w-4" /> Elimina lista
       </Button>
+
+      {attachmentsTask && (
+        <TaskAttachmentsSheet
+          taskTitle={attachmentsTask.title}
+          attachments={byTask.get(attachmentsTask.id) ?? []}
+          photoUrls={photoUrls}
+          onAdd={(kind, value, caption) =>
+            addAttachment(attachmentsTask.id, kind, value, caption)
+          }
+          onAddPhoto={(file, caption) => attachPhoto(attachmentsTask.id, file, caption)}
+          onDelete={deleteAttachment}
+          onClose={() => setAttachmentsTask(null)}
+        />
+      )}
     </div>
   )
 }
