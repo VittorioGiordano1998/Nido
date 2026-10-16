@@ -162,9 +162,26 @@ export function useNotes() {
     setNotes((current) => current.filter((note) => note.id !== id))
   }, [])
 
+  /** Re-inserts a deleted note (undo toast, TASK-UI-…-001). */
+  const restoreNote = useCallback(async (note: Note) => {
+    const { data, error: insertError } = await supabase
+      .from('notes')
+      .insert({
+        id: note.id,
+        couple_id: note.coupleId,
+        created_by: note.createdBy,
+        title: note.title,
+        body: note.body,
+      })
+      .select(NOTE_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setNotes((current) => upsertNote(current, rowToNote(data as unknown as NoteRow)))
+  }, [])
+
   const value = useMemo(
-    () => ({ notes, loading, error, refresh, createNote, updateNote, deleteNote }),
-    [notes, loading, error, refresh, createNote, updateNote, deleteNote],
+    () => ({ notes, loading, error, refresh, createNote, updateNote, deleteNote, restoreNote }),
+    [notes, loading, error, refresh, createNote, updateNote, deleteNote, restoreNote],
   )
   return value
 }

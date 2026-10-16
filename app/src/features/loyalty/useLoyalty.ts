@@ -160,5 +160,27 @@ export function useLoyalty() {
     setCards((current) => current.filter((card) => card.id !== id))
   }, [])
 
-  return { cards, loading, error, refresh, createCard, updateCard, deleteCard }
+  /** Re-inserts a deleted card (undo toast, TASK-UI-…-001). */
+  const restoreCard = useCallback(
+    async (card: LoyaltyCard) => {
+      const { data, error: insertError } = await supabase
+        .from('loyalty_cards')
+        .insert({
+          id: card.id,
+          couple_id: card.coupleId,
+          created_by: userId,
+          store_name: card.storeName,
+          code: card.code,
+          barcode_type: card.barcodeType,
+          color: card.color,
+        })
+        .select(LOYALTY_COLUMNS)
+        .single()
+      if (insertError) throw new Error(insertError.message)
+      setCards((current) => [rowToCard(data as unknown as LoyaltyRow), ...current])
+    },
+    [userId],
+  )
+
+  return { cards, loading, error, refresh, createCard, updateCard, deleteCard, restoreCard }
 }

@@ -1,15 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import {
-  Button,
-  Card,
-  EmptyState,
-  ErrorBanner,
-  Field,
-  Spinner,
-  TextInput,
-} from '../../ui/components'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { Button, Card, EmptyState, ErrorBanner, Field, TextInput } from '../../ui/components'
 import { ChevronLeftIcon, CloseIcon, PlusIcon, TrashIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -242,7 +235,7 @@ export function FactsPage() {
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-ink">Cosa c'è da sapere</h1>
+            <h1 className="text-balance text-2xl font-bold text-ink">Cosa c'è da sapere</h1>
             <p className="text-sm text-ink-muted">
               Le cose utili da ricordare, senza doverle chiedere.
             </p>
@@ -281,9 +274,7 @@ export function FactsPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-6">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={3} />
       ) : groups.length === 0 ? (
         <EmptyState
           title="Nessuna scheda"

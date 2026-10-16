@@ -123,18 +123,25 @@ export function Screen({ children, className = '' }: { children: ReactNode; clas
 
 export function EmptyState({
   icon,
+  illustration,
   title,
   description,
+  action,
 }: {
   icon?: ReactNode
+  /** Small original line art (ui/illustrations); falls back to `icon`. */
+  illustration?: ReactNode
   title: string
   description: string
+  /** Call to action (a Button or a Link styled as one). */
+  action?: ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line-strong bg-surface/60 px-6 py-10 text-center">
-      {icon}
+    <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line-strong bg-surface/60 px-6 py-8 text-center">
+      {illustration ?? icon}
       <p className="text-sm font-semibold text-ink-soft">{title}</p>
-      <p className="text-sm text-ink-muted">{description}</p>
+      <p className="max-w-xs text-balance text-sm text-ink-muted">{description}</p>
+      {action && <div className="mt-2">{action}</div>}
     </div>
   )
 }

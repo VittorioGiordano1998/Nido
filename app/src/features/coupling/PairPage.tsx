@@ -93,7 +93,7 @@ export function PairPage() {
       <Screen className="justify-center gap-6 px-6 py-10">
         <header className="space-y-2 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
-          <h1 className="text-2xl font-bold text-ink">Invita il tuo partner</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Invita il tuo partner</h1>
           <p className="text-sm text-ink-muted">
             Fai entrare {couple.name ? `"${couple.name}"` : 'la vostra coppia'} nell'app con questo
             codice:
@@ -159,7 +159,7 @@ export function PairPage() {
     <Screen className="justify-center gap-6 px-6 py-10">
       <header className="space-y-2 text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
-        <h1 className="text-2xl font-bold text-ink">Create il vostro spazio</h1>
+        <h1 className="text-balance text-2xl font-bold text-ink">Create il vostro spazio</h1>
         <p className="text-sm text-ink-muted">
           Crea una nuova coppia e invita il partner, oppure inserisci il codice che ti ha mandato.
         </p>

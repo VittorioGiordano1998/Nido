@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Button, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { Button, EmptyState, ErrorBanner, TextInput } from '../../ui/components'
 import { ChevronRightIcon, ListIcon, PlusIcon } from '../../ui/icons'
 import { BackdropPhoto } from './BackdropPhoto'
 import { useLists } from './useLists'
@@ -45,7 +46,7 @@ export function ListsPage() {
   return (
     <div className="space-y-5 pt-2">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold text-ink">Liste</h1>
+        <h1 className="text-balance text-2xl font-bold text-ink">Liste</h1>
         <p className="text-sm text-ink-muted">
           Spesa, film, valigie: tutto quello che fate insieme.
         </p>
@@ -66,9 +67,7 @@ export function ListsPage() {
       {formError && <ErrorBanner message={formError} />}
 
       {loading ? (
-        <div className="flex justify-center py-6">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={3} />
       ) : lists.length === 0 ? (
         <EmptyState
           icon={<ListIcon className="h-8 w-8 text-ink-faint" />}

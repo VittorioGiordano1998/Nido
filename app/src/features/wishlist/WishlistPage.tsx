@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt, fromDateKey, toDateKey } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
+import { Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { CheckIcon, ChevronLeftIcon, PlusIcon } from '../../ui/icons'
+import { useToast } from '../../ui/toast'
 import { useAuth } from '../auth/AuthProvider'
 import { expandOccurrences } from '../calendar/recurrence'
 import { useEvents } from '../calendar/useEvents'
@@ -33,9 +35,10 @@ function daysLeft(iso: string): number {
 export function WishlistPage() {
   const { session } = useAuth()
   const { couple } = useCouple()
-  const { items, loading, error, createItem, updateItem, togglePurchased, deleteItem } =
+  const { items, loading, error, createItem, updateItem, togglePurchased, deleteItem, restoreItem } =
     useWishlist()
   const { events } = useEvents()
+  const { showToast } = useToast()
 
   const [todayKey] = useState(() => toDateKey(new Date()))
 
@@ -83,11 +86,18 @@ export function WishlistPage() {
   }
 
   async function handleDelete(id: string) {
+    const deleted = items.find((item) => item.id === id) ?? null
     setSaving(true)
     setFormError(null)
     try {
       await deleteItem(id)
       setEditor(null)
+      if (deleted) {
+        showToast({
+          message: 'Desiderio eliminato.',
+          action: { label: 'Annulla', onAction: () => void restoreItem(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Errore durante l'eliminazione.")
     } finally {
@@ -193,7 +203,7 @@ export function WishlistPage() {
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-ink">Wishlist</h1>
+            <h1 className="text-balance text-2xl font-bold text-ink">Wishlist</h1>
             <p className="text-sm text-ink-muted">
               I desideri di ognuno, così i regali non sono mai un terno al lotto.
             </p>
@@ -266,9 +276,7 @@ export function WishlistPage() {
       </section>
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={3} />
       ) : items.length === 0 ? (
         <EmptyState
           title="Nessun desiderio"

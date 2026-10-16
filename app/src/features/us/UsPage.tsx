@@ -1,103 +1,127 @@
 import { Link } from 'react-router-dom'
 
 import { Card } from '../../ui/components'
-import { ChevronRightIcon, HeartIcon } from '../../ui/icons'
+import {
+  CameraIcon,
+  CardIcon,
+  ChatIcon,
+  ChecklistIcon,
+  ChevronRightIcon,
+  CoinIcon,
+  CompassIcon,
+  DiceIcon,
+  GiftIcon,
+  HeartIcon,
+  HourglassIcon,
+  InfoIcon,
+  SplitIcon,
+} from '../../ui/icons'
 import { NudgeCard } from '../nudges/NudgeCard'
+
+const TINTS = [
+  'bg-accent-100 text-accent-ink dark:bg-accent-100 dark:text-accent-ink',
+  'bg-sage-100 text-sage-700 dark:bg-sage-700/30 dark:text-sage-300',
+  'bg-surface-muted text-ink-soft',
+]
 
 const FEATURES = [
   {
     to: '/us/question',
     title: 'Domanda del giorno',
-    description: 'Rispondete in segreto e scoprite le risposte insieme.',
-    ready: true,
+    description: 'Risposte segrete, rivelate insieme.',
+    icon: ChatIcon,
   },
   {
-    to: '/us/facts',
-    title: "Cosa c'è da sapere",
-    description: 'Taglie, gusti, allergie: le cose utili a portata di mano.',
-    ready: true,
+    to: '/us/memories',
+    title: 'Ricordi',
+    description: 'Il diario fotografico della coppia.',
+    icon: CameraIcon,
   },
   {
-    to: '/us/capsules',
-    title: 'Capsule del tempo',
-    description: 'Note che si aprono il giorno che scegliete voi.',
-    ready: true,
+    to: '/us/bucket',
+    title: 'Bucket list',
+    description: 'Le cose da fare insieme.',
+    icon: ChecklistIcon,
+  },
+  {
+    to: '/us/pick',
+    title: 'Scegli per noi',
+    description: 'Quando non sapete decidere.',
+    icon: DiceIcon,
   },
   {
     to: '/us/decisions',
     title: 'Decisioni alla cieca',
-    description: 'Votate di nascosto, poi la scelta si svela.',
-    ready: true,
+    description: 'Votate di nascosto, poi si svela.',
+    icon: SplitIcon,
   },
   {
     to: '/us/wishlist',
     title: 'Wishlist',
-    description: 'I desideri di ognuno, con il radar delle occasioni.',
-    ready: true,
+    description: 'Desideri e radar delle occasioni.',
+    icon: GiftIcon,
   },
   {
     to: '/us/plan',
     title: 'Piano settimanale',
-    description: 'Una proposta a settimana da fare insieme.',
-    ready: true,
+    description: 'Una proposta a settimana.',
+    icon: CompassIcon,
   },
   {
     to: '/us/savings',
     title: 'Risparmi',
-    description: 'Obiettivi di coppia, con la barra che cresce insieme.',
-    ready: true,
+    description: 'Obiettivi di coppia che crescono.',
+    icon: CoinIcon,
   },
   {
     to: '/us/loyalty',
     title: 'Tessere',
-    description: 'Le tessere dei negozi, pronte al banco.',
-    ready: true,
+    description: 'Le tessere dei negozi, al banco.',
+    icon: CardIcon,
+  },
+  {
+    to: '/us/facts',
+    title: "Cosa c'è da sapere",
+    description: 'Taglie, gusti, allergie.',
+    icon: InfoIcon,
+  },
+  {
+    to: '/us/capsules',
+    title: 'Capsule del tempo',
+    description: 'Note che si aprono il giorno scelto.',
+    icon: HourglassIcon,
   },
 ] as const
 
+/** The "Noi" hub: one tinted icon tile per feature (TASK-UI-…-003). */
 export function UsPage() {
   return (
     <div className="space-y-5 pt-2">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold text-ink">Noi</h1>
-        <p className="text-sm text-ink-muted">
-          Piccoli rituali quotidiani da fare in due.
-        </p>
+        <h1 className="text-balance text-2xl font-bold text-ink">Noi</h1>
+        <p className="text-sm text-ink-muted">Piccoli rituali quotidiani da fare in due.</p>
       </header>
 
-      <ul className="space-y-2">
-        {FEATURES.map((feature) =>
-          feature.ready ? (
-            <li key={feature.to}>
-              <Link to={feature.to} className="block">
-                <Card className="flex items-center justify-between gap-3 transition hover:ring-accent-300">
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-ink">
-                      {feature.title}
-                    </span>
-                    <span className="block text-xs text-ink-muted">{feature.description}</span>
-                  </span>
-                  <ChevronRightIcon className="h-5 w-5 shrink-0 text-ink-faint" />
-                </Card>
-              </Link>
-            </li>
-          ) : (
-            <li key={feature.to}>
-              <Card className="flex items-center justify-between gap-3 bg-surface/60">
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-ink-muted">
-                    {feature.title}
-                  </span>
-                  <span className="block text-xs text-ink-faint">{feature.description}</span>
-                </span>
-                <span className="shrink-0 rounded-full bg-surface-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
-                  presto
-                </span>
-              </Card>
-            </li>
-          ),
-        )}
-      </ul>
+      <div className="grid grid-cols-2 gap-2">
+        {FEATURES.map((feature, index) => (
+          <Link key={feature.to} to={feature.to} viewTransition className="block h-full">
+            <Card className="flex h-full flex-col gap-2.5 transition hover:ring-accent-300">
+              <span
+                className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+                  TINTS[index % TINTS.length]
+                }`}
+              >
+                <feature.icon className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-ink">{feature.title}</span>
+                <span className="mt-0.5 block text-xs text-ink-muted">{feature.description}</span>
+              </span>
+              <ChevronRightIcon className="h-4 w-4 self-end text-ink-faint" />
+            </Card>
+          </Link>
+        ))}
+      </div>
 
       <NudgeCard />
 

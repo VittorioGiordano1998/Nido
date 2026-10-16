@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
+import { Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { ChevronLeftIcon, PlusIcon } from '../../ui/icons'
+import { SparkleIllustration } from '../../ui/illustrations'
+import { useToast } from '../../ui/toast'
 import { SavingsEditor } from './SavingsEditor'
 import { useSavings } from './useSavings'
 import type { SavingsInput, SavingsProject } from './useSavings'
@@ -22,7 +25,9 @@ function progressPercent(project: SavingsProject): number {
 }
 
 export function SavingsPage() {
-  const { projects, loading, error, createProject, updateProject, deleteProject } = useSavings()
+  const { projects, loading, error, createProject, updateProject, deleteProject, restoreProject } =
+    useSavings()
+  const { showToast } = useToast()
 
   const [editor, setEditor] = useState<{ project: SavingsProject | null } | null>(null)
   const [saving, setSaving] = useState(false)
@@ -44,11 +49,18 @@ export function SavingsPage() {
   }
 
   async function handleDelete(id: string) {
+    const deleted = projects.find((project) => project.id === id) ?? null
     setSaving(true)
     setFormError(null)
     try {
       await deleteProject(id)
       setEditor(null)
+      if (deleted) {
+        showToast({
+          message: 'Progetto eliminato.',
+          action: { label: 'Annulla', onAction: () => void restoreProject(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Errore durante l'eliminazione.")
     } finally {
@@ -68,7 +80,7 @@ export function SavingsPage() {
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-ink">Risparmi</h1>
+            <h1 className="text-balance text-2xl font-bold text-ink">Risparmi</h1>
             <p className="text-sm text-ink-muted">
               Gli obiettivi di coppia, un po' alla volta.
             </p>
@@ -90,13 +102,24 @@ export function SavingsPage() {
       {formError && <ErrorBanner message={formError} />}
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={2} />
       ) : projects.length === 0 ? (
         <EmptyState
+          illustration={<SparkleIllustration className="h-14 w-14 text-accent-glyph" />}
           title="Nessun progetto"
           description="Crea il primo obiettivo: una cifra, una data e la barra che cresce insieme."
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setFormError(null)
+                setEditor({ project: null })
+              }}
+              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
+            >
+              Crea il primo obiettivo
+            </button>
+          }
         />
       ) : (
         <ul className="space-y-2">

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt } from '../../core/dates'
-import { Button, Card, ErrorBanner, Spinner, TextArea } from '../../ui/components'
+import { Button, Card, ErrorBanner, TextArea } from '../../ui/components'
 import { CheckIcon, ChevronLeftIcon, CloseIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -126,7 +127,7 @@ export function PlanPage() {
           <ChevronLeftIcon className="h-5 w-5" />
         </Link>
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-ink">Piano settimanale</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Piano settimanale</h1>
           <p className="text-sm text-ink-muted">
             Una proposta a settimana da fare insieme, da accettare o rilanciare.
           </p>
@@ -137,9 +138,7 @@ export function PlanPage() {
       {formError && <ErrorBanner message={formError} />}
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={2} />
       ) : (
         <>
           <section className="space-y-2">

@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt, fromDateKey, toDateKey } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
+import { Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { NestIllustration } from '../../ui/illustrations'
 import { ChevronLeftIcon, PlusIcon } from '../../ui/icons'
+import { useToast } from '../../ui/toast'
 import { useAuth } from '../auth/AuthProvider'
 import { CapsuleEditor } from './CapsuleEditor'
 import { useCapsules } from './useCapsules'
@@ -25,7 +28,9 @@ function statusLabel(capsule: Capsule, todayKey: string): string {
 
 export function CapsulesPage() {
   const { session } = useAuth()
-  const { capsules, loading, error, createCapsule, updateCapsule, deleteCapsule } = useCapsules()
+  const { capsules, loading, error, createCapsule, updateCapsule, deleteCapsule, restoreCapsule } =
+    useCapsules()
+  const { showToast } = useToast()
   const [todayKey] = useState(() => toDateKey(new Date()))
   const [editor, setEditor] = useState<{ capsule: Capsule | null } | null>(null)
   const [saving, setSaving] = useState(false)
@@ -66,11 +71,18 @@ export function CapsulesPage() {
   }
 
   async function handleDelete(id: string) {
+    const deleted = capsules.find((capsule) => capsule.id === id) ?? null
     setSaving(true)
     setFormError(null)
     try {
       await deleteCapsule(id)
       setEditor(null)
+      if (deleted) {
+        showToast({
+          message: 'Capsula eliminata.',
+          action: { label: 'Annulla', onAction: () => void restoreCapsule(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Errore durante l'eliminazione.")
     } finally {
@@ -137,7 +149,7 @@ export function CapsulesPage() {
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-ink">Capsule del tempo</h1>
+            <h1 className="text-balance text-2xl font-bold text-ink">Capsule del tempo</h1>
             <p className="text-sm text-ink-muted">
               Scrivi oggi, leggi il giorno scelto: il partner non può aprirla prima.
             </p>
@@ -155,13 +167,21 @@ export function CapsulesPage() {
       {error && <ErrorBanner message={error} />}
 
       {loading ? (
-        <div className="flex justify-center py-6">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={3} />
       ) : mine.length === 0 && theirs.length === 0 ? (
         <EmptyState
+          illustration={<NestIllustration className="h-14 w-14 text-accent-glyph" />}
           title="Nessuna capsula"
           description="Scrivete qualcosa oggi e scegliete il giorno in cui l'altro lo leggerà."
+          action={
+            <button
+              type="button"
+              onClick={openNew}
+              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
+            >
+              Scrivi la prima capsula
+            </button>
+          }
         />
       ) : (
         <div className="space-y-4">

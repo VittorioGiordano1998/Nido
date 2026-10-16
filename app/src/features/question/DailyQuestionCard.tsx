@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 
-import { Card, Spinner } from '../../ui/components'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { Card } from '../../ui/components'
 import { ChevronRightIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -27,9 +28,7 @@ export function DailyQuestionCard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-2">
-        <Spinner />
-      </div>
+      <CardListSkeleton rows={1} />
     )
   }
 

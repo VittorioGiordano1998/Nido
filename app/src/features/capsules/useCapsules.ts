@@ -166,9 +166,36 @@ export function useCapsules() {
     setCapsules((current) => current.filter((capsule) => capsule.id !== id))
   }, [])
 
+  /** Re-inserts a deleted capsule (undo toast, TASK-UI-…-001). */
+  const restoreCapsule = useCallback(async (capsule: Capsule) => {
+    const { data, error: insertError } = await supabase
+      .from('time_capsules')
+      .insert({
+        id: capsule.id,
+        couple_id: capsule.coupleId,
+        created_by: capsule.createdBy,
+        title: capsule.title,
+        body: capsule.body,
+        opens_at: capsule.opensAt,
+      })
+      .select(CAPSULE_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setCapsules((current) => upsertCapsule(current, rowToCapsule(data as unknown as CapsuleRow)))
+  }, [])
+
   const value = useMemo(
-    () => ({ capsules, loading, error, refresh, createCapsule, updateCapsule, deleteCapsule }),
-    [capsules, loading, error, refresh, createCapsule, updateCapsule, deleteCapsule],
+    () => ({
+      capsules,
+      loading,
+      error,
+      refresh,
+      createCapsule,
+      updateCapsule,
+      deleteCapsule,
+      restoreCapsule,
+    }),
+    [capsules, loading, error, refresh, createCapsule, updateCapsule, deleteCapsule, restoreCapsule],
   )
   return value
 }

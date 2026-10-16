@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Button, Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { Button, Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { ChevronLeftIcon, CloseIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { useToast } from '../../ui/toast'
 import { LoyaltyBarcode } from './LoyaltyBarcode'
 import { LoyaltyEditor, toneClasses } from './LoyaltyEditor'
 import { useLoyalty } from './useLoyalty'
 import type { LoyaltyCard, LoyaltyInput } from './useLoyalty'
 
 export function LoyaltyPage() {
-  const { cards, loading, error, createCard, updateCard, deleteCard } = useLoyalty()
+  const { cards, loading, error, createCard, updateCard, deleteCard, restoreCard } = useLoyalty()
+  const { showToast } = useToast()
 
   const [viewer, setViewer] = useState<LoyaltyCard | null>(null)
   const [editor, setEditor] = useState<{ card: LoyaltyCard | null } | null>(null)
@@ -32,13 +35,19 @@ export function LoyaltyPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm('Eliminare questa tessera?')) return
+    const deleted = cards.find((card) => card.id === id) ?? null
     setSaving(true)
     setFormError(null)
     try {
       await deleteCard(id)
       setViewer(null)
       setEditor(null)
+      if (deleted) {
+        showToast({
+          message: 'Tessera eliminata.',
+          action: { label: 'Annulla', onAction: () => void restoreCard(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Errore durante l'eliminazione.")
     } finally {
@@ -58,7 +67,7 @@ export function LoyaltyPage() {
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-ink">Tessere</h1>
+            <h1 className="text-balance text-2xl font-bold text-ink">Tessere</h1>
             <p className="text-sm text-ink-muted">
               Le tessere dei negozi, pronte al banco anche senza rete.
             </p>
@@ -80,9 +89,7 @@ export function LoyaltyPage() {
       {formError && <ErrorBanner message={formError} />}
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={3} />
       ) : cards.length === 0 ? (
         <EmptyState
           title="Nessuna tessera"
