@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-38 tasks — 8 Proposed · 0 Ready · 13 In Progress · 0 Blocked · 17 Done · 0 Cancelled
+39 tasks — 8 Proposed · 0 Ready · 14 In Progress · 0 Blocked · 17 Done · 0 Cancelled
 
 ## Proposed
 
@@ -35,6 +35,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-LOY-VITTORIOGIORDANOYBQ-001](in-progress/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
 | [TASK-NOTIF-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NOTIF-VITTORIOGIORDANOYBQ-001-calendar-reminders-by-email-brevo.md) | Calendar reminders by email (Brevo) | Feature | notifications | Medium | 2026-10-16 | — |
 | [TASK-NUDGE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NUDGE-VITTORIOGIORDANOYBQ-001-partner-nudge-with-one-tap.md) | Partner nudge with one tap | Feature | nudges | Low | 2026-10-14 | — |
+| [TASK-PROF-VITTORIOGIORDANOYBQ-002](in-progress/TASK-PROF-VITTORIOGIORDANOYBQ-002-profile-editable-avatar-photo.md) | Profile: editable avatar photo | Feature | profile and personalization | Low | 2026-10-16 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-001](in-progress/TASK-PUSH-VITTORIOGIORDANOYBQ-001-push-notifications-partner-changes.md) | Push notifications: partner changes | Feature | push | Medium | 2026-10-14 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-002](in-progress/TASK-PUSH-VITTORIOGIORDANOYBQ-002-push-calendar-activity-notifications.md) | Push: calendar activity notifications | Feature | push | Low | 2026-10-15 | — |
 | [TASK-SAV-VITTORIOGIORDANOYBQ-001](in-progress/TASK-SAV-VITTORIOGIORDANOYBQ-001-savings-projects.md) | Savings projects | Feature | savings | Medium | 2026-10-15 | — |
