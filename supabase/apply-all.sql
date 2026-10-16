@@ -2048,3 +2048,388 @@ drop policy if exists avatars_objects_delete on storage.objects;
 create policy avatars_objects_delete on storage.objects
   for delete to authenticated
   using (bucket_id = 'avatars' and public.is_couple_member(public.storage_couple_id(name)));
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016150000_nido_moods.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - moods (check-in "Come stai oggi?")
+--
+-- One row per member per day: a mood 1..5 and an optional one-line note. Both
+-- partners read the couple's moods (the check-in is meant to be seen); only
+-- the owner writes their own row. Realtime on `moods`. Idempotent.
+-- =============================================================================
+
+create table if not exists public.moods (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples (id) on delete cascade,
+  user_id uuid not null references public.profiles (id) on delete cascade,
+  mood_date date not null default current_date,
+  mood smallint not null check (mood between 1 and 5),
+  note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (user_id, mood_date)
+);
+create index if not exists moods_couple_date_idx on public.moods (couple_id, mood_date desc);
+
+alter table public.moods enable row level security;
+
+drop policy if exists moods_select on public.moods;
+create policy moods_select on public.moods
+  for select to authenticated
+  using (public.is_couple_member(couple_id));
+
+drop policy if exists moods_insert on public.moods;
+create policy moods_insert on public.moods
+  for insert to authenticated
+  with check (public.is_couple_member(couple_id) and user_id = auth.uid());
+
+drop policy if exists moods_update on public.moods;
+create policy moods_update on public.moods
+  for update to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+drop policy if exists moods_delete on public.moods;
+create policy moods_delete on public.moods
+  for delete to authenticated
+  using (user_id = auth.uid());
+
+drop trigger if exists moods_set_updated_at on public.moods;
+create trigger moods_set_updated_at
+  before update on public.moods
+  for each row execute function public.set_updated_at();
+
+-- Realtime
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'moods'
+  ) then
+    alter publication supabase_realtime add table public.moods;
+    alter table public.moods replica identity full;
+  end if;
+end;
+$$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016160000_nido_stickies.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - stickies (bigliettini veloci)
+--
+-- Ephemeral notes one partner leaves for the other: short text, created by the
+-- author, dismissed by the recipient (delete) or retracted by the author.
+-- Both members read the couple's stickies; no updates (rows are immutable).
+-- Realtime on `stickies`. Idempotent.
+-- =============================================================================
+
+create table if not exists public.stickies (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples (id) on delete cascade,
+  from_user uuid not null references public.profiles (id) on delete cascade,
+  to_user uuid not null references public.profiles (id) on delete cascade,
+  body text not null check (char_length(body) between 1 and 200),
+  created_at timestamptz not null default now(),
+  check (from_user <> to_user)
+);
+create index if not exists stickies_couple_idx on public.stickies (couple_id, created_at desc);
+
+alter table public.stickies enable row level security;
+
+drop policy if exists stickies_select on public.stickies;
+create policy stickies_select on public.stickies
+  for select to authenticated
+  using (public.is_couple_member(couple_id));
+
+drop policy if exists stickies_insert on public.stickies;
+create policy stickies_insert on public.stickies
+  for insert to authenticated
+  with check (
+    public.is_couple_member(couple_id)
+    and from_user = auth.uid()
+    and public.shares_couple_with(to_user)
+  );
+
+drop policy if exists stickies_delete on public.stickies;
+create policy stickies_delete on public.stickies
+  for delete to authenticated
+  using (from_user = auth.uid() or to_user = auth.uid());
+
+-- Realtime
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'stickies'
+  ) then
+    alter publication supabase_realtime add table public.stickies;
+    alter table public.stickies replica identity full;
+  end if;
+end;
+$$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016170000_nido_bucket_items.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - bucket items (cose da fare insieme)
+--
+-- A shared bucket list of experiences: title, optional note, done date and a
+-- manual order. `memories.bucket_item_id` (next migration) links the journal
+-- entry created when an item is completed. Realtime on `bucket_items`.
+-- Idempotent.
+-- =============================================================================
+
+create table if not exists public.bucket_items (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples (id) on delete cascade,
+  title text not null,
+  note text,
+  done_at timestamptz,
+  position int not null default 0,
+  created_by uuid not null references public.profiles (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists bucket_items_couple_idx on public.bucket_items (couple_id, position);
+
+alter table public.bucket_items enable row level security;
+
+drop policy if exists bucket_items_select on public.bucket_items;
+create policy bucket_items_select on public.bucket_items
+  for select to authenticated
+  using (public.is_couple_member(couple_id));
+
+drop policy if exists bucket_items_insert on public.bucket_items;
+create policy bucket_items_insert on public.bucket_items
+  for insert to authenticated
+  with check (public.is_couple_member(couple_id) and created_by = auth.uid());
+
+drop policy if exists bucket_items_update on public.bucket_items;
+create policy bucket_items_update on public.bucket_items
+  for update to authenticated
+  using (public.is_couple_member(couple_id))
+  with check (public.is_couple_member(couple_id));
+
+drop policy if exists bucket_items_delete on public.bucket_items;
+create policy bucket_items_delete on public.bucket_items
+  for delete to authenticated
+  using (public.is_couple_member(couple_id));
+
+drop trigger if exists bucket_items_set_updated_at on public.bucket_items;
+create trigger bucket_items_set_updated_at
+  before update on public.bucket_items
+  for each row execute function public.set_updated_at();
+
+-- Realtime
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'bucket_items'
+  ) then
+    alter publication supabase_realtime add table public.bucket_items;
+    alter table public.bucket_items replica identity full;
+  end if;
+end;
+$$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016180000_nido_memories.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - memories (Ricordi)
+--
+-- The couple's photo journal: one photo per row (private `memories` bucket,
+-- path under `<couple_id>/`), a caption, the day it happened and the author.
+-- `bucket_item_id` links the entry to the bucket list item it completed.
+-- Both members read and write; Realtime on `memories`. Idempotent.
+-- =============================================================================
+
+create table if not exists public.memories (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples (id) on delete cascade,
+  photo_path text not null,
+  caption text,
+  taken_on date not null default current_date,
+  bucket_item_id uuid references public.bucket_items (id) on delete set null,
+  created_by uuid not null references public.profiles (id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+create index if not exists memories_couple_date_idx on public.memories (couple_id, taken_on desc);
+
+alter table public.memories enable row level security;
+
+drop policy if exists memories_select on public.memories;
+create policy memories_select on public.memories
+  for select to authenticated
+  using (public.is_couple_member(couple_id));
+
+drop policy if exists memories_insert on public.memories;
+create policy memories_insert on public.memories
+  for insert to authenticated
+  with check (public.is_couple_member(couple_id) and created_by = auth.uid());
+
+drop policy if exists memories_update on public.memories;
+create policy memories_update on public.memories
+  for update to authenticated
+  using (public.is_couple_member(couple_id))
+  with check (public.is_couple_member(couple_id));
+
+drop policy if exists memories_delete on public.memories;
+create policy memories_delete on public.memories
+  for delete to authenticated
+  using (public.is_couple_member(couple_id));
+
+-- Realtime
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'memories'
+  ) then
+    alter publication supabase_realtime add table public.memories;
+    alter table public.memories replica identity full;
+  end if;
+end;
+$$;
+
+-- Storage: private `memories` bucket, same couple-scoped policy pattern as
+-- `avatars` and `list-photos`.
+insert into storage.buckets (id, name, public)
+values ('memories', 'memories', false)
+on conflict (id) do nothing;
+
+drop policy if exists memories_objects_select on storage.objects;
+create policy memories_objects_select on storage.objects
+  for select to authenticated
+  using (bucket_id = 'memories' and public.is_couple_member(public.storage_couple_id(name)));
+
+drop policy if exists memories_objects_insert on storage.objects;
+create policy memories_objects_insert on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'memories' and public.is_couple_member(public.storage_couple_id(name)));
+
+drop policy if exists memories_objects_update on storage.objects;
+create policy memories_objects_update on storage.objects
+  for update to authenticated
+  using (bucket_id = 'memories' and public.is_couple_member(public.storage_couple_id(name)))
+  with check (bucket_id = 'memories' and public.is_couple_member(public.storage_couple_id(name)));
+
+drop policy if exists memories_objects_delete on storage.objects;
+create policy memories_objects_delete on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'memories' and public.is_couple_member(public.storage_couple_id(name)));
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016190000_nido_reset_couple_v2.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - couple data reset, v2 (test tool)
+--
+-- Same SECURITY DEFINER helper as `20261015200000_nido_reset_couple.sql`, with
+-- the tables added after it (moods, stickies, bucket items, memories) and the
+-- couple hero photo cleared. Keep the list in sync when a feature adds a
+-- table; the `memories` bucket objects follow the same rule as list photos
+-- (feature data only, files left in storage). Idempotent.
+--
+-- Not a product feature: review before any public use.
+-- =============================================================================
+
+create or replace function public.reset_couple_data(target_couple uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_couple_member(target_couple) then
+    raise exception 'not a couple member';
+  end if;
+
+  delete from public.moods where couple_id = target_couple;
+  delete from public.stickies where couple_id = target_couple;
+  delete from public.memories where couple_id = target_couple;
+  delete from public.bucket_items where couple_id = target_couple;
+  delete from public.daily_answers where couple_id = target_couple;
+  delete from public.decisions where couple_id = target_couple;      -- votes cascade
+  delete from public.task_lists where couple_id = target_couple;     -- tasks cascade
+  delete from public.notes where couple_id = target_couple;
+  delete from public.events where couple_id = target_couple;
+  delete from public.wishlist_items where couple_id = target_couple;
+  delete from public.partner_facts where couple_id = target_couple;
+  delete from public.time_capsules where couple_id = target_couple;
+  delete from public.week_plans where couple_id = target_couple;
+  delete from public.nudges where couple_id = target_couple;
+  delete from public.savings_projects where couple_id = target_couple;
+  delete from public.loyalty_cards where couple_id = target_couple;
+  delete from public.canvases where couple_id = target_couple;
+  delete from public.cycle_logs where couple_id = target_couple;
+  delete from public.cycle_shares where couple_id = target_couple;
+  delete from public.vault_items where couple_id = target_couple;
+  delete from public.vault_keys where couple_id = target_couple;
+
+  update public.couples
+  set hero_path = null, hero_x = null, hero_y = null, hero_zoom = null
+  where id = target_couple;
+end;
+$$;
+
+comment on function public.reset_couple_data(uuid) is
+  'Test tool: clears one couple''s feature data for a member of that couple (cycle data included).';
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016200000_nido_couple_hero.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - couple hero (Home cover photo)
+--
+-- The Home hero can carry a cover photo chosen by the couple: the storage path
+-- (private `list-photos` bucket, same couple-scoped policies as covers) plus
+-- its framing (x/y position in percent, zoom 1..3), mirroring the list cover
+-- model. `couples` joins the Realtime publication so the partner's Home hero
+-- updates live; RLS already limits reads/updates to members. Idempotent.
+-- =============================================================================
+
+alter table public.couples
+  add column if not exists hero_path text,
+  add column if not exists hero_x real check (hero_x is null or (hero_x between 0 and 100)),
+  add column if not exists hero_y real check (hero_y is null or (hero_y between 0 and 100)),
+  add column if not exists hero_zoom real check (hero_zoom is null or (hero_zoom between 1 and 3));
+
+-- Realtime: partner sees a new/changed/removed cover without a reload.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'couples'
+  ) then
+    alter publication supabase_realtime add table public.couples;
+    alter table public.couples replica identity full;
+  end if;
+end;
+$$;
