@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { subscribeToAppResync } from '../../core/resync'
 import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
@@ -105,6 +106,9 @@ export function useMemories() {
     void refresh()
   }, [refresh])
 
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
+
   // Signed URLs for every path (re-signed when the set changes).
   const pathsKey = [...new Set(memories.map((memory) => memory.photoPath))].sort().join('|')
   useEffect(() => {
@@ -186,6 +190,21 @@ export function useMemories() {
     setMemories((current) => current.filter((memory) => memory.id !== id))
   }, [])
 
+  /** Edits caption and date; the photo stays (TASK-MEMO-…-003). */
+  const updateMemory = useCallback(
+    async (id: string, input: { caption: string; takenOn: string }) => {
+      const { data, error: updateError } = await supabase
+        .from('memories')
+        .update({ caption: input.caption.trim() || null, taken_on: input.takenOn })
+        .eq('id', id)
+        .select(MEMORY_COLUMNS)
+        .single()
+      if (updateError) throw new Error(updateError.message)
+      setMemories((current) => upsertMemory(current, rowToMemory(data as unknown as MemoryRow)))
+    },
+    [],
+  )
+
   /** Re-inserts a deleted memory (undo toast, TASK-UI-…-001). */
   const restoreMemory = useCallback(async (memory: Memory) => {
     const { data, error: insertError } = await supabase
@@ -216,6 +235,7 @@ export function useMemories() {
     loading,
     error,
     createMemory,
+    updateMemory,
     deleteMemory,
     restoreMemory,
     purgePhoto,

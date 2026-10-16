@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { fromDateKey, toDateKey } from '../../core/dates'
 import { uniqueChannelTopic } from '../../core/realtime'
+import { subscribeToAppResync } from '../../core/resync'
+import { streakFromDates } from '../../core/streaks'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -99,6 +101,9 @@ export function useMoods() {
     void refresh()
   }, [refresh])
 
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
+
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
@@ -162,18 +167,16 @@ export function useMoods() {
   }, [entries, userId, todayKey])
 
   /** Consecutive days with my own check-in, ending today (or yesterday). */
-  const streak = useMemo(() => {
-    const mine = new Set(
-      entries.filter((entry) => entry.userId === userId).map((entry) => entry.moodDate),
-    )
-    let cursor = mine.has(todayKey) ? todayKey : addDays(todayKey, -1)
-    let count = 0
-    while (mine.has(cursor)) {
-      count += 1
-      cursor = addDays(cursor, -1)
-    }
-    return count
-  }, [entries, userId, todayKey])
+  const streak = useMemo(
+    () =>
+      streakFromDates(
+        entries
+          .filter((entry) => entry.userId === userId)
+          .map((entry) => entry.moodDate),
+        todayKey,
+      ),
+    [entries, userId, todayKey],
+  )
 
   return { entries, loading, error, myToday, partnerToday, week, streak, setMood, refresh }
 }

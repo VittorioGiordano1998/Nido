@@ -2,9 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { fromDateKey, toDateKey } from '../../core/dates'
 import { uniqueChannelTopic } from '../../core/realtime'
+import { subscribeToAppResync } from '../../core/resync'
+import { streakFromDates } from '../../core/streaks'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
+import { pickQuestionIndex } from './pick'
 
 export interface DailyQuestion {
   id: number
@@ -38,16 +41,7 @@ interface AnswerRow {
   question_id: number
 }
 
-/** FNV-1a: selezione deterministica stabile di coppia + giorno. */
-function hashString(value: string): number {
-  let hash = 2166136261
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index)
-    hash = Math.imul(hash, 16777619)
-  }
-  return hash >>> 0
-}
-
+/** FNV-1a: selezione deterministica stabile di coppia + giorno (vedi pick.ts). */
 function addDays(dateKey: string, delta: number): string {
   const date = fromDateKey(dateKey)
   date.setDate(date.getDate() + delta)
@@ -94,7 +88,7 @@ export function useDailyQuestion() {
 
     let picked: DailyQuestion | null = null
     if (count && count > 0) {
-      const index = hashString(`${coupleId}:${todayKey}`) % count
+      const index = pickQuestionIndex(coupleId, todayKey, count)
       const { data } = await supabase
         .from('question_bank')
         .select('id, text, category')
@@ -170,13 +164,7 @@ export function useDailyQuestion() {
     )
 
     const completeSet = new Set(completeDates.map(([date]) => date))
-    let cursor = completeSet.has(todayKey) ? todayKey : addDays(todayKey, -1)
-    let streakDays = 0
-    while (completeSet.has(cursor)) {
-      streakDays += 1
-      cursor = addDays(cursor, -1)
-    }
-    setStreak(streakDays)
+    setStreak(streakFromDates(completeSet, todayKey))
 
     setLoading(false)
   }, [coupleId, todayKey])
@@ -184,6 +172,9 @@ export function useDailyQuestion() {
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
 
   useEffect(() => {
     if (!coupleId) return

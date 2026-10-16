@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { subscribeToAppResync } from '../../core/resync'
 import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
@@ -104,6 +105,9 @@ export function useWishlist() {
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
 
   useEffect(() => {
     if (!coupleId) return
