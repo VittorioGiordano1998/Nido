@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { subscribeToAppResync } from '../../core/resync'
 import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
@@ -168,6 +169,9 @@ export function useLists() {
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
 
   useEffect(() => {
     if (!coupleId) return
@@ -402,6 +406,43 @@ export function useLists() {
     setTasks((current) => current.filter((task) => task.id !== id))
   }, [])
 
+  /** Copies a list's items into a new list (TASK-LIST-…-004): titles only,
+   *  unchecked, in order; attachments and cover stay behind. */
+  const reuseList = useCallback(
+    async (source: TaskList, sourceTasks: Task[], title: string) => {
+      if (!coupleId || !userId) throw new Error('Coppia non ancora caricata.')
+      const name = title.trim() || source.title
+      const position = lists.reduce((max, list) => Math.max(max, list.position), 0) + 1
+      const { data: listData, error: listError } = await supabase
+        .from('task_lists')
+        .insert({ couple_id: coupleId, created_by: userId, title: name, position })
+        .select(LIST_COLUMNS)
+        .single()
+      if (listError) throw new Error(listError.message)
+      const created = listRowToList(listData as unknown as ListRow)
+      setLists((current) => upsertList(current, created))
+
+      if (sourceTasks.length > 0) {
+        const rows = sourceTasks.map((task, index) => ({
+          list_id: created.id,
+          couple_id: coupleId,
+          created_by: userId,
+          title: task.title,
+          position: index + 1,
+        }))
+        const { data: taskData, error: taskError } = await supabase
+          .from('tasks')
+          .insert(rows)
+          .select(TASK_COLUMNS)
+        if (taskError) throw new Error(taskError.message)
+        const createdTasks = ((taskData ?? []) as unknown as TaskRow[]).map(taskRowToTask)
+        setTasks((current) => createdTasks.reduce((acc, task) => upsertTask(acc, task), current))
+      }
+      return created.id
+    },
+    [coupleId, userId, lists],
+  )
+
   /** Re-inserts a deleted task (undo toast, TASK-UI-…-001). Its attachments
    *  are not restored: those rows are released with the task. */
   const restoreTask = useCallback(async (task: Task) => {
@@ -441,6 +482,7 @@ export function useLists() {
       setTaskAssignee,
       deleteTask,
       restoreTask,
+      reuseList,
       uploadCover,
       setCover,
       clearCover,
@@ -462,6 +504,7 @@ export function useLists() {
       setTaskAssignee,
       deleteTask,
       restoreTask,
+      reuseList,
       uploadCover,
       setCover,
       clearCover,

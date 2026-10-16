@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { Button, EmptyState, ErrorBanner, TextInput } from '../../ui/components'
-import { BellIcon, CheckIcon, ChevronLeftIcon, ImageIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { BellIcon, CheckIcon, ChevronLeftIcon, CopyIcon, ImageIcon, PlusIcon, TrashIcon } from '../../ui/icons'
 import { useToast } from '../../ui/toast'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -13,6 +13,7 @@ import { BackdropEditor } from './BackdropEditor'
 import { BackdropPhoto } from './BackdropPhoto'
 import { DEFAULT_FRAMING } from './photos'
 import type { Framing } from './photos'
+import { ReuseListSheet } from './ReuseListSheet'
 import { TaskAttachmentsSheet } from './TaskAttachmentsSheet'
 import { useLists } from './useLists'
 import type { Task } from './useLists'
@@ -51,6 +52,7 @@ export function ListView() {
     restoreTask,
     deleteList,
     restoreList,
+    reuseList,
     renameList,
     uploadCover,
     setCover,
@@ -74,6 +76,9 @@ export function ListView() {
   const [adding, setAdding] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [titleDraft, setTitleDraft] = useState<string | null>(null)
+  const [reuseOpen, setReuseOpen] = useState(false)
+  const [reuseBusy, setReuseBusy] = useState(false)
+  const [reuseError, setReuseError] = useState<string | null>(null)
   const [attachmentsTask, setAttachmentsTask] = useState<Task | null>(null)
   const [coverEditor, setCoverEditor] = useState<{
     url: string
@@ -204,6 +209,25 @@ export function ListView() {
   async function handleAttachmentDelete(attachment: TaskAttachment) {
     if (attachment.kind === 'photo') await releaseCoversForPath(attachment.value)
     await deleteAttachment(attachment)
+  }
+
+  async function handleReuse(title: string) {
+    if (!list) return
+    setReuseBusy(true)
+    setReuseError(null)
+    try {
+      const listTasks = tasks
+        .filter((task) => task.listId === list.id)
+        .sort((a, b) => a.position - b.position)
+      const newId = await reuseList(list, listTasks, title)
+      setReuseOpen(false)
+      showToast({ message: 'Lista creata.', tone: 'success' })
+      navigate(`/lists/${newId}`)
+    } catch (err) {
+      setReuseError(err instanceof Error ? err.message : 'Errore di creazione.')
+    } finally {
+      setReuseBusy(false)
+    }
   }
 
   async function handleDeleteList() {
@@ -507,16 +531,32 @@ export function ListView() {
             <p className={`text-sm ${coverUrl ? 'text-white/80' : 'text-ink-muted'}`}>
               {openTasks.length} da fare · {doneTasks.length} completate
             </p>
-            {!coverUrl && (
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {!coverUrl && (
+                <button
+                  type="button"
+                  disabled={coverBusy}
+                  onClick={openCoverEditor}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-3 py-1 text-[11px] font-semibold text-ink-soft transition hover:bg-surface-muted disabled:opacity-50"
+                >
+                  <ImageIcon className="h-3.5 w-3.5" /> Aggiungi copertina
+                </button>
+              )}
               <button
                 type="button"
-                disabled={coverBusy}
-                onClick={openCoverEditor}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-3 py-1 text-[11px] font-semibold text-ink-soft transition hover:bg-surface-muted disabled:opacity-50"
+                onClick={() => {
+                  setReuseError(null)
+                  setReuseOpen(true)
+                }}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold transition ${
+                  coverUrl
+                    ? 'bg-white/20 text-white hover:bg-white/30'
+                    : 'bg-surface-soft text-ink-soft hover:bg-surface-muted'
+                }`}
               >
-                <ImageIcon className="h-3.5 w-3.5" /> Aggiungi copertina
+                <CopyIcon className="h-3.5 w-3.5" /> Riusa lista
               </button>
-            )}
+            </div>
           </div>
           {coverUrl && (
             <button
@@ -616,6 +656,17 @@ export function ListView() {
           onRemove={list.coverPath ? () => void handleCoverRemove() : undefined}
           removeLabel="Rimuovi copertina"
           onClose={closeCoverEditor}
+        />
+      )}
+
+      {reuseOpen && (
+        <ReuseListSheet
+          sourceTitle={list.title}
+          itemCount={tasks.filter((task) => task.listId === list.id).length}
+          busy={reuseBusy}
+          error={reuseError}
+          onConfirm={(title) => void handleReuse(title)}
+          onClose={() => setReuseOpen(false)}
         />
       )}
     </div>

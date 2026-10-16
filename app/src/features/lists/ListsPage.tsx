@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { Button, EmptyState, ErrorBanner, TextInput } from '../../ui/components'
+import { SearchField } from '../../ui/SearchField'
 import { ChevronRightIcon, ListIcon, PlusIcon } from '../../ui/icons'
 import { BackdropPhoto } from './BackdropPhoto'
 import { useLists } from './useLists'
@@ -14,7 +15,21 @@ export function ListsPage() {
   const [newTitle, setNewTitle] = useState('')
   const [creating, setCreating] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
   const coverUrls = usePhotoUrls(lists.map((list) => list.coverPath))
+
+  // Filter by list title or by any item title (TASK-SEARCH-…-001).
+  const normalizedQuery = query.trim().toLowerCase()
+  const visibleLists = useMemo(() => {
+    if (!normalizedQuery) return lists
+    return lists.filter(
+      (list) =>
+        list.title.toLowerCase().includes(normalizedQuery) ||
+        tasks.some(
+          (task) => task.listId === list.id && task.title.toLowerCase().includes(normalizedQuery),
+        ),
+    )
+  }, [lists, tasks, normalizedQuery])
 
   const counts = useMemo(() => {
     const map = new Map<string, { open: number; total: number }>()
@@ -66,6 +81,15 @@ export function ListsPage() {
       </form>
       {formError && <ErrorBanner message={formError} />}
 
+      {lists.length >= 4 && (
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder="Cerca liste e voci…"
+          label="Cerca tra le liste"
+        />
+      )}
+
       {loading ? (
         <CardListSkeleton rows={3} />
       ) : lists.length === 0 ? (
@@ -74,9 +98,13 @@ export function ListsPage() {
           title="Nessuna lista"
           description="Create la prima: spesa, film da vedere, valigie…"
         />
+      ) : visibleLists.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-line-strong bg-surface/60 px-4 py-6 text-center text-sm text-ink-faint">
+          Nessuna lista corrisponde a «{query.trim()}».
+        </p>
       ) : (
         <ul className="space-y-2">
-          {lists.map((list) => {
+          {visibleLists.map((list) => {
             const count = counts.get(list.id) ?? { open: 0, total: 0 }
             const coverUrl = list.coverPath ? (coverUrls[list.coverPath] ?? null) : null
             return (
