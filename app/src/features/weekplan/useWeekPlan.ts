@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { subscribeToAppResync } from '../../core/resync'
 import { toDateKey } from '../../core/dates'
 import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
@@ -97,6 +98,9 @@ export function useWeekPlan() {
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
 
   useEffect(() => {
     if (!coupleId) return

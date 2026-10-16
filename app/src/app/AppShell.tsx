@@ -8,6 +8,7 @@ import { useEventReminders } from '../features/calendar/reminders'
 import { useCouple } from '../features/coupling/CoupleProvider'
 import { useSettings } from '../features/settings/SettingsProvider'
 import { CalendarIcon, HeartIcon, HomeIcon, ListIcon, UserIcon } from '../ui/icons'
+import { ErrorBoundary } from './ErrorBoundary'
 import { titleForPath } from './titles'
 
 const NAV_ITEMS = [
@@ -73,9 +74,12 @@ export function AppShell() {
       </header>
 
       <main className="flex-1 px-5 pb-6 pt-1">
-        {/* Soft entrance on route change (TASK-UI-…-005); reduced motion off in CSS. */}
+        {/* Soft entrance on route change (TASK-UI-…-005); reduced motion off in CSS.
+            The boundary remounts per route, so a broken page never traps the shell. */}
         <div key={location.pathname} className="page-enter">
-          <Outlet />
+          <ErrorBoundary key={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
 
