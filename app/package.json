@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "test": "vitest run",
     "check:recurrence": "node scripts/check-recurrence.ts",
     "check:channels": "node scripts/check-channel-reuse.mjs",
     "preview": "vite preview"
@@ -18,6 +19,7 @@
     "@supabase/supabase-js": "^2.117.3",
     "@tailwindcss/vite": "^4.3.3",
     "jsbarcode": "^3.12.3",
+    "jszip": "^3.10.2",
     "motion": "^14.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -32,6 +34,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
     "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "vitest": "^5.0.5"
   }
 }
