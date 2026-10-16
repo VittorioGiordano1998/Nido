@@ -1,14 +1,15 @@
 # <Project> CI — GitLab
 #
-# Lint jobs run unconditionally. Addons append their own test/build jobs
-# through a .gitlab-ci.yml.append fragment; when an addon adds jobs,
-# uncomment the corresponding stage below and follow the addon's manual
-# merge notes.
+# Lint jobs run unconditionally. The app jobs (`app-test`, `app-build`) compile
+# the web app and run its unit tests on node 24, matching the Vercel build.
+# Addons append their own test/build jobs through a .gitlab-ci.yml.append
+# fragment; when an addon adds jobs, uncomment the corresponding stage below
+# and follow the addon's manual merge notes.
 
 stages:
   - lint
-  # - test
-  # - build
+  - test
+  - build
 
 variables:
   GIT_DEPTH: "0"
@@ -49,6 +50,40 @@ records:
   image: node:20
   script:
     - sh tools/check-records.sh
+
+# ───────────────────────────── test / build ─────────────────────────────
+
+# App unit tests over the pure logic (vitest; TASK-QA-VITTORIOGIORDANOYBQ-001).
+app-test:
+  stage: test
+  image: node:24
+  cache:
+    key:
+      files:
+        - app/package-lock.json
+    paths:
+      - app/node_modules/
+  script:
+    - cd app
+    - npm ci
+    - npm run test
+
+# The production build must compile before it reaches main
+# (TASK-CI-VITTORIOGIORDANOYBQ-001); Vercel publishes on push, so a type error
+# must fail here instead.
+app-build:
+  stage: build
+  image: node:24
+  cache:
+    key:
+      files:
+        - app/package-lock.json
+    paths:
+      - app/node_modules/
+  script:
+    - cd app
+    - npm ci
+    - npm run build
 
 # Scaffold updates and policy: the full `status` report (upgrades, policy
 # findings) against the registry. Needs the runner to reach the npm registry
