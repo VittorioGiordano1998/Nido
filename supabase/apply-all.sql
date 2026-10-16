@@ -1752,3 +1752,183 @@ exception when others then
   raise notice 'job nido-push-reminders non pianificato (%): abilita Cron e pg_net da Dashboard e rilancia questo blocco', sqlerrm;
 end;
 $$;
+
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016090000_nido_profile_sex.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - profile sex
+--
+-- Owner request (TASK-CYC-VITTORIOGIORDANOYBQ-002): a male/female value on the
+-- profile gates the cycle section, so the diary entry point only shows where it
+-- makes sense. The column is nullable on purpose: unset keeps today's behaviour
+-- and nothing else reads it. Idempotent.
+-- =============================================================================
+
+alter table public.profiles
+  add column if not exists sex text;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'profiles_sex_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_sex_check check (sex in ('male', 'female'));
+  end if;
+end $$;
+
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016110000_nido_cycle_calendar_shares.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - cycle calendar sharing (opt-in)
+--
+-- The diary can publish the period dates it computes onto the couple calendar:
+-- `profiles.cycle_calendar_share` is the explicit, revocable switch, and the
+-- published rows are `cycle_shares` with source = 'auto' (dates only — flow,
+-- mood, symptoms and notes never leave `cycle_logs`). Manual summaries keep
+-- source = 'manual' so the automatic reconcile never touches them.
+-- `cycle_shares` joins Realtime so both calendars update without a refresh.
+-- Idempotent.
+-- =============================================================================
+
+alter table public.profiles
+  add column if not exists cycle_calendar_share boolean not null default false;
+
+alter table public.cycle_shares
+  add column if not exists source text not null default 'manual';
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'cycle_shares_source_check'
+  ) then
+    alter table public.cycle_shares
+      add constraint cycle_shares_source_check check (source in ('manual', 'auto'));
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    create publication supabase_realtime;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'cycle_shares'
+  ) then
+    alter publication supabase_realtime add table public.cycle_shares;
+    alter table public.cycle_shares replica identity full;
+  end if;
+end;
+$$;
+
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016120000_nido_task_attachments.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - list item attachments (photos, links, notes)
+--
+-- Owner request (TASK-LIST-VITTORIOGIORDANOYBQ-002): a list item can carry any
+-- number of attachments. Photos live in the private `list-photos` bucket under
+-- `<couple_id>/<file>`; the row keeps the object path. Rows follow their item
+-- (FK cascade) and the couple RLS mirrors `tasks`. Realtime so both partners
+-- see new attachments without a refresh. Idempotent.
+-- =============================================================================
+
+create table if not exists public.task_attachments (
+  id uuid primary key default gen_random_uuid(),
+  task_id uuid not null references public.tasks (id) on delete cascade,
+  couple_id uuid not null references public.couples (id) on delete cascade,
+  kind text not null check (kind in ('photo', 'link', 'note')),
+  value text not null,
+  caption text,
+  created_by uuid not null references public.profiles (id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists task_attachments_task_idx
+  on public.task_attachments (task_id, created_at);
+create index if not exists task_attachments_couple_idx
+  on public.task_attachments (couple_id);
+
+alter table public.task_attachments enable row level security;
+
+drop policy if exists task_attachments_select on public.task_attachments;
+create policy task_attachments_select on public.task_attachments
+  for select to authenticated using (public.is_couple_member(couple_id));
+
+drop policy if exists task_attachments_insert on public.task_attachments;
+create policy task_attachments_insert on public.task_attachments
+  for insert to authenticated
+  with check (public.is_couple_member(couple_id) and created_by = auth.uid());
+
+drop policy if exists task_attachments_update on public.task_attachments;
+create policy task_attachments_update on public.task_attachments
+  for update to authenticated
+  using (public.is_couple_member(couple_id))
+  with check (public.is_couple_member(couple_id));
+
+drop policy if exists task_attachments_delete on public.task_attachments;
+create policy task_attachments_delete on public.task_attachments
+  for delete to authenticated using (public.is_couple_member(couple_id));
+
+do $$
+begin
+  if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    create publication supabase_realtime;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'task_attachments'
+  ) then
+    alter publication supabase_realtime add table public.task_attachments;
+    alter table public.task_attachments replica identity full;
+  end if;
+end;
+$$;
+
+-- ---------------------------------------------------------------------------
+-- Storage: private bucket, paths `<couple_id>/<file>` (second path segment
+-- never matters; the helper reads the first one).
+-- ---------------------------------------------------------------------------
+
+insert into storage.buckets (id, name, public)
+values ('list-photos', 'list-photos', false)
+on conflict (id) do nothing;
+
+drop policy if exists list_photos_objects_select on storage.objects;
+create policy list_photos_objects_select on storage.objects
+  for select to authenticated
+  using (bucket_id = 'list-photos' and public.is_couple_member(public.storage_couple_id(name)));
+
+drop policy if exists list_photos_objects_insert on storage.objects;
+create policy list_photos_objects_insert on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'list-photos' and public.is_couple_member(public.storage_couple_id(name)));
+
+drop policy if exists list_photos_objects_update on storage.objects;
+create policy list_photos_objects_update on storage.objects
+  for update to authenticated
+  using (bucket_id = 'list-photos' and public.is_couple_member(public.storage_couple_id(name)))
+  with check (bucket_id = 'list-photos' and public.is_couple_member(public.storage_couple_id(name)));
+
+drop policy if exists list_photos_objects_delete on storage.objects;
+create policy list_photos_objects_delete on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'list-photos' and public.is_couple_member(public.storage_couple_id(name)));
