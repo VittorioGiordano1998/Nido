@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-34 tasks — 8 Proposed · 0 Ready · 9 In Progress · 0 Blocked · 17 Done · 0 Cancelled
+37 tasks — 8 Proposed · 0 Ready · 12 In Progress · 0 Blocked · 17 Done · 0 Cancelled
 
 ## Proposed
 
@@ -28,8 +28,11 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | --- | --- | --- | --- | --- | --- | --- |
 | [TASK-CAL-VITTORIOGIORDANOYBQ-003](in-progress/TASK-CAL-VITTORIOGIORDANOYBQ-003-calendar-push-reminders-with-a-server-cron.md) | Calendar: push reminders with a server cron | Feature | calendar | Medium | 2026-10-15 | — |
 | [TASK-CYC-VITTORIOGIORDANOYBQ-001](in-progress/TASK-CYC-VITTORIOGIORDANOYBQ-001-cycle-tracker-owner-only-log-with-explicit-consent.md) | Cycle tracker: owner-only log with explicit consent | Feature | cycle tracker | Medium | 2026-10-15 | — |
+| [TASK-CYC-VITTORIOGIORDANOYBQ-002](in-progress/TASK-CYC-VITTORIOGIORDANOYBQ-002-cycle-sex-gate-in-profile-and-opt-in-calendar-sharing.md) | Cycle: sex gate in profile and opt-in calendar sharing | Feature | cycle tracker | Medium | 2026-10-16 | — |
 | [TASK-GDPR-VITTORIOGIORDANOYBQ-001](in-progress/TASK-GDPR-VITTORIOGIORDANOYBQ-001-gdpr-account-deletion.md) | GDPR: account deletion | Feature | gdpr | Medium | 2026-10-15 | — |
+| [TASK-LIST-VITTORIOGIORDANOYBQ-002](in-progress/TASK-LIST-VITTORIOGIORDANOYBQ-002-lists-attachments-for-items-photos-links-notes.md) | Lists: attachments for items (photos, links, notes) | Feature | lists | Medium | 2026-10-16 | — |
 | [TASK-LOY-VITTORIOGIORDANOYBQ-001](in-progress/TASK-LOY-VITTORIOGIORDANOYBQ-001-loyalty-cards.md) | Loyalty cards | Feature | loyalty cards | Low | 2026-10-15 | — |
+| [TASK-NOTIF-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NOTIF-VITTORIOGIORDANOYBQ-001-calendar-reminders-by-email-brevo.md) | Calendar reminders by email (Brevo) | Feature | notifications | Medium | 2026-10-16 | — |
 | [TASK-NUDGE-VITTORIOGIORDANOYBQ-001](in-progress/TASK-NUDGE-VITTORIOGIORDANOYBQ-001-partner-nudge-with-one-tap.md) | Partner nudge with one tap | Feature | nudges | Low | 2026-10-14 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-001](in-progress/TASK-PUSH-VITTORIOGIORDANOYBQ-001-push-notifications-partner-changes.md) | Push notifications: partner changes | Feature | push | Medium | 2026-10-14 | — |
 | [TASK-PUSH-VITTORIOGIORDANOYBQ-002](in-progress/TASK-PUSH-VITTORIOGIORDANOYBQ-002-push-calendar-activity-notifications.md) | Push: calendar activity notifications | Feature | push | Low | 2026-10-15 | — |

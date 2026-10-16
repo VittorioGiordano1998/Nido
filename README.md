@@ -56,6 +56,12 @@ npm run lint     # oxlint
 11. `*_nido_push_events.sql` — trigger su `events`: un evento di coppia avvisa il partner
 12. `*_nido_push_reminders.sql` — `push_reminders` + il job pg_cron che consegna i
     promemoria a app chiusa
+13. `*_nido_profile_sex.sql` — `profiles.sex` (`male` / `female`), la scelta che mostra la
+    sezione ciclo solo dove serve
+14. `*_nido_cycle_calendar_shares.sql` — condivisione opt-in del ciclo sul calendario
+    (`profiles.cycle_calendar_share`, `cycle_shares.source`, Realtime su `cycle_shares`)
+15. `*_nido_task_attachments.sql` — allegati delle voci di lista (foto, link, note) con il
+    bucket privato `list-photos`
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
@@ -64,8 +70,9 @@ in quel caso applicare solo le migrazioni mancanti, oppure l'eventuale file di f
 es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-question-bank.sql`, `supabase/apply-profile-preferences.sql`,
 `supabase/apply-onboarding.sql`, `supabase/apply-occasions.sql`,
-`supabase/apply-push-nudges.sql`, `supabase/apply-push-events.sql` o
-`supabase/apply-push-reminders.sql`).
+`supabase/apply-push-nudges.sql`, `supabase/apply-push-events.sql`,
+`supabase/apply-push-reminders.sql`, `supabase/apply-profile-sex.sql`,
+`supabase/apply-cycle-calendar.sql` o `supabase/apply-list-attachments.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -156,12 +163,32 @@ Le notifiche push usano Web Push con VAPID (decisione in
    Home (Safari → Condividi → Aggiungi a Home); con l'app chiusa la notifica arriva solo
    da lì.
 
-I **promemoria eventi** funzionano su due canali: mentre l'app è aperta scatta la notifica
+I **promemoria eventi** funzionano su più canali: mentre l'app è aperta scatta la notifica
 locale (15 minuti prima; alle 9 per i "tutto il giorno"); con l'app chiusa arrivano via push
-sui dispositivi con le notifiche attive. I promemoria lato server coprono i prossimi 7
+sui dispositivi con le notifiche attive **e via email** (Brevo) sugli indirizzi degli
+account. L'email è il canale affidabile: non dipende da browser, PWA o permessi del
+dispositivo. I promemoria lato server coprono i prossimi 7
 giorni e si aggiornano a ogni apertura dell'app o modifica degli eventi: se l'app non viene
 mai aperta per più di 7 giorni, oltre quell'orizzonte non arriva nulla (limite accettato).
 Gli eventi **privati** avvisano solo chi li ha creati.
+
+### Email dei promemoria (Brevo, una volta)
+
+I promemoria dei prossimi 7 giorni vengono anche inviati per email (oggetto
+`Promemoria: {titolo}`) dalla Edge Function `send-reminders`, così la consegna non dipende
+dallo stato del browser:
+
+1. **Account Brevo** e verifica del mittente: crea l'account (piano gratuito, ~300
+   email/giorno) e verifica l'indirizzo che invierà (Brevo → Senders).
+2. **Chiave API** (Brevo → SMTP & API → API keys, accesso "Transactional email").
+3. **Secret Supabase**: `BREVO_API_KEY` (la chiave), `EMAIL_FROM` (il mittente verificato,
+   es. `Nido <tu@email>` oppure solo l'indirizzo) e `APP_URL` (l'origine dell'app per il
+   link al calendario, es. `https://nidoapp-sage.vercel.app`) — con `supabase secrets set`
+   o dalla Dashboard → Edge Functions → Secrets.
+4. **Deploy**: `supabase functions deploy send-reminders`.
+
+Senza `BREVO_API_KEY` o `EMAIL_FROM` il canale email resta spento e la funzione lo segnala
+nei log; gli altri canali continuano a funzionare.
 
 ### Eliminazione account e reset (una volta)
 
@@ -191,8 +218,14 @@ Due strumenti pensati per l'uso privato/test:
 
 **M0, M1 e Fase 2** complete e pubblicate (calendario con ricorrenze e occasioni, liste, note,
 home, hub "Noi" con domanda del giorno, decisioni, wishlist con radar, piano settimanale,
-capsule, fatti, profilo con tema/accenti). **Push, promemoria al partner e push del
-calendario** (novità eventi e promemoria a app chiusa) implementati: mancano le chiavi,
-il deploy e i due script SQL lato owner (vedi "Push") e la prova di consegna sul dispositivo.
-Prossimo: **Fase 3** (cassaforte E2E, tracker ciclo, premium, risparmi, tessere).
+capsule, fatti, profilo con tema/accenti). **Push e promemoria** (novità eventi, promemoria
+al partner, promemoria a app chiusa) implementati e deployati; i promemoria arrivano anche
+**via email** (Brevo), così la consegna non dipende dallo stato del browser. Restano la
+prova di consegna sul dispositivo e i passi owner ancora aperti (vedi "Push").
+Prossimo: **Fase 3** (cassaforte E2E, tracker ciclo, premium, risparmi, tessere) — avviata:
+il **ciclo** ha il diario con consenso esplicito, la scelta maschio/femmina nel profilo e la
+condivisione opt-in sul calendario; le **liste** hanno gli allegati (foto, link, note) su
+ogni voce. Passi owner: `apply-profile-sex.sql`, `apply-cycle-calendar.sql` e
+`apply-list-attachments.sql` (vedi Database), poi il giro di prova a due account. Restano
+cassaforte E2E, premium, risparmi e tessere.
 Record in `docs/development/tasks/`.
