@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import { AVATAR_BUCKET, signPhotoUrls } from '../../core/photos'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 
@@ -8,6 +9,8 @@ export interface CoupleMember {
   userId: string
   displayName: string
   birthDate: string | null
+  /** Display-ready: an external OAuth URL or a signed storage URL. */
+  avatarUrl: string | null
   joinedAt: string
 }
 
@@ -63,12 +66,15 @@ async function fetchCouple(): Promise<CoupleInfo | null> {
   if (membersError) throw new Error(membersError.message)
 
   const rows = (memberRows ?? []) as Array<{ user_id: string; joined_at: string }>
-  const profileById = new Map<string, { display_name: string | null; birth_date: string | null }>()
+  const profileById = new Map<
+    string,
+    { display_name: string | null; birth_date: string | null; avatar_url: string | null }
+  >()
 
   if (rows.length > 0) {
     const { data: profileRows, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, display_name, birth_date')
+      .select('id, display_name, birth_date, avatar_url')
       .in(
         'id',
         rows.map((row) => row.user_id),
@@ -78,9 +84,34 @@ async function fetchCouple(): Promise<CoupleInfo | null> {
       id: string
       display_name: string | null
       birth_date: string | null
+      avatar_url: string | null
     }>) {
       profileById.set(profile.id, profile)
     }
+  }
+
+  // Avatars: external OAuth URLs go straight to the <img>; stored paths are
+  // signed here so views never touch Supabase.
+  const storedAvatarPaths = [
+    ...new Set(
+      [...profileById.values()]
+        .map((profile) => profile.avatar_url)
+        .filter((value): value is string => typeof value === 'string' && !/^https?:\/\//i.test(value)),
+    ),
+  ]
+  let signedAvatars: Record<string, string> = {}
+  if (storedAvatarPaths.length > 0) {
+    try {
+      signedAvatars = await signPhotoUrls(AVATAR_BUCKET, storedAvatarPaths)
+    } catch {
+      signedAvatars = {}
+    }
+  }
+  function avatarDisplay(userId: string): string | null {
+    const raw = profileById.get(userId)?.avatar_url ?? null
+    if (!raw) return null
+    if (/^https?:\/\//i.test(raw)) return raw
+    return signedAvatars[raw] ?? null
   }
 
   const couple = coupleRow as {
@@ -101,6 +132,7 @@ async function fetchCouple(): Promise<CoupleInfo | null> {
         userId: row.user_id,
         displayName: profile?.display_name ?? 'Senza nome',
         birthDate: profile?.birth_date ?? null,
+        avatarUrl: avatarDisplay(row.user_id),
         joinedAt: row.joined_at,
       }
     }),
