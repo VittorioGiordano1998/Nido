@@ -33,11 +33,12 @@ export function uploadListPhoto(coupleId: string, file: File): Promise<string> {
 
 /** Removes an object when nothing references it any more (best effort). */
 export async function removePhotoIfUnused(path: string): Promise<void> {
-  const [attachment, cover] = await Promise.all([
+  const [attachment, cover, hero] = await Promise.all([
     supabase.from('task_attachments').select('id').eq('value', path).limit(1).maybeSingle(),
     supabase.from('task_lists').select('id').eq('cover_path', path).limit(1).maybeSingle(),
+    supabase.from('couples').select('id').eq('hero_path', path).limit(1).maybeSingle(),
   ])
-  if (attachment.data || cover.data) return
+  if (attachment.data || cover.data || hero.data) return
   await supabase.storage.from(PHOTO_BUCKET).remove([path])
 }
 

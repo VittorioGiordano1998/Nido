@@ -4,6 +4,7 @@ import { Button } from '../../ui/components'
 import { useAuth } from '../auth/AuthProvider'
 import { OnboardingSlides } from '../auth/OnboardingSlides'
 import { CoupleCard } from './CoupleCard'
+import { CoverCard } from './CoverCard'
 import { CycleCard } from './CycleCard'
 import { DeleteAccountCard } from './DeleteAccountCard'
 import { NotificationsCard } from './NotificationsCard'
@@ -22,7 +23,7 @@ export function ProfilePage() {
   return (
     <div className="space-y-5 pt-2">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold text-ink">Profilo</h1>
+        <h1 className="text-balance text-2xl font-bold text-ink">Profilo</h1>
         <p className="text-sm text-ink-muted">
           I tuoi dati, la vostra coppia e le sezioni attive.
         </p>
@@ -30,6 +31,7 @@ export function ProfilePage() {
 
       <ProfileCard profile={profile} />
       <PersonalizationCard />
+      <CoverCard />
       <NotificationsCard />
       <SecurityCard />
       <CycleCard visible={!profile.loading && profile.sex !== 'male'} />

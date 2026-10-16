@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
+import { BucketPage } from '../features/bucket/BucketPage'
 import { CalendarPage } from '../features/calendar/CalendarPage'
 import { CapsulesPage } from '../features/capsules/CapsulesPage'
 import { CyclePage } from '../features/cycle/CyclePage'
@@ -10,8 +11,10 @@ import { HomePage } from '../features/home/HomePage'
 import { ListsPage } from '../features/lists/ListsPage'
 import { ListView } from '../features/lists/ListView'
 import { LoyaltyPage } from '../features/loyalty/LoyaltyPage'
+import { MemoriesPage } from '../features/memories/MemoriesPage'
 import { NotesPage } from '../features/notes/NotesPage'
 import { PairPage } from '../features/coupling/PairPage'
+import { PickPage } from '../features/pick/PickPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { QuestionPage } from '../features/question/QuestionPage'
 import { SavingsPage } from '../features/savings/SavingsPage'
@@ -44,6 +47,9 @@ export function AppRouter() {
               <Route path="/us/loyalty" element={<LoyaltyPage />} />
               <Route path="/us/facts" element={<FactsPage />} />
               <Route path="/us/capsules" element={<CapsulesPage />} />
+              <Route path="/us/memories" element={<MemoriesPage />} />
+              <Route path="/us/bucket" element={<BucketPage />} />
+              <Route path="/us/pick" element={<PickPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/cycle" element={<CyclePage />} />
             </Route>

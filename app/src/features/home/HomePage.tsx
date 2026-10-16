@@ -1,17 +1,21 @@
 import { Link } from 'react-router-dom'
 
-import { daysSince, formatDateIt, formatShortDateIt, formatTimeIt } from '../../core/dates'
-import { Card, EmptyState, Spinner } from '../../ui/components'
-import { ChevronRightIcon, HeartIcon, LockIcon } from '../../ui/icons'
+import { formatShortDateIt, formatTimeIt } from '../../core/dates'
+import { Card, EmptyState } from '../../ui/components'
+import { CalendarIllustration, ChecklistIllustration, NestIllustration } from '../../ui/illustrations'
+import { ChevronRightIcon, LockIcon } from '../../ui/icons'
+import { CardListSkeleton } from '../../ui/Skeleton'
 import BlurText from '../../ui/reactbits/BlurText'
-import CountUp from '../../ui/reactbits/CountUp'
 import { useAuth } from '../auth/AuthProvider'
 import { useUpcomingEvents } from '../calendar/useEvents'
 import { useCouple } from '../coupling/CoupleProvider'
+import { HomeHero } from './HomeHero'
 import { useOpenTasks } from '../lists/useLists'
 import { notePreview, useNotes } from '../notes/useNotes'
+import { MoodCard } from '../mood/MoodCard'
 import { DailyQuestionCard } from '../question/DailyQuestionCard'
 import { useSettings } from '../settings/SettingsProvider'
+import { StickyCard } from '../stickies/StickyCard'
 
 const todayLabel = new Intl.DateTimeFormat('it-IT', {
   weekday: 'long',
@@ -36,7 +40,6 @@ export function HomePage() {
   const myId = session?.user.id
   const me = couple?.members.find((member) => member.userId === myId)
   const partner = couple?.members.find((member) => member.userId !== myId)
-  const days = couple?.startedAt ? daysSince(couple.startedAt) : null
   const latestNote = notes[0] ?? null
 
   return (
@@ -45,7 +48,7 @@ export function HomePage() {
         <p className="text-xs capitalize text-ink-faint">{todayLabel}</p>
         <BlurText
           text={`Ciao, ${me?.displayName ?? 'ciao'}`}
-          className="text-2xl font-bold text-ink"
+          className="text-balance text-2xl font-bold text-ink"
           delay={90}
           stepDuration={0.28}
           direction="top"
@@ -57,59 +60,42 @@ export function HomePage() {
         </p>
       </header>
 
-      {partner === undefined && (
-        <Card className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-ink">Completa la coppia</p>
-            <p className="text-xs text-ink-muted">Manca il secondo posto nel nido.</p>
-          </div>
-          <Link
-            to="/pair"
-            className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-700"
-          >
-            Invita
-          </Link>
-        </Card>
-      )}
+      <HomeHero />
 
-      {days !== null && (
-        <Card className="flex items-center gap-4 bg-accent-50 ring-accent-200">
-          <HeartIcon className="h-8 w-8 text-accent-glyph" />
-          <div>
-            <CountUp
-              to={days}
-              separator="."
-              duration={1.4}
-              className="text-3xl font-bold text-accent-ink"
-            />
-            <p className="text-xs font-semibold uppercase tracking-wide text-accent-glyph">
-              giorni insieme
-            </p>
-            {couple?.startedAt && (
-              <p className="text-xs text-ink-muted">dal {formatDateIt(couple.startedAt)}</p>
-            )}
-          </div>
-        </Card>
-      )}
+      {enabled.us && <MoodCard />}
 
       {enabled.us && <DailyQuestionCard />}
+
+      {enabled.us && <StickyCard />}
 
       {enabled.calendar && (
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             {sectionTitle('Prossimi eventi')}
-            <Link to="/calendar" className="text-xs font-semibold text-accent-ink hover:underline">
+            <Link
+              to="/calendar"
+              viewTransition
+              className="text-xs font-semibold text-accent-ink hover:underline"
+            >
               Calendario
             </Link>
           </div>
           {upcomingLoading ? (
-            <div className="flex justify-center py-4">
-              <Spinner />
-            </div>
+            <CardListSkeleton rows={2} />
           ) : upcoming.length === 0 ? (
             <EmptyState
+              illustration={<CalendarIllustration className="h-12 w-12 text-accent-glyph" />}
               title="Ancora nessun evento"
-              description="Aggiungi il primo appuntamento dal calendario: apparirà qui."
+              description="Aggiungete il primo appuntamento: apparirà qui per entrambi."
+              action={
+                <Link
+                  to="/calendar"
+                  viewTransition
+                  className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
+                >
+                  Apri il calendario
+                </Link>
+              }
             />
           ) : (
             <Card className="divide-y divide-line">
@@ -117,9 +103,10 @@ export function HomePage() {
                 <Link
                   key={occurrence.key}
                   to="/calendar"
+                  viewTransition
                   className="flex items-center gap-3 py-2.5 first:pt-1 last:pb-1"
                 >
-                  <span className="w-12 shrink-0 text-xs font-semibold capitalize text-ink-muted">
+                  <span className="w-12 shrink-0 text-xs font-semibold capitalize tabular-nums text-ink-muted">
                     {formatShortDateIt(occurrence.startAt)}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -148,18 +135,30 @@ export function HomePage() {
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             {sectionTitle('Attività aperte')}
-            <Link to="/lists" className="text-xs font-semibold text-accent-ink hover:underline">
+            <Link
+              to="/lists"
+              viewTransition
+              className="text-xs font-semibold text-accent-ink hover:underline"
+            >
               Liste
             </Link>
           </div>
           {tasksLoading ? (
-            <div className="flex justify-center py-4">
-              <Spinner />
-            </div>
+            <CardListSkeleton rows={2} />
           ) : openTasks.length === 0 ? (
             <EmptyState
+              illustration={<ChecklistIllustration className="h-12 w-12 text-accent-glyph" />}
               title="Nessuna attività"
               description="Le liste condivise sono vuote: aggiungete qualcosa insieme."
+              action={
+                <Link
+                  to="/lists"
+                  viewTransition
+                  className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
+                >
+                  Apri le liste
+                </Link>
+              }
             />
           ) : (
             <Card className="divide-y divide-line">
@@ -167,6 +166,7 @@ export function HomePage() {
                 <Link
                   key={task.id}
                   to={`/lists/${task.listId}`}
+                  viewTransition
                   className="flex items-center gap-3 py-2.5 first:pt-1 last:pb-1"
                 >
                   <span className="min-w-0 flex-1">
@@ -186,21 +186,33 @@ export function HomePage() {
       <section className="space-y-2">
         <div className="flex items-center justify-between">
           {sectionTitle('Note')}
-          <Link to="/notes" className="text-xs font-semibold text-accent-ink hover:underline">
+          <Link
+            to="/notes"
+            viewTransition
+            className="text-xs font-semibold text-accent-ink hover:underline"
+          >
             Tutte
           </Link>
         </div>
         {notesLoading ? (
-          <div className="flex justify-center py-4">
-            <Spinner />
-          </div>
+          <CardListSkeleton rows={1} />
         ) : latestNote === null ? (
           <EmptyState
+            illustration={<NestIllustration className="h-12 w-12 text-accent-glyph" />}
             title="Nessuna nota"
             description="Aprite il blocchetto condiviso per il primo appunto."
+            action={
+              <Link
+                to="/notes"
+                viewTransition
+                className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
+              >
+                Apri le note
+              </Link>
+            }
           />
         ) : (
-          <Link to="/notes" className="block">
+          <Link to="/notes" viewTransition className="block">
             <Card className="transition hover:ring-accent-300">
               <span className="block truncate text-sm font-semibold text-ink">
                 {latestNote.title.trim() || 'Senza titolo'}
