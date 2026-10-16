@@ -5,6 +5,7 @@ import { Button, ErrorBanner, Field, Select, TextArea, TextInput } from '../../u
 import { CloseIcon, LockIcon, TrashIcon } from '../../ui/icons'
 import { parseRecurrence, serializeRecurrence } from './recurrence'
 import type { RecurrenceFrequency } from './recurrence'
+import { REMINDER_OPTIONS } from './reminders'
 import type { CalendarEvent, EventInput, EventOccasion, EventVisibility } from './useEvents'
 
 interface EventEditorProps {
@@ -40,6 +41,7 @@ interface FormState {
   location: string
   description: string
   visibility: EventVisibility
+  remindMinutes: number | null
 }
 
 function isoFromParts(dateKey: string, time: string): string {
@@ -71,6 +73,7 @@ function initialState(
       location: '',
       description: '',
       visibility: 'couple',
+      remindMinutes: null,
     }
   }
   return {
@@ -89,6 +92,7 @@ function initialState(
     location: event.location ?? '',
     description: event.description ?? '',
     visibility: event.visibility,
+    remindMinutes: event.remindMinutes,
   }
 }
 
@@ -188,6 +192,7 @@ export function EventEditor({
       rrule,
       occasion: form.occasion === 'none' ? null : form.occasion,
       occasionFor: form.occasion === 'none' ? null : form.occasionFor || myId,
+      remindMinutes: form.remindMinutes,
     })
   }
 
@@ -284,6 +289,28 @@ export function EventEditor({
               </Field>
             </div>
           )}
+
+          <Field
+            label="Promemoria"
+            hint="Avviso su dispositivo ed email anche ad app chiusa; per i tutto il giorno il conto parte dalle 9:00."
+          >
+            <Select
+              value={form.remindMinutes === null ? 'default' : String(form.remindMinutes)}
+              onChange={(changeEvent) => {
+                const raw = changeEvent.target.value
+                setForm({ ...form, remindMinutes: raw === 'default' ? null : Number(raw) })
+              }}
+            >
+              {REMINDER_OPTIONS.map((option) => (
+                <option
+                  key={option.label}
+                  value={option.value === null ? 'default' : String(option.value)}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
           <Field label="Ripetizione">
             <Select
