@@ -46,14 +46,22 @@ export function AppShell() {
           <span className="h-2.5 w-2.5 rounded-full bg-accent-500" />
           Nido
         </span>
-        {partner && (
-          <span
-            title={partner.displayName}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-sage-300 text-xs font-bold text-sage-700 dark:bg-sage-700 dark:text-sage-100"
-          >
-            {initials(partner.displayName)}
-          </span>
-        )}
+        {partner &&
+          (partner.avatarUrl ? (
+            <img
+              src={partner.avatarUrl}
+              alt={partner.displayName}
+              title={partner.displayName}
+              className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
+            />
+          ) : (
+            <span
+              title={partner.displayName}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-sage-300 text-xs font-bold text-sage-700 dark:bg-sage-700 dark:text-sage-100"
+            >
+              {initials(partner.displayName)}
+            </span>
+          ))}
       </header>
 
       <main className="flex-1 px-5 pb-6 pt-1">

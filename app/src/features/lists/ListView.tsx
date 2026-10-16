@@ -387,7 +387,19 @@ export function ListView() {
                       : 'bg-surface-soft text-ink-faint hover:bg-surface-muted'
                 }`}
               >
-                {assignee ? initials(assignee.displayName) : '—'}
+                {assignee ? (
+                assignee.avatarUrl ? (
+                  <img
+                    src={assignee.avatarUrl}
+                    alt=""
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : (
+                  initials(assignee.displayName)
+                )
+              ) : (
+                '—'
+              )}
               </button>
             )}
             {!task.done && partner && (
