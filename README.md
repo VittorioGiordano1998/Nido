@@ -35,6 +35,7 @@ Comandi utili (su questa macchina `npm` va lanciato via `cmd /c`):
 npm run dev      # dev server
 npm run build    # build di produzione (tsc + vite)
 npm run lint     # oxlint
+npm run test     # unit test (vitest) sulla logica pura
 ```
 
 ## Database
@@ -76,6 +77,12 @@ npm run lint     # oxlint
     stickies, bucket e Ricordi e toglie la copertina
 23. `*_nido_couple_hero.sql` — copertina della Home su `couples` (percorso + inquadratura;
     pubblica `couples` su Realtime)
+24. `*_nido_push_moments.sql` — trigger che chiamano `send-push` per bigliettini e check-in
+    (stessi segnaposto di `apply-push-events.sql`: `<project-ref>` e `<SEND_PUSH_SECRET>`)
+25. `*_nido_notification_prefs.sql` — preferenze di notifica per tipo su `profiles`
+    (eventi, promemoria, bigliettini, check-in, campanelli), lette dalle Edge Function
+26. `*_nido_event_reminders.sql` — promemoria personalizzato per evento
+    (`events.remind_minutes`: null = default, 0 = nessuno, minuti prima altrimenti)
 
 Alternative di applicazione: Supabase CLI (`supabase link` + `supabase db push`) oppure il
 file unico `supabase/apply-all.sql` incollato nell'SQL Editor del dashboard — pensato per un
@@ -90,7 +97,9 @@ es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-list-backdrops.sql`, `supabase/apply-avatars-bucket.sql`,
 `supabase/apply-moods.sql`, `supabase/apply-stickies.sql`, `supabase/apply-bucket.sql`,
 `supabase/apply-memories.sql` (dopo `apply-bucket.sql`, c'è la chiave esterna),
-`supabase/apply-reset-couple.sql` o `supabase/apply-couple-hero.sql`).
+`supabase/apply-reset-couple.sql`, `supabase/apply-couple-hero.sql`,
+`supabase/apply-push-moments.sql` (dopo aver sostituito i segnaposto),
+`supabase/apply-notification-prefs.sql` o `supabase/apply-event-reminders.sql`).
 
 ### Keep-alive (piano gratuito)
 
@@ -262,4 +271,17 @@ numeri tabellari e transizioni morbide tra pagine (View Transitions, con rispett
 `prefers-reduced-motion`). Passi owner: `apply-moods.sql`, `apply-stickies.sql`,
 `apply-bucket.sql`, `apply-memories.sql` (dopo `apply-bucket.sql`), `apply-reset-couple.sql`
 (v2) e `apply-couple-hero.sql`, poi il giro di prova a due account.
+
+Ultimo giro: **test automatici** (Vitest sulla logica pura: ricorrenze, date, streak,
+selezione della domanda, inquadratura, promemoria) e pipeline che **compila e testa** a ogni
+push (`app-test`, `app-build`); **error boundary** con ricarica (niente più schermate
+bianche) e **resync silenzioso** quando l'app torna in primo piano; **push anche per
+bigliettini e check-in** (trigger SQL verso `send-push`) e **preferenze di notifica per
+tipo** (eventi, promemoria, bigliettini, check-in, campanelli) lette dal server; **ricerca**
+in note, liste e Ricordi; **"un anno fa oggi"** nei Ricordi e **modifica di didascalia e
+data** di un ricordo; **promemoria personalizzato per evento** (nessuno, 15 min, 1 ora, 1
+giorno…); **"Riusa lista"** per la spesa ricorrente; **export dei dati** (ZIP con JSON e
+foto) dal Profilo. Passi owner: `apply-push-moments.sql` (con i segnaposto sostituiti),
+`apply-notification-prefs.sql` e `apply-event-reminders.sql`, poi il redeploy di `send-push`
+e `send-reminders` (ora leggono le preferenze) e il giro a due account.
 Record in `docs/development/tasks/`.

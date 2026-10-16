@@ -13,6 +13,16 @@ or a runner is required — see the installed addons' docs).
 | lint | `records` | owner-qualified ids unique; filename == the frontmatter `id`; every record in its generated index | always on |
 | lint | `scaffold` | scaffold updates and policy against the registry | opt-in (needs registry access) |
 | lint | `conventions` | project-specific convention checks (commented template in `.gitlab-ci.yml`) | always on |
+| test | `app-test` | `npm ci && npm run test` in `app/` (vitest, pure logic) | always on |
+| build | `app-build` | `npm ci && npm run build` in `app/` (tsc + vite) | always on |
+
+## App jobs
+
+`app-test` and `app-build` fail the pipeline before an error reaches `main` (the Vercel
+build publishes automatically on push, so the type check must happen here). Both run on
+`node:24` — the version `app/package.json` pins and Vercel builds with — and cache
+`app/node_modules` keyed by the lockfile. Locally the same checks are `cd app && npm run
+test` and `npm run build`.
 
 Pipelines run for merge requests, for pushes to `main`, and for release tags
 (`<id>/v<semver>` and `vscode/v<semver>`, which run the publish jobs below) — see the
