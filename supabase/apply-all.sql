@@ -2433,3 +2433,118 @@ begin
   end if;
 end;
 $$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016210000_nido_push_moments.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - push per bigliettini e check-in (TASK-PUSH-VITTORIOGIORDANOYBQ-003)
+--
+-- Two triggers call the `send-push` Edge Function on row insert, exactly like
+-- `20261015220000_nido_push_events.sql`:
+--   * stickies  -> the recipient is notified of the note left for them;
+--   * moods     -> the partner is notified of the first check-in of the day
+--                  (same-day edits are an UPDATE of the same row, so they do
+--                  not fire again).
+-- Up to when the placeholders are substituted the triggers are not created and
+-- the apply script reports it. Idempotent.
+-- =============================================================================
+
+do $$
+declare
+  v_url text := 'https://<project-ref>.supabase.co/functions/v1/send-push';
+  v_secret text := '<SEND_PUSH_SECRET>';
+  v_headers text;
+begin
+  if v_url like '%<%>%' or v_secret like '%<%>%' then
+    raise notice 'segnaposto non sostituiti: trigger send_push_on_sticky / send_push_on_mood non creati (sostituisci <project-ref> e <SEND_PUSH_SECRET> e rilancia)';
+    return;
+  end if;
+
+  if not exists (select 1 from pg_namespace where nspname = 'supabase_functions') then
+    raise notice 'schema supabase_functions assente: trigger non creati (crea prima un webhook dal Dashboard e rilancia)';
+    return;
+  end if;
+
+  v_headers := jsonb_build_object(
+    'Content-type', 'application/json',
+    'x-webhook-secret', v_secret
+  )::text;
+
+  drop trigger if exists send_push_on_sticky on public.stickies;
+  execute format($trigger$
+    create trigger send_push_on_sticky
+      after insert on public.stickies
+      for each row
+      execute function supabase_functions.http_request(%L, 'POST', %L, '{}', '1000')
+  $trigger$, v_url, v_headers);
+
+  drop trigger if exists send_push_on_mood on public.moods;
+  execute format($trigger$
+    create trigger send_push_on_mood
+      after insert on public.moods
+      for each row
+      execute function supabase_functions.http_request(%L, 'POST', %L, '{}', '1000')
+  $trigger$, v_url, v_headers);
+end;
+$$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016220000_nido_notification_prefs.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - notification preferences (TASK-NOTIF-VITTORIOGIORDANOYBQ-002)
+--
+-- Per-account switchboard for partner notifications, stored on `profiles` so
+-- it applies to every device and to the server-side deliveries: `send-push`
+-- and `send-reminders` read the recipient's row and skip muted types. Five
+-- boolean keys, all on by default; an absent or malformed value behaves as on.
+-- Idempotent.
+-- =============================================================================
+
+alter table public.profiles
+  add column if not exists notification_prefs jsonb not null
+  default '{"events":true,"reminders":true,"stickies":true,"moods":true,"nudges":true}'::jsonb;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'profiles_notification_prefs_object_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_notification_prefs_object_check
+      check (jsonb_typeof(notification_prefs) = 'object');
+  end if;
+end;
+$$;
+
+-- ============================================================================
+-- Source: supabase/migrations/20261016230000_nido_event_reminders.sql
+-- ============================================================================
+
+-- =============================================================================
+-- Nido - promemoria personalizzato per evento (TASK-CAL-VITTORIOGIORDANOYBQ-004)
+--
+-- `events.remind_minutes`: null keeps the default (15 minutes before, 9:00 for
+-- all-day events), 0 mutes the reminder for that event, a positive value is
+-- the lead time in minutes (up to a week) counted back from the start — or
+-- from 9:00 for all-day events. The client materializes `push_reminders` from
+-- it; the existing pipeline is unchanged. Idempotent.
+-- =============================================================================
+
+alter table public.events
+  add column if not exists remind_minutes int;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'events_remind_minutes_check'
+  ) then
+    alter table public.events
+      add constraint events_remind_minutes_check
+      check (remind_minutes is null or remind_minutes between 0 and 10080);
+  end if;
+end;
+$$;
