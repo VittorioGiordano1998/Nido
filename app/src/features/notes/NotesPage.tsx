@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { formatShortDateIt } from '../../core/dates'
 import { Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { NestIllustration } from '../../ui/illustrations'
-import { PlusIcon } from '../../ui/icons'
+import { SearchField } from '../../ui/SearchField'
 import { CardListSkeleton } from '../../ui/Skeleton'
+import { PlusIcon } from '../../ui/icons'
 import { useToast } from '../../ui/toast'
 import { NoteEditor } from './NoteEditor'
 import { notePreview, useNotes } from './useNotes'
@@ -16,6 +17,18 @@ export function NotesPage() {
   const [editor, setEditor] = useState<{ note: Note | null } | null>(null)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
+
+  // Client-side filter over title and body (TASK-SEARCH-…-001).
+  const normalizedQuery = query.trim().toLowerCase()
+  const visibleNotes = useMemo(() => {
+    if (!normalizedQuery) return notes
+    return notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(normalizedQuery) ||
+        note.body.toLowerCase().includes(normalizedQuery),
+    )
+  }, [notes, normalizedQuery])
 
   function openNew() {
     setFormError(null)
@@ -85,6 +98,15 @@ export function NotesPage() {
 
       {error && <ErrorBanner message={error} />}
 
+      {notes.length >= 4 && (
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder="Cerca nelle note…"
+          label="Cerca tra le note"
+        />
+      )}
+
       {loading ? (
         <CardListSkeleton rows={3} />
       ) : notes.length === 0 ? (
@@ -102,9 +124,13 @@ export function NotesPage() {
             </button>
           }
         />
+      ) : visibleNotes.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-line-strong bg-surface/60 px-4 py-6 text-center text-sm text-ink-faint">
+          Nessuna nota corrisponde a «{query.trim()}».
+        </p>
       ) : (
         <ul className="space-y-2">
-          {notes.map((note) => (
+          {visibleNotes.map((note) => (
             <li key={note.id}>
               <button type="button" onClick={() => openNote(note)} className="w-full">
                 <Card className="w-full text-left transition hover:ring-accent-300">
