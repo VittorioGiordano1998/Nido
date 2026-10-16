@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { subscribeToAppResync } from '../../core/resync'
 import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
@@ -27,6 +28,8 @@ export interface CalendarEvent {
   occasion: EventOccasion | null
   /** Who the occasion is for. */
   occasionFor: string | null
+  /** Custom reminder lead in minutes; null = default, 0 = none (TASK-CAL-…-004). */
+  remindMinutes: number | null
 }
 
 export interface EventInput {
@@ -40,6 +43,7 @@ export interface EventInput {
   rrule: string | null
   occasion: EventOccasion | null
   occasionFor: string | null
+  remindMinutes: number | null
 }
 
 interface EventRow {
@@ -57,10 +61,11 @@ interface EventRow {
   rrule: string | null
   occasion: string | null
   occasion_for: string | null
+  remind_minutes: number | null
 }
 
 const EVENT_COLUMNS =
-  'id, couple_id, title, description, location, start_at, end_at, all_day, visibility, created_by, updated_at, rrule, occasion, occasion_for'
+  'id, couple_id, title, description, location, start_at, end_at, all_day, visibility, created_by, updated_at, rrule, occasion, occasion_for, remind_minutes'
 
 function rowToEvent(row: EventRow): CalendarEvent {
   return {
@@ -79,6 +84,7 @@ function rowToEvent(row: EventRow): CalendarEvent {
     occasion:
       row.occasion === 'birthday' || row.occasion === 'anniversary' ? row.occasion : null,
     occasionFor: row.occasion_for,
+    remindMinutes: row.remind_minutes,
   }
 }
 
@@ -133,6 +139,9 @@ export function useEvents() {
     void refresh()
   }, [refresh])
 
+  // Silent resync when the app comes back to the foreground (TASK-ROB-…-002).
+  useEffect(() => subscribeToAppResync(() => void refresh()), [refresh])
+
   useEffect(() => {
     if (!coupleId) return
     const channel = supabase
@@ -174,6 +183,7 @@ export function useEvents() {
           rrule: input.rrule,
           occasion: input.occasion,
           occasion_for: input.occasionFor,
+          remind_minutes: input.remindMinutes,
         })
         .select(EVENT_COLUMNS)
         .single()
@@ -197,6 +207,7 @@ export function useEvents() {
         rrule: input.rrule,
         occasion: input.occasion,
         occasion_for: input.occasionFor,
+        remind_minutes: input.remindMinutes,
       })
       .eq('id', id)
       .select(EVENT_COLUMNS)
@@ -229,6 +240,7 @@ export function useEvents() {
         rrule: event.rrule,
         occasion: event.occasion,
         occasion_for: event.occasionFor,
+        remind_minutes: event.remindMinutes,
       })
       .select(EVENT_COLUMNS)
       .single()

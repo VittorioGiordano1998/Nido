@@ -30,10 +30,31 @@ const RESCHEDULE_MS = 5 * 60 * 1000
 /** Server-side reminders are materialized this far ahead, then refreshed. */
 const PUSH_HORIZON_DAYS = 7
 
-export function reminderAtMs(occurrence: EventOccurrence): number {
+/**
+ * Preset lead times for the event editor (TASK-CAL-…-004): `null` keeps the
+ * default, `0` disables the reminder for that event.
+ */
+export const REMINDER_OPTIONS: ReadonlyArray<{ value: number | null; label: string }> = [
+  { value: null, label: 'Come sempre (15 min prima)' },
+  { value: 0, label: 'Nessuno' },
+  { value: 15, label: '15 minuti prima' },
+  { value: 30, label: '30 minuti prima' },
+  { value: 60, label: '1 ora prima' },
+  { value: 120, label: '2 ore prima' },
+  { value: 1440, label: '1 giorno prima' },
+]
+
+/**
+ * When the reminder for an occurrence fires, or null when the event mutes it.
+ * Timed events count back from the start; all-day ones count back from 9:00 of
+ * their own day (so "1 giorno prima" lands at 9:00 the day before).
+ */
+export function reminderAtMs(occurrence: EventOccurrence): number | null {
+  const custom = occurrence.event.remindMinutes
+  if (custom === 0) return null
   const start = new Date(occurrence.startAt)
   if (occurrence.event.allDay) {
-    return new Date(
+    const base = new Date(
       start.getFullYear(),
       start.getMonth(),
       start.getDate(),
@@ -41,8 +62,9 @@ export function reminderAtMs(occurrence: EventOccurrence): number {
       0,
       0,
     ).getTime()
+    return base - (custom ?? 0) * 60 * 1000
   }
-  return start.getTime() - LEAD_MINUTES * 60 * 1000
+  return start.getTime() - (custom ?? LEAD_MINUTES) * 60 * 1000
 }
 
 function notificationBody(occurrence: EventOccurrence): string {
@@ -77,13 +99,13 @@ async function materializePushReminders(
   const rows = expandOccurrences(events, dayStart, horizonEnd)
     .filter((occurrence) => {
       const at = reminderAtMs(occurrence)
-      return at > now && at <= horizonEnd.getTime()
+      return at !== null && at > now && at <= horizonEnd.getTime()
     })
     .map((occurrence) => ({
       couple_id: coupleId,
       event_id: occurrence.event.id,
       occurrence_key: occurrence.key,
-      fire_at: new Date(reminderAtMs(occurrence)).toISOString(),
+      fire_at: new Date(reminderAtMs(occurrence) ?? now).toISOString(),
       only_for: occurrence.event.visibility === 'private' ? occurrence.event.createdBy : null,
       created_by: userId,
       title: occurrence.event.title,
@@ -148,7 +170,7 @@ export function useEventReminders(enabled: boolean): void {
     const timers: number[] = []
     for (const occurrence of occurrences) {
       const at = reminderAtMs(occurrence)
-      if (at < now || at > horizon) continue
+      if (at === null || at < now || at > horizon) continue
       if (fired.current.has(occurrence.key)) continue
       timers.push(
         window.setTimeout(() => {
