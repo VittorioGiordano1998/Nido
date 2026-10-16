@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Card, ErrorBanner } from '../../ui/components'
 import { useAuth } from '../auth/AuthProvider'
 import { disablePush, enablePush, isPushConfigured, isPushSubscribed } from '../settings/push'
+import { NOTIFICATION_PREF_DEFS, useNotificationPrefs } from '../settings/notificationPrefs'
 import { useSettings } from '../settings/SettingsProvider'
 
 type PermissionState = NotificationPermission | 'unsupported'
@@ -52,6 +53,7 @@ export function NotificationsCard() {
   const { session } = useAuth()
   const userId = session?.user.id
   const { remindersEnabled, setRemindersEnabled } = useSettings()
+  const notificationPrefs = useNotificationPrefs()
   const [permission, setPermission] = useState<PermissionState>(currentPermission)
   const [pushState, setPushState] = useState<'loading' | 'off' | 'on'>('loading')
   const [busy, setBusy] = useState(false)
@@ -144,6 +146,30 @@ export function NotificationsCard() {
             label="Attiva o disattiva le notifiche push"
             onChange={() => void togglePush()}
           />
+        </div>
+
+        <div className="space-y-3 border-t border-line pt-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+            Cosa mi avvisa
+          </p>
+          {notificationPrefs.error && <ErrorBanner message={notificationPrefs.error} />}
+          {NOTIFICATION_PREF_DEFS.map((def) => (
+            <div key={def.key} className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-ink">{def.label}</p>
+                <p className="text-xs text-ink-muted">{def.description}</p>
+              </div>
+              <Switch
+                checked={notificationPrefs.prefs[def.key]}
+                disabled={notificationPrefs.loading}
+                label={`Attiva o disattiva: ${def.label}`}
+                onChange={() => void notificationPrefs.toggle(def.key)}
+              />
+            </div>
+          ))}
+          <p className="text-xs text-ink-faint">
+            La scelta vale su tutti i dispositivi e anche ad app chiusa.
+          </p>
         </div>
       </div>
     </Card>
