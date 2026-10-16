@@ -2,15 +2,18 @@ import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Button, Card, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
+import { Button, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
 import { ChevronRightIcon, ListIcon, PlusIcon } from '../../ui/icons'
+import { BackdropPhoto } from './BackdropPhoto'
 import { useLists } from './useLists'
+import { usePhotoUrls } from './usePhotoUrls'
 
 export function ListsPage() {
   const { lists, tasks, loading, error, createList } = useLists()
   const [newTitle, setNewTitle] = useState('')
   const [creating, setCreating] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const coverUrls = usePhotoUrls(lists.map((list) => list.coverPath))
 
   const counts = useMemo(() => {
     const map = new Map<string, { open: number; total: number }>()
@@ -76,20 +79,41 @@ export function ListsPage() {
         <ul className="space-y-2">
           {lists.map((list) => {
             const count = counts.get(list.id) ?? { open: 0, total: 0 }
+            const coverUrl = list.coverPath ? (coverUrls[list.coverPath] ?? null) : null
             return (
               <li key={list.id}>
                 <Link to={`/lists/${list.id}`} className="block">
-                  <Card className="flex items-center justify-between gap-3 transition hover:ring-accent-300">
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold text-ink">
+                  <div
+                    className={`relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl shadow-sm ring-1 ring-line/70 transition hover:ring-accent-300 ${
+                      coverUrl ? 'h-24' : 'bg-surface p-4'
+                    }`}
+                  >
+                    {coverUrl && list.coverPath && (
+                      <BackdropPhoto
+                        url={coverUrl}
+                        framing={{ x: list.coverX, y: list.coverY, zoom: list.coverZoom }}
+                      />
+                    )}
+                    <span className={`relative z-10 min-w-0 ${coverUrl ? 'pl-4' : ''}`}>
+                      <span
+                        className={`block truncate text-sm font-semibold ${
+                          coverUrl ? 'text-white' : 'text-ink'
+                        }`}
+                      >
                         {list.title}
                       </span>
-                      <span className="block text-xs text-ink-muted">
+                      <span
+                        className={`block text-xs ${coverUrl ? 'text-white/80' : 'text-ink-muted'}`}
+                      >
                         {count.open} da fare · {count.total} in totale
                       </span>
                     </span>
-                    <ChevronRightIcon className="h-5 w-5 shrink-0 text-ink-faint" />
-                  </Card>
+                    <ChevronRightIcon
+                      className={`relative z-10 h-5 w-5 shrink-0 ${
+                        coverUrl ? 'mr-4 text-white/85' : 'text-ink-faint'
+                      }`}
+                    />
+                  </div>
                 </Link>
               </li>
             )

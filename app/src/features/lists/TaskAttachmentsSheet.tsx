@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Button, ErrorBanner, TextArea, TextInput } from '../../ui/components'
 import { CloseIcon, ImageIcon, LinkIcon, TrashIcon } from '../../ui/icons'
+import { BackdropEditor } from './BackdropEditor'
+import { DEFAULT_FRAMING } from './photos'
+import type { Framing } from './photos'
 import type { AttachmentKind, TaskAttachment } from './useTaskAttachments'
 
 const TABS: Array<{ key: AttachmentKind; label: string }> = [
@@ -10,24 +13,43 @@ const TABS: Array<{ key: AttachmentKind; label: string }> = [
   { key: 'note', label: 'Nota' },
 ]
 
+interface FramingTarget {
+  attachment: TaskAttachment
+  target: 'backdrop' | 'cover'
+  initial: Framing
+}
+
 interface TaskAttachmentsSheetProps {
   taskTitle: string
+  listTitle: string
   attachments: TaskAttachment[]
   photoUrls: Record<string, string>
+  coverPath: string | null
+  coverFraming: Framing
   onAdd: (kind: AttachmentKind, value: string, caption: string | null) => Promise<unknown>
   onAddPhoto: (file: File, caption: string | null) => Promise<unknown>
   onDelete: (attachment: TaskAttachment) => Promise<unknown>
+  onSetBackdrop: (attachment: TaskAttachment, framing: Framing) => Promise<unknown>
+  onClearBackdrop: (attachment: TaskAttachment) => Promise<unknown>
+  onSetCover: (attachment: TaskAttachment, framing: Framing) => Promise<unknown>
   onClose: () => void
 }
 
-/** Bottom sheet attached to one list item: current attachments plus add controls. */
+/** Bottom sheet attached to one list item: everything about the item (photos
+ *  with the backdrop/cover actions, links, notes) plus the framing editor. */
 export function TaskAttachmentsSheet({
   taskTitle,
+  listTitle,
   attachments,
   photoUrls,
+  coverPath,
+  coverFraming,
   onAdd,
   onAddPhoto,
   onDelete,
+  onSetBackdrop,
+  onClearBackdrop,
+  onSetCover,
   onClose,
 }: TaskAttachmentsSheetProps) {
   const [tab, setTab] = useState<AttachmentKind>('photo')
@@ -36,15 +58,16 @@ export function TaskAttachmentsSheet({
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [editor, setEditor] = useState<FramingTarget | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const onKeyDown = (keyEvent: KeyboardEvent) => {
-      if (keyEvent.key === 'Escape') onClose()
+      if (keyEvent.key === 'Escape' && !editor) onClose()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
+  }, [editor, onClose])
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true)
@@ -94,6 +117,46 @@ export function TaskAttachmentsSheet({
     void run(() => onDelete(attachment))
   }
 
+  function openFraming(attachment: TaskAttachment, target: 'backdrop' | 'cover') {
+    setFormError(null)
+    const initial =
+      target === 'backdrop'
+        ? { x: attachment.bgX, y: attachment.bgY, zoom: attachment.bgZoom }
+        : coverPath === attachment.value
+          ? coverFraming
+          : DEFAULT_FRAMING
+    setEditor({ attachment, target, initial })
+  }
+
+  async function handleFramingSave(framing: Framing) {
+    if (!editor) return
+    setBusy(true)
+    setFormError(null)
+    try {
+      if (editor.target === 'backdrop') await onSetBackdrop(editor.attachment, framing)
+      else await onSetCover(editor.attachment, framing)
+      setEditor(null)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Errore di salvataggio.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleRemoveBackdrop() {
+    if (!editor) return
+    setBusy(true)
+    setFormError(null)
+    try {
+      await onClearBackdrop(editor.attachment)
+      setEditor(null)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Errore di salvataggio.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div
       role="presentation"
@@ -103,13 +166,13 @@ export function TaskAttachmentsSheet({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`Allegati di ${taskTitle}`}
+        aria-label={`Voce ${taskTitle}`}
         onClick={(clickEvent) => clickEvent.stopPropagation()}
         className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-canvas p-5 shadow-xl sm:rounded-3xl"
       >
         <header className="mb-4 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-lg font-bold text-ink">Allegati</h2>
+            <h2 className="text-lg font-bold text-ink">Voce</h2>
             <p className="truncate text-xs text-ink-muted">{taskTitle}</p>
           </div>
           <button
@@ -139,15 +202,41 @@ export function TaskAttachmentsSheet({
                           <img
                             src={photoUrls[attachment.value]}
                             alt={attachment.caption ?? 'Foto'}
-                            className="h-14 w-14 rounded-lg object-cover ring-1 ring-line"
+                            className="h-16 w-16 rounded-lg object-cover ring-1 ring-line"
                           />
                         </a>
                       ) : (
-                        <span className="h-14 w-14 shrink-0 animate-pulse rounded-lg bg-surface-muted" />
+                        <span className="h-16 w-16 shrink-0 animate-pulse rounded-lg bg-surface-muted" />
                       )}
-                      <span className="min-w-0 flex-1 text-sm text-ink-soft">
-                        {attachment.caption ?? 'Foto'}
-                      </span>
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <p className="truncate text-sm text-ink-soft">
+                          {attachment.caption ?? 'Foto'}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {attachment.isBackdrop ? (
+                            <span className="rounded-full bg-accent-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                              Sfondo
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => openFraming(attachment, 'backdrop')}
+                              className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-accent-ink ring-1 ring-line transition hover:ring-accent-400 disabled:opacity-50"
+                            >
+                              Usa come sfondo
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => openFraming(attachment, 'cover')}
+                            className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-accent-ink ring-1 ring-line transition hover:ring-accent-400 disabled:opacity-50"
+                          >
+                            {coverPath === attachment.value ? 'Copertina · inquadra' : 'Copertina'}
+                          </button>
+                        </div>
+                      </div>
                       <DeleteButton onClick={() => handleDelete(attachment)} disabled={busy} />
                     </div>
                   ) : attachment.kind === 'link' ? (
@@ -232,7 +321,7 @@ export function TaskAttachmentsSheet({
                   }}
                 />
                 <p className="text-xs text-ink-faint">
-                  Resta privata della coppia. Massimo 5 MB.
+                  Resta privata della coppia. Massimo 5 MB; la foto viene ottimizzata.
                 </p>
               </div>
             )}
@@ -287,9 +376,29 @@ export function TaskAttachmentsSheet({
               </div>
             )}
 
-            {formError && <ErrorBanner message={formError} />}
+            {formError && !editor && <ErrorBanner message={formError} />}
           </div>
         </div>
+
+        {editor && photoUrls[editor.attachment.value] && (
+          <BackdropEditor
+            title={editor.target === 'backdrop' ? 'Sfondo della voce' : 'Copertina della lista'}
+            sample={editor.target === 'backdrop' ? taskTitle : listTitle}
+            url={photoUrls[editor.attachment.value] as string}
+            initial={editor.initial}
+            busy={busy}
+            error={formError}
+            onSave={(framing) => void handleFramingSave(framing)}
+            onRemove={
+              editor.target === 'backdrop' ? () => void handleRemoveBackdrop() : undefined
+            }
+            removeLabel="Rimuovi sfondo"
+            onClose={() => {
+              setEditor(null)
+              setFormError(null)
+            }}
+          />
+        )}
       </div>
     </div>
   )

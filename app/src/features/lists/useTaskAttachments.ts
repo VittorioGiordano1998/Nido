@@ -4,11 +4,14 @@ import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
+import { clampFraming, removePhotoIfUnused, signPhotoUrls, uploadListPhoto } from './photos'
+import type { Framing } from './photos'
 
 /**
  * Item attachments (state layer): photos, links and notes for the couple's
- * list items. Photos live in the private `list-photos` bucket and are shown
- * through short-lived signed URLs; rows sync over Realtime.
+ * list items, plus the backdrop choice and its framing (one photo per item).
+ * Photos live in the private `list-photos` bucket and are shown through
+ * signed URLs; rows sync over Realtime.
  */
 
 export type AttachmentKind = 'photo' | 'link' | 'note'
@@ -22,11 +25,12 @@ export interface TaskAttachment {
   caption: string | null
   createdBy: string
   createdAt: string
+  /** One per item: the photo used as the card's backdrop. */
+  isBackdrop: boolean
+  bgX: number
+  bgY: number
+  bgZoom: number
 }
-
-const PHOTO_BUCKET = 'list-photos'
-export const MAX_PHOTO_BYTES = 5 * 1024 * 1024
-const SIGNED_URL_TTL_SECONDS = 3600
 
 interface AttachmentRow {
   id: string
@@ -37,10 +41,14 @@ interface AttachmentRow {
   caption: string | null
   created_by: string
   created_at: string
+  is_backdrop: boolean
+  bg_x: number | null
+  bg_y: number | null
+  bg_zoom: number | null
 }
 
 const ATTACHMENT_COLUMNS =
-  'id, task_id, couple_id, kind, value, caption, created_by, created_at'
+  'id, task_id, couple_id, kind, value, caption, created_by, created_at, is_backdrop, bg_x, bg_y, bg_zoom'
 
 function rowToAttachment(row: AttachmentRow): TaskAttachment {
   const kind: AttachmentKind = row.kind === 'photo' || row.kind === 'note' ? row.kind : 'link'
@@ -53,6 +61,10 @@ function rowToAttachment(row: AttachmentRow): TaskAttachment {
     caption: row.caption,
     createdBy: row.created_by,
     createdAt: row.created_at,
+    isBackdrop: Boolean(row.is_backdrop),
+    bgX: row.bg_x ?? 50,
+    bgY: row.bg_y ?? 50,
+    bgZoom: row.bg_zoom ?? 1,
   }
 }
 
@@ -68,12 +80,6 @@ function upsertAttachment(list: TaskAttachment[], next: TaskAttachment): TaskAtt
   return [...list.filter((attachment) => attachment.id !== next.id), next].sort((a, b) =>
     a.createdAt.localeCompare(b.createdAt),
   )
-}
-
-function photoPathFor(coupleId: string, file: File): string {
-  const rawExt = file.name.includes('.') ? (file.name.split('.').pop() ?? 'jpg') : 'jpg'
-  const ext = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'jpg'
-  return `${coupleId}/${crypto.randomUUID()}.${ext}`
 }
 
 export function useTaskAttachments() {
@@ -93,26 +99,20 @@ export function useTaskAttachments() {
       setPhotoUrls({})
       return
     }
-    const { data, error: signError } = await supabase.storage
-      .from(PHOTO_BUCKET)
-      .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS)
-    if (signError) {
-      setError(signError.message)
-      return
+    try {
+      setPhotoUrls(await signPhotoUrls(paths))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Errore nel caricamento delle foto.')
     }
-    const urls: Record<string, string> = {}
-    for (const entry of data ?? []) {
-      if (entry.signedUrl && entry.path) urls[entry.path] = entry.signedUrl
-    }
-    setPhotoUrls(urls)
   }, [])
 
   const signOne = useCallback(async (path: string) => {
-    const { data, error: signError } = await supabase.storage
-      .from(PHOTO_BUCKET)
-      .createSignedUrl(path, SIGNED_URL_TTL_SECONDS)
-    if (signError) return
-    if (data?.signedUrl) setPhotoUrls((current) => ({ ...current, [path]: data.signedUrl }))
+    try {
+      const urls = await signPhotoUrls([path])
+      if (urls[path]) setPhotoUrls((current) => ({ ...current, [path]: urls[path] as string }))
+    } catch {
+      // La miniatura resta al placeholder: niente da segnalare qui.
+    }
   }, [])
 
   const forgetPhoto = useCallback((path: string) => {
@@ -215,17 +215,11 @@ export function useTaskAttachments() {
   const attachPhoto = useCallback(
     async (taskId: string, file: File, caption: string | null) => {
       if (!coupleId) throw new Error('Coppia non ancora caricata.')
-      if (!file.type.startsWith('image/')) throw new Error('Serve un file immagine.')
-      if (file.size > MAX_PHOTO_BYTES) throw new Error('La foto supera 5 MB: scegline una più leggera.')
-      const path = photoPathFor(coupleId, file)
-      const { error: uploadError } = await supabase.storage
-        .from(PHOTO_BUCKET)
-        .upload(path, file, { contentType: file.type })
-      if (uploadError) throw new Error(uploadError.message)
+      const path = await uploadListPhoto(coupleId, file)
       try {
         return await addAttachment(taskId, 'photo', path, caption)
       } catch (err) {
-        await supabase.storage.from(PHOTO_BUCKET).remove([path])
+        await removePhotoIfUnused(path)
         throw err
       }
     },
@@ -242,22 +236,67 @@ export function useTaskAttachments() {
       setAttachments((current) => current.filter((item) => item.id !== attachment.id))
       if (attachment.kind === 'photo') {
         forgetPhoto(attachment.value)
-        await supabase.storage.from(PHOTO_BUCKET).remove([attachment.value])
+        await removePhotoIfUnused(attachment.value)
       }
     },
     [forgetPhoto],
   )
 
-  /** Best-effort storage cleanup before deleting items or lists (rows cascade). */
+  /** Best-effort storage cleanup before deleting items or lists (rows cascade);
+   *  objects still referenced elsewhere (a cover) are kept. */
   const removeStoredPhotos = useCallback(
     async (rows: TaskAttachment[]) => {
       const paths = [...new Set(rows.filter((row) => row.kind === 'photo').map((row) => row.value))]
-      if (paths.length === 0) return
-      for (const path of paths) forgetPhoto(path)
-      await supabase.storage.from(PHOTO_BUCKET).remove(paths)
+      for (const path of paths) {
+        forgetPhoto(path)
+        await removePhotoIfUnused(path)
+      }
     },
     [forgetPhoto],
   )
+
+  /** Sets the item's backdrop (clearing any previous one) and stores the framing. */
+  const setBackdrop = useCallback(async (attachment: TaskAttachment, framing: Framing) => {
+    const clean = clampFraming(framing)
+    const { error: clearError } = await supabase
+      .from('task_attachments')
+      .update({ is_backdrop: false })
+      .eq('task_id', attachment.taskId)
+      .eq('is_backdrop', true)
+      .neq('id', attachment.id)
+    if (clearError) throw new Error(clearError.message)
+    const { data, error: updateError } = await supabase
+      .from('task_attachments')
+      .update({
+        is_backdrop: true,
+        bg_x: Math.round(clean.x),
+        bg_y: Math.round(clean.y),
+        bg_zoom: clean.zoom,
+      })
+      .eq('id', attachment.id)
+      .select(ATTACHMENT_COLUMNS)
+      .single()
+    if (updateError) throw new Error(updateError.message)
+    const saved = rowToAttachment(data as unknown as AttachmentRow)
+    setAttachments((current) =>
+      current.map((item) => {
+        if (item.id === saved.id) return saved
+        if (item.taskId === saved.taskId && item.isBackdrop) return { ...item, isBackdrop: false }
+        return item
+      }),
+    )
+  }, [])
+
+  const clearBackdrop = useCallback(async (attachment: TaskAttachment) => {
+    const { error: updateError } = await supabase
+      .from('task_attachments')
+      .update({ is_backdrop: false })
+      .eq('id', attachment.id)
+    if (updateError) throw new Error(updateError.message)
+    setAttachments((current) =>
+      current.map((item) => (item.id === attachment.id ? { ...item, isBackdrop: false } : item)),
+    )
+  }, [])
 
   const byTask = useMemo(() => {
     const map = new Map<string, TaskAttachment[]>()
@@ -280,5 +319,7 @@ export function useTaskAttachments() {
     attachPhoto,
     deleteAttachment,
     removeStoredPhotos,
+    setBackdrop,
+    clearBackdrop,
   }
 }

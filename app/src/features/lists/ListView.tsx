@@ -1,24 +1,22 @@
-import { useMemo, useState } from 'react'
-import type { FormEvent } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { Button, Card, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
-import {
-  BellIcon,
-  CheckIcon,
-  ChevronLeftIcon,
-  LinkIcon,
-  PaperclipIcon,
-  PlusIcon,
-  TrashIcon,
-} from '../../ui/icons'
+import { Button, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
+import { BellIcon, CheckIcon, ChevronLeftIcon, ImageIcon, PlusIcon, TrashIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useNudges } from '../nudges/useNudges'
+import { BackdropEditor } from './BackdropEditor'
+import { BackdropPhoto } from './BackdropPhoto'
+import { DEFAULT_FRAMING } from './photos'
+import type { Framing } from './photos'
 import { TaskAttachmentsSheet } from './TaskAttachmentsSheet'
 import { useLists } from './useLists'
 import type { Task } from './useLists'
 import { useTaskAttachments } from './useTaskAttachments'
+import type { TaskAttachment } from './useTaskAttachments'
+import { usePhotoUrls } from './usePhotoUrls'
 
 function initials(name: string): string {
   return name
@@ -27,6 +25,10 @@ function initials(name: string): string {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? '')
     .join('')
+}
+
+function photoPaths(rows: TaskAttachment[]): string[] {
+  return [...new Set(rows.filter((row) => row.kind === 'photo').map((row) => row.value))]
 }
 
 export function ListView() {
@@ -46,6 +48,11 @@ export function ListView() {
     deleteTask,
     deleteList,
     renameList,
+    uploadCover,
+    setCover,
+    clearCover,
+    discardPhoto,
+    releaseCoversForPath,
   } = useLists()
   const {
     byTask,
@@ -54,6 +61,8 @@ export function ListView() {
     attachPhoto,
     deleteAttachment,
     removeStoredPhotos,
+    setBackdrop,
+    clearBackdrop,
   } = useTaskAttachments()
 
   const [newTitle, setNewTitle] = useState('')
@@ -61,6 +70,15 @@ export function ListView() {
   const [formError, setFormError] = useState<string | null>(null)
   const [titleDraft, setTitleDraft] = useState<string | null>(null)
   const [attachmentsTask, setAttachmentsTask] = useState<Task | null>(null)
+  const [coverEditor, setCoverEditor] = useState<{
+    url: string
+    path: string
+    framing: Framing
+    isNew: boolean
+  } | null>(null)
+  const [coverBusy, setCoverBusy] = useState(false)
+  const [coverError, setCoverError] = useState<string | null>(null)
+  const coverFileRef = useRef<HTMLInputElement>(null)
 
   const myId = session?.user.id
   const partner = couple?.members.find((member) => member.userId !== myId) ?? null
@@ -68,6 +86,8 @@ export function ListView() {
   const listTasks = useMemo(() => tasks.filter((task) => task.listId === id), [tasks, id])
   const openTasks = listTasks.filter((task) => !task.done)
   const doneTasks = listTasks.filter((task) => task.done)
+  const coverUrls = usePhotoUrls([list?.coverPath ?? null])
+  const coverUrl = list?.coverPath ? (coverUrls[list.coverPath] ?? null) : null
 
   if (loading) {
     return (
@@ -155,13 +175,25 @@ export function ListView() {
     }
   }
 
+  /** Attachments of one item: the cover referencing one of its photos is
+   *  cleared first, then the photo objects that stay unused are removed. */
+  async function releasePhotos(rows: TaskAttachment[]) {
+    for (const path of photoPaths(rows)) await releaseCoversForPath(path)
+    await removeStoredPhotos(rows)
+  }
+
   async function handleDeleteTask(taskId: string) {
     try {
-      await removeStoredPhotos(byTask.get(taskId) ?? [])
+      await releasePhotos(byTask.get(taskId) ?? [])
       await deleteTask(taskId)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di eliminazione.')
     }
+  }
+
+  async function handleAttachmentDelete(attachment: TaskAttachment) {
+    if (attachment.kind === 'photo') await releaseCoversForPath(attachment.value)
+    await deleteAttachment(attachment)
   }
 
   async function handleDeleteList() {
@@ -169,13 +201,81 @@ export function ListView() {
     if (!window.confirm(`Eliminare la lista "${list.title}" e i suoi elementi?`)) return
     try {
       const listTaskIds = new Set(tasks.filter((task) => task.listId === list.id).map((task) => task.id))
-      await removeStoredPhotos(
-        [...listTaskIds].flatMap((taskId) => byTask.get(taskId) ?? []),
-      )
+      const rows = [...listTaskIds].flatMap((taskId) => byTask.get(taskId) ?? [])
+      await releasePhotos(rows)
+      if (list.coverPath) await discardPhoto(list.coverPath)
       await deleteList(list.id)
       navigate('/lists')
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di eliminazione.')
+    }
+  }
+
+  async function handleCoverPicked(file: File) {
+    setCoverError(null)
+    setCoverBusy(true)
+    try {
+      const path = await uploadCover(file)
+      setCoverEditor({ url: URL.createObjectURL(file), path, framing: DEFAULT_FRAMING, isNew: true })
+    } catch (err) {
+      setCoverError(err instanceof Error ? err.message : 'Errore di caricamento.')
+    } finally {
+      setCoverBusy(false)
+    }
+  }
+
+  function openCoverEditor() {
+    if (!list) return
+    setCoverError(null)
+    if (list.coverPath && coverUrl) {
+      setCoverEditor({
+        url: coverUrl,
+        path: list.coverPath,
+        framing: { x: list.coverX, y: list.coverY, zoom: list.coverZoom },
+        isNew: false,
+      })
+    } else {
+      coverFileRef.current?.click()
+    }
+  }
+
+  function closeCoverEditor() {
+    if (coverEditor?.isNew) {
+      URL.revokeObjectURL(coverEditor.url)
+      void discardPhoto(coverEditor.path)
+    }
+    setCoverEditor(null)
+    setCoverError(null)
+  }
+
+  async function handleCoverSave(framing: Framing) {
+    if (!list || !coverEditor) return
+    setCoverBusy(true)
+    setCoverError(null)
+    try {
+      await setCover(list.id, coverEditor.path, framing)
+      if (coverEditor.isNew) URL.revokeObjectURL(coverEditor.url)
+      setCoverEditor(null)
+    } catch (err) {
+      setCoverError(err instanceof Error ? err.message : 'Errore di salvataggio.')
+    } finally {
+      setCoverBusy(false)
+    }
+  }
+
+  async function handleCoverRemove() {
+    if (!list) return
+    if (!window.confirm('Rimuovere la copertina della lista?')) return
+    setCoverBusy(true)
+    setCoverError(null)
+    try {
+      await clearCover(list.id)
+      if (coverEditor?.isNew) URL.revokeObjectURL(coverEditor.url)
+      setCoverEditor(null)
+    } catch (err) {
+      setCoverError(err instanceof Error ? err.message : 'Errore di salvataggio.')
+    } finally {
+      setCoverBusy(false)
     }
   }
 
@@ -186,192 +286,237 @@ export function ListView() {
     const doneBy = task.doneBy
       ? couple?.members.find((member) => member.userId === task.doneBy)
       : undefined
-    const taskAttachments = byTask.get(task.id) ?? []
-    const photos = taskAttachments.filter((attachment) => attachment.kind === 'photo')
-    const links = taskAttachments.filter((attachment) => attachment.kind === 'link')
-    const notes = taskAttachments.filter((attachment) => attachment.kind === 'note')
+    const backdrop = (byTask.get(task.id) ?? []).find(
+      (attachment) => attachment.kind === 'photo' && attachment.isBackdrop && photoUrls[attachment.value],
+    )
+    const backdropUrl = backdrop ? photoUrls[backdrop.value] : null
+    const hasBackdrop = Boolean(backdropUrl && backdrop)
+
+    function openDetails() {
+      setAttachmentsTask(task)
+    }
+
+    function onRowKeyDown(keyEvent: ReactKeyboardEvent<HTMLDivElement>) {
+      if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+        keyEvent.preventDefault()
+        openDetails()
+      }
+    }
+
     return (
       <li key={task.id}>
-        <Card className="flex items-center gap-3 py-3">
-          <button
-            type="button"
-            role="checkbox"
-            aria-checked={task.done}
-            aria-label={task.done ? `Segna come da fare: ${task.title}` : `Segna come fatto: ${task.title}`}
-            onClick={() => void handleToggle(task)}
-            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 transition ${
-              task.done
-                ? 'bg-sage-500 text-white ring-sage-500'
-                : 'bg-surface text-transparent ring-line-strong hover:text-accent-glyph hover:ring-accent-400'
-            }`}
-          >
-            <CheckIcon className="h-3.5 w-3.5" />
-          </button>
-          <span className="min-w-0 flex-1">
-            <span
-              className={`block truncate text-sm font-semibold ${
-                task.done ? 'text-ink-faint line-through' : 'text-ink'
-              }`}
-            >
-              {task.title}
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label={`Apri i dettagli: ${task.title}`}
+          onClick={openDetails}
+          onKeyDown={onRowKeyDown}
+          className="relative flex h-24 cursor-pointer items-center gap-3 overflow-hidden rounded-2xl bg-surface px-4 shadow-sm ring-1 ring-line/70 transition hover:ring-accent-300"
+        >
+          {hasBackdrop && backdropUrl && backdrop && (
+            <span className={task.done ? 'opacity-60 saturate-50' : ''}>
+              <BackdropPhoto
+                url={backdropUrl}
+                framing={{ x: backdrop.bgX, y: backdrop.bgY, zoom: backdrop.bgZoom }}
+              />
             </span>
-            {task.done && doneBy && (
-              <span className="block text-xs text-ink-faint">fatto da {doneBy.displayName}</span>
-            )}
-            {taskAttachments.length > 0 && (
-              <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                {photos.slice(0, 3).map((photo) =>
-                  photoUrls[photo.value] ? (
-                    <a
-                      key={photo.id}
-                      href={photoUrls[photo.value]}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="shrink-0"
-                    >
-                      <img
-                        src={photoUrls[photo.value]}
-                        alt={photo.caption ?? 'Allegato'}
-                        className="h-9 w-9 rounded-lg object-cover ring-1 ring-line"
-                      />
-                    </a>
-                  ) : (
-                    <span
-                      key={photo.id}
-                      className="h-9 w-9 shrink-0 animate-pulse rounded-lg bg-surface-muted"
-                    />
-                  ),
-                )}
-                {photos.length > 3 && (
-                  <span className="text-[11px] font-semibold text-ink-faint">
-                    +{photos.length - 3}
-                  </span>
-                )}
-                {links.slice(0, 2).map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.value}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex max-w-[10rem] items-center gap-1 rounded-full bg-surface-soft px-2 py-0.5 text-[11px] text-ink-soft hover:bg-surface-muted"
-                  >
-                    <LinkIcon className="h-3 w-3 shrink-0" />
-                    <span className="truncate">{link.caption ?? link.value}</span>
-                  </a>
-                ))}
-                {links.length > 2 && (
-                  <span className="text-[11px] font-semibold text-ink-faint">
-                    +{links.length - 2}
-                  </span>
-                )}
-                {notes.length > 0 && (
-                  <span className="w-full truncate text-xs text-ink-muted">
-                    {notes[0]?.value}
-                    {notes.length > 1 ? ` · +${notes.length - 1}` : ''}
-                  </span>
-                )}
-              </span>
-            )}
-          </span>
-          {!task.done && (
+          )}
+
+          <div className="relative z-10 flex w-full items-center gap-3">
             <button
               type="button"
-              onClick={() => cycleAssignee(task)}
-              title={
-                assignee ? `Assegnato a ${assignee.displayName}: clicca per cambiare` : 'Assegna a…'
-              }
-              aria-label="Cambia assegnazione"
-              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition ${
-                assignee
-                  ? assignee.userId === myId
-                    ? 'bg-accent-100 text-accent-ink'
-                    : 'bg-sage-100 text-sage-700 dark:bg-sage-700/30 dark:text-sage-300'
-                  : 'bg-surface-soft text-ink-faint hover:bg-surface-muted'
+              role="checkbox"
+              aria-checked={task.done}
+              aria-label={task.done ? `Segna come da fare: ${task.title}` : `Segna come fatto: ${task.title}`}
+              onClick={(clickEvent) => {
+                clickEvent.stopPropagation()
+                void handleToggle(task)
+              }}
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 transition ${
+                task.done
+                  ? 'bg-sage-500 text-white ring-sage-500'
+                  : hasBackdrop
+                    ? 'bg-black/25 text-transparent ring-white/70 hover:text-white'
+                    : 'bg-surface text-transparent ring-line-strong hover:text-accent-glyph hover:ring-accent-400'
               }`}
             >
-              {assignee ? initials(assignee.displayName) : '—'}
+              <CheckIcon className="h-3.5 w-3.5" />
             </button>
-          )}
-          <button
-            type="button"
-            aria-label={
-              taskAttachments.length > 0
-                ? `Allegati (${taskAttachments.length}): ${task.title}`
-                : `Aggiungi allegati: ${task.title}`
-            }
-            onClick={() => setAttachmentsTask(task)}
-            className="relative shrink-0 rounded-lg p-1.5 text-ink-muted transition hover:bg-accent-50 hover:text-accent-ink"
-          >
-            <PaperclipIcon className="h-4 w-4" />
-            {taskAttachments.length > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-accent-600 px-0.5 text-[9px] font-bold text-white">
-                {taskAttachments.length}
+            <span className="min-w-0 flex-1">
+              <span
+                className={`block truncate text-sm font-semibold ${
+                  task.done
+                    ? hasBackdrop
+                      ? 'text-white/75 line-through'
+                      : 'text-ink-faint line-through'
+                    : hasBackdrop
+                      ? 'text-white'
+                      : 'text-ink'
+                }`}
+              >
+                {task.title}
               </span>
+              {task.done && doneBy && (
+                <span className={`block text-xs ${hasBackdrop ? 'text-white/70' : 'text-ink-faint'}`}>
+                  fatto da {doneBy.displayName}
+                </span>
+              )}
+            </span>
+            {!task.done && (
+              <button
+                type="button"
+                onClick={(clickEvent) => {
+                  clickEvent.stopPropagation()
+                  cycleAssignee(task)
+                }}
+                title={
+                  assignee ? `Assegnato a ${assignee.displayName}: clicca per cambiare` : 'Assegna a…'
+                }
+                aria-label="Cambia assegnazione"
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition ${
+                  assignee
+                    ? assignee.userId === myId
+                      ? hasBackdrop
+                        ? 'bg-white/25 text-white'
+                        : 'bg-accent-100 text-accent-ink'
+                      : hasBackdrop
+                        ? 'bg-white/20 text-white'
+                        : 'bg-sage-100 text-sage-700 dark:bg-sage-700/30 dark:text-sage-300'
+                    : hasBackdrop
+                      ? 'bg-white/15 text-white/80 hover:bg-white/25'
+                      : 'bg-surface-soft text-ink-faint hover:bg-surface-muted'
+                }`}
+              >
+                {assignee ? initials(assignee.displayName) : '—'}
+              </button>
             )}
-          </button>
-          {!task.done && partner && (
+            {!task.done && partner && (
+              <button
+                type="button"
+                aria-label={`Ricorda a ${partner.displayName}: ${task.title}`}
+                onClick={(clickEvent) => {
+                  clickEvent.stopPropagation()
+                  void handleNudge(task.id, task.title)
+                }}
+                className={`rounded-lg p-1.5 transition ${
+                  hasBackdrop
+                    ? 'text-white/85 hover:bg-white/15 hover:text-white'
+                    : 'text-ink-muted hover:bg-accent-50 hover:text-accent-ink'
+                }`}
+              >
+                <BellIcon className="h-4 w-4" />
+              </button>
+            )}
             <button
               type="button"
-              aria-label={`Ricorda a ${partner.displayName}: ${task.title}`}
-              onClick={() => void handleNudge(task.id, task.title)}
-              className="rounded-lg p-1.5 text-ink-muted transition hover:bg-accent-50 hover:text-accent-ink"
+              aria-label={`Elimina ${task.title}`}
+              onClick={(clickEvent) => {
+                clickEvent.stopPropagation()
+                void handleDeleteTask(task.id)
+              }}
+              className={`rounded-lg p-1.5 transition ${
+                hasBackdrop
+                  ? 'text-white/85 hover:bg-red-500/80 hover:text-white'
+                  : 'text-ink-faint hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/60 dark:hover:text-red-400'
+              }`}
             >
-              <BellIcon className="h-4 w-4" />
+              <TrashIcon className="h-4 w-4" />
             </button>
-          )}
-          <button
-            type="button"
-            aria-label={`Elimina ${task.title}`}
-            onClick={() => void handleDeleteTask(task.id)}
-            className="rounded-lg p-1.5 text-ink-faint transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/60 dark:hover:text-red-400"
-          >
-            <TrashIcon className="h-4 w-4" />
-          </button>
-        </Card>
+          </div>
+        </div>
       </li>
     )
   }
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start gap-2">
-        <Link
-          to="/lists"
-          aria-label="Torna alle liste"
-          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Link>
-        <div className="min-w-0 flex-1">
-          {titleDraft === null ? (
+      <header className={`relative overflow-hidden rounded-2xl ${coverUrl ? 'p-3' : ''}`}>
+        {coverUrl && list.coverPath && (
+          <BackdropPhoto
+            url={coverUrl}
+            framing={{ x: list.coverX, y: list.coverY, zoom: list.coverZoom }}
+          />
+        )}
+        <div className="relative flex items-start gap-2">
+          <Link
+            to="/lists"
+            aria-label="Torna alle liste"
+            className={`mt-0.5 rounded-lg p-1.5 transition ${
+              coverUrl
+                ? 'text-white/90 hover:bg-white/15'
+                : 'text-ink-muted hover:bg-surface-soft'
+            }`}
+          >
+            <ChevronLeftIcon className="h-5 w-5" />
+          </Link>
+          <div className="min-w-0 flex-1">
+            {titleDraft === null ? (
+              <button
+                type="button"
+                onClick={() => setTitleDraft(list.title)}
+                title="Rinomina"
+                className={`max-w-full truncate text-left text-2xl font-bold ${
+                  coverUrl ? 'text-white' : 'text-ink'
+                }`}
+              >
+                {list.title}
+              </button>
+            ) : (
+              <TextInput
+                autoFocus
+                value={titleDraft}
+                onChange={(event) => setTitleDraft(event.target.value)}
+                onBlur={() => void handleRename()}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') event.currentTarget.blur()
+                }}
+                className="text-lg font-bold"
+              />
+            )}
+            <p className={`text-sm ${coverUrl ? 'text-white/80' : 'text-ink-muted'}`}>
+              {openTasks.length} da fare · {doneTasks.length} completate
+            </p>
+            {!coverUrl && (
+              <button
+                type="button"
+                disabled={coverBusy}
+                onClick={openCoverEditor}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-3 py-1 text-[11px] font-semibold text-ink-soft transition hover:bg-surface-muted disabled:opacity-50"
+              >
+                <ImageIcon className="h-3.5 w-3.5" /> Aggiungi copertina
+              </button>
+            )}
+          </div>
+          {coverUrl && (
             <button
               type="button"
-              onClick={() => setTitleDraft(list.title)}
-              title="Rinomina"
-              className="max-w-full truncate text-left text-2xl font-bold text-ink"
+              disabled={coverBusy}
+              onClick={openCoverEditor}
+              aria-label="Cambia copertina"
+              title="Cambia copertina"
+              className="rounded-lg p-1.5 text-white/90 transition hover:bg-white/15 disabled:opacity-50"
             >
-              {list.title}
+              <ImageIcon className="h-5 w-5" />
             </button>
-          ) : (
-            <TextInput
-              autoFocus
-              value={titleDraft}
-              onChange={(event) => setTitleDraft(event.target.value)}
-              onBlur={() => void handleRename()}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') event.currentTarget.blur()
-              }}
-              className="text-lg font-bold"
-            />
           )}
-          <p className="text-sm text-ink-muted">
-            {openTasks.length} da fare · {doneTasks.length} completate
-          </p>
         </div>
       </header>
 
+      <input
+        ref={coverFileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(changeEvent) => {
+          const file = changeEvent.target.files?.[0]
+          changeEvent.target.value = ''
+          if (file) void handleCoverPicked(file)
+        }}
+      />
+
       {error && <ErrorBanner message={error} />}
       {formError && <ErrorBanner message={formError} />}
+      {coverError && !coverEditor && <ErrorBanner message={coverError} />}
 
       <form onSubmit={(event) => void handleAdd(event)} className="flex items-center gap-2">
         <TextInput
@@ -411,14 +556,35 @@ export function ListView() {
       {attachmentsTask && (
         <TaskAttachmentsSheet
           taskTitle={attachmentsTask.title}
+          listTitle={list.title}
           attachments={byTask.get(attachmentsTask.id) ?? []}
           photoUrls={photoUrls}
+          coverPath={list.coverPath}
+          coverFraming={{ x: list.coverX, y: list.coverY, zoom: list.coverZoom }}
           onAdd={(kind, value, caption) =>
             addAttachment(attachmentsTask.id, kind, value, caption)
           }
           onAddPhoto={(file, caption) => attachPhoto(attachmentsTask.id, file, caption)}
-          onDelete={deleteAttachment}
+          onDelete={handleAttachmentDelete}
+          onSetBackdrop={setBackdrop}
+          onClearBackdrop={clearBackdrop}
+          onSetCover={(attachment, framing) => setCover(list.id, attachment.value, framing)}
           onClose={() => setAttachmentsTask(null)}
+        />
+      )}
+
+      {coverEditor && (
+        <BackdropEditor
+          title="Copertina della lista"
+          sample={list.title}
+          url={coverEditor.url}
+          initial={coverEditor.framing}
+          busy={coverBusy}
+          error={coverError}
+          onSave={(framing) => void handleCoverSave(framing)}
+          onRemove={list.coverPath ? () => void handleCoverRemove() : undefined}
+          removeLabel="Rimuovi copertina"
+          onClose={closeCoverEditor}
         />
       )}
     </div>
