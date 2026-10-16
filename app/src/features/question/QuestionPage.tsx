@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt } from '../../core/dates'
-import { Button, Card, EmptyState, ErrorBanner, Spinner, TextArea } from '../../ui/components'
+import { Button, Card, EmptyState, ErrorBanner, TextArea } from '../../ui/components'
 import { ChevronLeftIcon } from '../../ui/icons'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -51,7 +52,7 @@ export function QuestionPage() {
           <ChevronLeftIcon className="h-5 w-5" />
         </Link>
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-ink">Domanda del giorno</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Domanda del giorno</h1>
           <p className="text-sm text-ink-muted">
             Rispondete in segreto: le risposte si svelano quando ci siete tutti e due.
           </p>
@@ -61,9 +62,7 @@ export function QuestionPage() {
       {error && <ErrorBanner message={error} />}
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={2} />
       ) : question === null ? (
         <EmptyState
           title="Banca domande vuota"

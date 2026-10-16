@@ -211,9 +211,34 @@ export function useEvents() {
     setEvents((current) => current.filter((event) => event.id !== id))
   }, [])
 
+  /** Re-inserts a deleted event (undo toast, TASK-UI-…-001). */
+  const restoreEvent = useCallback(async (event: CalendarEvent) => {
+    const { data, error: insertError } = await supabase
+      .from('events')
+      .insert({
+        id: event.id,
+        couple_id: event.coupleId,
+        created_by: event.createdBy,
+        title: event.title,
+        description: event.description,
+        location: event.location,
+        start_at: event.startAt,
+        end_at: event.endAt,
+        all_day: event.allDay,
+        visibility: event.visibility,
+        rrule: event.rrule,
+        occasion: event.occasion,
+        occasion_for: event.occasionFor,
+      })
+      .select(EVENT_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setEvents((current) => upsert(current, rowToEvent(data as unknown as EventRow)))
+  }, [])
+
   const value = useMemo(
-    () => ({ events, loading, error, refresh, createEvent, updateEvent, deleteEvent }),
-    [events, loading, error, refresh, createEvent, updateEvent, deleteEvent],
+    () => ({ events, loading, error, refresh, createEvent, updateEvent, deleteEvent, restoreEvent }),
+    [events, loading, error, refresh, createEvent, updateEvent, deleteEvent, restoreEvent],
   )
   return value
 }

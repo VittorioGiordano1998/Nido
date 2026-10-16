@@ -205,7 +205,7 @@ export function CyclePage() {
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-ink">Ciclo</h1>
+            <h1 className="text-balance text-2xl font-bold text-ink">Ciclo</h1>
             <p className="text-sm text-ink-muted">Un diario personale, con riepiloghi
               condivisibili quando vuoi.</p>
           </div>
@@ -239,7 +239,7 @@ export function CyclePage() {
           <ChevronLeftIcon className="h-5 w-5" />
         </Link>
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-ink">Ciclo</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Ciclo</h1>
           <p className="text-sm text-ink-muted">
             Solo tuo; al partner arrivano soltanto i riepiloghi che condividi.
           </p>

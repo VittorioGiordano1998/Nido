@@ -195,5 +195,38 @@ export function useWishlist() {
     setItems((current) => current.filter((item) => item.id !== id))
   }, [])
 
-  return { items, loading, error, refresh, createItem, updateItem, togglePurchased, deleteItem }
+  /** Re-inserts a deleted wish (undo toast, TASK-UI-…-001). */
+  const restoreItem = useCallback(async (item: WishItem) => {
+    const { data, error: insertError } = await supabase
+      .from('wishlist_items')
+      .insert({
+        id: item.id,
+        couple_id: item.coupleId,
+        owner_id: item.ownerId,
+        title: item.title,
+        url: item.url,
+        price: item.price,
+        currency: item.currency,
+        notes: item.notes,
+        priority: item.priority,
+        purchased: item.purchased,
+        purchased_by: item.purchasedBy,
+      })
+      .select(WISH_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setItems((current) => [rowToItem(data as unknown as WishRow), ...current])
+  }, [])
+
+  return {
+    items,
+    loading,
+    error,
+    refresh,
+    createItem,
+    updateItem,
+    togglePurchased,
+    deleteItem,
+    restoreItem,
+  }
 }

@@ -167,3 +167,116 @@ export function LinkIcon({ className = 'h-5 w-5' }: IconProps) {
     </svg>
   )
 }
+
+export function ChatIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M12 5c4.6 0 8 3 8 6.8s-3.4 6.7-8 6.7c-.7 0-1.4-.1-2-.2L6 20l.9-3.2C5.7 15.6 4 13.8 4 11.8 4 8 7.4 5 12 5z" />
+    </svg>
+  )
+}
+
+export function InfoIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 11v5M12 8h.01" />
+    </svg>
+  )
+}
+
+export function HourglassIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M7 4h10M7 20h10" />
+      <path d="M8 4c0 3.2 1.6 4.8 4 8-2.4 3.2-4 4.8-4 8" />
+      <path d="M16 4c0 3.2-1.6 4.8-4 8 2.4 3.2 4 4.8 4 8" />
+    </svg>
+  )
+}
+
+export function SplitIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M8 4v3.5c0 2 1 3 3 3.8L17 14" />
+      <path d="M8 20v-3.5c0-2 1-3 3-3.8l6-2.7" />
+      <path d="m15 5.5 2.5 2L15 9.5" />
+      <path d="m15 14.5 2.5 2-2.5 2" />
+    </svg>
+  )
+}
+
+export function GiftIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <rect x="4.5" y="10" width="15" height="9.5" rx="1.5" />
+      <path d="M4.5 13h15M12 10v9.5" />
+      <path d="M12 10c-2.8 0-4.5-1-4.5-2.7A1.8 1.8 0 0 1 9.3 5.5C11 5.5 12 7.5 12 10zm0 0c2.8 0 4.5-1 4.5-2.7A1.8 1.8 0 0 0 14.7 5.5C13 5.5 12 7.5 12 10z" />
+    </svg>
+  )
+}
+
+export function CompassIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <circle cx="12" cy="12" r="8" />
+      <path d="m14.8 9.2-1.5 4.1-4.1 1.5 1.5-4.1z" />
+    </svg>
+  )
+}
+
+export function CoinIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M14.5 9.5a3 3 0 0 0-2.5-1.3c-1.4 0-2.5.9-2.5 2 0 2.8 5 1.6 5 4.2 0 1.2-1.1 2-2.5 2a3 3 0 0 1-2.5-1.3" />
+      <path d="M12 7v10" />
+    </svg>
+  )
+}
+
+export function CardIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <rect x="4" y="7" width="16" height="10.5" rx="2" />
+      <path d="M7 14.5v-2M9.5 14.5v-2M12 14.5v-2M14.5 14.5v-2" />
+    </svg>
+  )
+}
+
+export function CameraIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <rect x="4" y="8" width="16" height="11" rx="2.5" />
+      <path d="m9 8 1.2-2h3.6L15 8" />
+      <circle cx="12" cy="13.2" r="3.2" />
+    </svg>
+  )
+}
+
+export function ChecklistIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="m4.5 7 1.5 1.5L8.5 6M4.5 12.5 6 14l2.5-2.5M4.5 18l1.5 1.5L8.5 17" />
+      <path d="M11 7h9M11 13h9M11 19h9" />
+    </svg>
+  )
+}
+
+export function DiceIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="3" />
+      <path d="M9 9h.01M15 9h.01M12 12h.01M9 15h.01M15 15h.01" />
+    </svg>
+  )
+}
+
+export function SparklesIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M12 4.5 13.6 9l4.5 1.6-4.5 1.6L12 16.7l-1.6-4.5L5.9 10.6 10.4 9z" />
+      <path d="M17.5 15.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z" />
+    </svg>
+  )
+}

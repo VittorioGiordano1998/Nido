@@ -9,6 +9,7 @@ import { AuthProvider } from './features/auth/AuthProvider'
 import { CoupleProvider } from './features/coupling/CoupleProvider'
 import { PreferencesProvider } from './features/settings/PreferencesProvider'
 import { SettingsProvider } from './features/settings/SettingsProvider'
+import { ToastProvider } from './ui/toast'
 
 const rootEl = document.getElementById('root')
 if (!rootEl) throw new Error('Elemento #root non trovato')
@@ -25,7 +26,9 @@ createRoot(rootEl).render(
         <AuthProvider>
           <PreferencesProvider>
             <CoupleProvider>
-              <AppRouter />
+              <ToastProvider>
+                <AppRouter />
+              </ToastProvider>
             </CoupleProvider>
           </PreferencesProvider>
         </AuthProvider>

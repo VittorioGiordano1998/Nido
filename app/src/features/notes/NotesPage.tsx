@@ -1,14 +1,18 @@
 import { useState } from 'react'
 
 import { formatShortDateIt } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
+import { Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { NestIllustration } from '../../ui/illustrations'
 import { PlusIcon } from '../../ui/icons'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { useToast } from '../../ui/toast'
 import { NoteEditor } from './NoteEditor'
 import { notePreview, useNotes } from './useNotes'
 import type { Note, NoteInput } from './useNotes'
 
 export function NotesPage() {
-  const { notes, loading, error, createNote, updateNote, deleteNote } = useNotes()
+  const { notes, loading, error, createNote, updateNote, deleteNote, restoreNote } = useNotes()
+  const { showToast } = useToast()
   const [editor, setEditor] = useState<{ note: Note | null } | null>(null)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -44,11 +48,18 @@ export function NotesPage() {
   }
 
   async function handleDelete(id: string) {
+    const deleted = notes.find((note) => note.id === id) ?? null
     setSaving(true)
     setFormError(null)
     try {
       await deleteNote(id)
       setEditor(null)
+      if (deleted) {
+        showToast({
+          message: 'Nota eliminata.',
+          action: { label: 'Annulla', onAction: () => void restoreNote(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Errore durante l'eliminazione.")
     } finally {
@@ -60,7 +71,7 @@ export function NotesPage() {
     <div className="space-y-5 pt-2">
       <header className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-ink">Note</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Note</h1>
           <p className="text-sm text-ink-muted">Il blocchetto condiviso della coppia.</p>
         </div>
         <button
@@ -75,13 +86,21 @@ export function NotesPage() {
       {error && <ErrorBanner message={error} />}
 
       {loading ? (
-        <div className="flex justify-center py-6">
-          <Spinner />
-        </div>
+        <CardListSkeleton rows={3} />
       ) : notes.length === 0 ? (
         <EmptyState
+          illustration={<NestIllustration className="h-14 w-14 text-accent-glyph" />}
           title="Nessuna nota"
           description="La prima nota può essere qualsiasi cosa: un codice, un'idea, un promemoria."
+          action={
+            <button
+              type="button"
+              onClick={openNew}
+              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
+            >
+              Scrivi la prima nota
+            </button>
+          }
         />
       ) : (
         <ul className="space-y-2">

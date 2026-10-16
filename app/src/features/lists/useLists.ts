@@ -246,6 +246,45 @@ export function useLists() {
     setTasks((current) => current.filter((task) => task.listId !== id))
   }, [])
 
+  /** Re-inserts a deleted list with its tasks (undo toast, TASK-UI-…-001).
+   *  The cover is cleared: its object may already be gone. */
+  const restoreList = useCallback(async (list: TaskList, listTasks: Task[]) => {
+    const { data, error: insertError } = await supabase
+      .from('task_lists')
+      .insert({
+        id: list.id,
+        couple_id: list.coupleId,
+        created_by: list.createdBy,
+        title: list.title,
+        position: list.position,
+      })
+      .select(LIST_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setLists((current) => upsertList(current, listRowToList(data as unknown as ListRow)))
+    for (const task of listTasks) {
+      const { data: taskData, error: taskError } = await supabase
+        .from('tasks')
+        .insert({
+          id: task.id,
+          list_id: task.listId,
+          couple_id: task.coupleId,
+          created_by: task.createdBy,
+          title: task.title,
+          done: task.done,
+          done_by: task.doneBy,
+          done_at: task.doneAt,
+          assigned_to: task.assignedTo,
+          position: task.position,
+        })
+        .select(TASK_COLUMNS)
+        .single()
+      if (!taskError) {
+        setTasks((current) => upsertTask(current, taskRowToTask(taskData as unknown as TaskRow)))
+      }
+    }
+  }, [])
+
   /** Uploads a cover file (downscaled) and returns the stored path. */
   const uploadCover = useCallback(
     async (file: File) => {
@@ -363,6 +402,29 @@ export function useLists() {
     setTasks((current) => current.filter((task) => task.id !== id))
   }, [])
 
+  /** Re-inserts a deleted task (undo toast, TASK-UI-…-001). Its attachments
+   *  are not restored: those rows are released with the task. */
+  const restoreTask = useCallback(async (task: Task) => {
+    const { data, error: insertError } = await supabase
+      .from('tasks')
+      .insert({
+        id: task.id,
+        list_id: task.listId,
+        couple_id: task.coupleId,
+        created_by: task.createdBy,
+        title: task.title,
+        done: task.done,
+        done_by: task.doneBy,
+        done_at: task.doneAt,
+        assigned_to: task.assignedTo,
+        position: task.position,
+      })
+      .select(TASK_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setTasks((current) => upsertTask(current, taskRowToTask(data as unknown as TaskRow)))
+  }, [])
+
   const value = useMemo(
     () => ({
       lists,
@@ -373,10 +435,12 @@ export function useLists() {
       createList,
       renameList,
       deleteList,
+      restoreList,
       addTask,
       toggleTask,
       setTaskAssignee,
       deleteTask,
+      restoreTask,
       uploadCover,
       setCover,
       clearCover,
@@ -392,10 +456,12 @@ export function useLists() {
       createList,
       renameList,
       deleteList,
+      restoreList,
       addTask,
       toggleTask,
       setTaskAssignee,
       deleteTask,
+      restoreTask,
       uploadCover,
       setCover,
       clearCover,

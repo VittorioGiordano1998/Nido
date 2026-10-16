@@ -2,8 +2,10 @@ import { useMemo, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { Button, EmptyState, ErrorBanner, Spinner, TextInput } from '../../ui/components'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { Button, EmptyState, ErrorBanner, TextInput } from '../../ui/components'
 import { BellIcon, CheckIcon, ChevronLeftIcon, ImageIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { useToast } from '../../ui/toast'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useNudges } from '../nudges/useNudges'
@@ -46,7 +48,9 @@ export function ListView() {
     toggleTask,
     setTaskAssignee,
     deleteTask,
+    restoreTask,
     deleteList,
+    restoreList,
     renameList,
     uploadCover,
     setCover,
@@ -54,6 +58,7 @@ export function ListView() {
     discardPhoto,
     releaseCoversForPath,
   } = useLists()
+  const { showToast } = useToast()
   const {
     byTask,
     photoUrls,
@@ -91,9 +96,7 @@ export function ListView() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-10">
-        <Spinner />
-      </div>
+      <CardListSkeleton rows={4} />
     )
   }
 
@@ -108,7 +111,7 @@ export function ListView() {
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </Link>
-          <h1 className="text-2xl font-bold text-ink">Lista</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Lista</h1>
         </header>
         <EmptyState title="Lista non trovata" description="Potrebbe essere stata eliminata." />
       </div>
@@ -183,9 +186,16 @@ export function ListView() {
   }
 
   async function handleDeleteTask(taskId: string) {
+    const deleted = tasks.find((task) => task.id === taskId) ?? null
     try {
       await releasePhotos(byTask.get(taskId) ?? [])
       await deleteTask(taskId)
+      if (deleted) {
+        showToast({
+          message: 'Elemento eliminato.',
+          action: { label: 'Annulla', onAction: () => void restoreTask(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di eliminazione.')
     }
@@ -198,14 +208,23 @@ export function ListView() {
 
   async function handleDeleteList() {
     if (!list) return
+    const deletedList = list
+    const listTasks = tasks.filter((task) => task.listId === list.id)
     if (!window.confirm(`Eliminare la lista "${list.title}" e i suoi elementi?`)) return
     try {
-      const listTaskIds = new Set(tasks.filter((task) => task.listId === list.id).map((task) => task.id))
+      const listTaskIds = new Set(listTasks.map((task) => task.id))
       const rows = [...listTaskIds].flatMap((taskId) => byTask.get(taskId) ?? [])
       await releasePhotos(rows)
       if (list.coverPath) await discardPhoto(list.coverPath)
       await deleteList(list.id)
       navigate('/lists')
+      showToast({
+        message: 'Lista eliminata.',
+        action: {
+          label: 'Annulla',
+          onAction: () => void restoreList(deletedList, listTasks),
+        },
+      })
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di eliminazione.')
     }

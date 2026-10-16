@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../features/auth/AuthProvider'
 import { OnboardingSlides } from '../features/auth/OnboardingSlides'
@@ -7,6 +8,7 @@ import { useEventReminders } from '../features/calendar/reminders'
 import { useCouple } from '../features/coupling/CoupleProvider'
 import { useSettings } from '../features/settings/SettingsProvider'
 import { CalendarIcon, HeartIcon, HomeIcon, ListIcon, UserIcon } from '../ui/icons'
+import { titleForPath } from './titles'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Home', icon: HomeIcon, end: true, section: null },
@@ -31,6 +33,12 @@ export function AppShell() {
   const { enabled, remindersEnabled } = useSettings()
   const { status, complete } = useOnboarding()
   useEventReminders(remindersEnabled)
+  const location = useLocation()
+
+  // Per-route document title (TASK-UI-…-004).
+  useEffect(() => {
+    document.title = titleForPath(location.pathname)
+  }, [location.pathname])
 
   const myId = session?.user.id
   const partner = couple?.members.find((member) => member.userId !== myId)
@@ -65,7 +73,10 @@ export function AppShell() {
       </header>
 
       <main className="flex-1 px-5 pb-6 pt-1">
-        <Outlet />
+        {/* Soft entrance on route change (TASK-UI-…-005); reduced motion off in CSS. */}
+        <div key={location.pathname} className="page-enter">
+          <Outlet />
+        </div>
       </main>
 
       <nav className="sticky bottom-0 z-10 border-t border-line/70 bg-canvas/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
@@ -75,6 +86,7 @@ export function AppShell() {
               key={item.to}
               to={item.to}
               end={item.end}
+              viewTransition
               className={({ isActive }) =>
                 `flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold transition ${
                   isActive ? 'text-accent-ink' : 'text-ink-faint hover:text-ink-soft'

@@ -160,5 +160,33 @@ export function useSavings() {
     setProjects((current) => current.filter((project) => project.id !== id))
   }, [])
 
-  return { projects, loading, error, refresh, createProject, updateProject, deleteProject }
+  /** Re-inserts a deleted project (undo toast, TASK-UI-…-001). */
+  const restoreProject = useCallback(async (project: SavingsProject) => {
+    const { data, error: insertError } = await supabase
+      .from('savings_projects')
+      .insert({
+        id: project.id,
+        couple_id: project.coupleId,
+        title: project.title,
+        target_amount: project.targetAmount,
+        current_amount: project.currentAmount,
+        currency: project.currency,
+        deadline: project.deadline,
+      })
+      .select(SAVINGS_COLUMNS)
+      .single()
+    if (insertError) throw new Error(insertError.message)
+    setProjects((current) => [rowToProject(data as unknown as SavingsRow), ...current])
+  }, [])
+
+  return {
+    projects,
+    loading,
+    error,
+    refresh,
+    createProject,
+    updateProject,
+    deleteProject,
+    restoreProject,
+  }
 }

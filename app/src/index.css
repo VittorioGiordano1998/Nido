@@ -167,3 +167,83 @@ select,
 button {
   font: inherit;
 }
+
+/* ---------------------------------------------------------------------------
+ * Motion (TASK-UI-…-005): soft page entrance, toast entrance and the View
+ * Transitions cross-fade. Everything is opacity/transform only and is turned
+ * off entirely under prefers-reduced-motion.
+ * ------------------------------------------------------------------------- */
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-enter {
+  animation: page-enter 220ms ease-out both;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.toast-enter {
+  animation: toast-enter 180ms ease-out both;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+
+@keyframes view-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes view-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+::view-transition-old(root) {
+  animation-name: view-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: view-fade-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .toast-enter {
+    animation: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

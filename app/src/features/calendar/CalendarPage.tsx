@@ -9,13 +9,15 @@ import {
   startOfMonth,
   toDateKey,
 } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner, Spinner } from '../../ui/components'
+import { Card, EmptyState, ErrorBanner } from '../../ui/components'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   LockIcon,
   PlusIcon,
 } from '../../ui/icons'
+import { CardListSkeleton } from '../../ui/Skeleton'
+import { useToast } from '../../ui/toast'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { periodDayKeys, periodLabel, useCycleCalendar } from '../cycle/useCycleCalendar'
@@ -42,8 +44,10 @@ function occasionLabel(event: CalendarEvent): string {
 export function CalendarPage() {
   const { couple } = useCouple()
   const { session } = useAuth()
-  const { events, loading, error, createEvent, updateEvent, deleteEvent } = useEvents()
+  const { events, loading, error, createEvent, updateEvent, deleteEvent, restoreEvent } =
+    useEvents()
   const { periods, loading: cycleLoading, error: cycleError } = useCycleCalendar()
+  const { showToast } = useToast()
 
   const [month, setMonth] = useState(() => startOfMonth(new Date()))
   const [selectedKey, setSelectedKey] = useState(() => toDateKey(new Date()))
@@ -133,11 +137,18 @@ export function CalendarPage() {
   }
 
   async function handleDelete(id: string) {
+    const deleted = events.find((event) => event.id === id) ?? null
     setSaving(true)
     setFormError(null)
     try {
       await deleteEvent(id)
       setEditor(null)
+      if (deleted) {
+        showToast({
+          message: 'Evento eliminato.',
+          action: { label: 'Annulla', onAction: () => void restoreEvent(deleted) },
+        })
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Errore durante l'eliminazione.")
     } finally {
@@ -149,7 +160,7 @@ export function CalendarPage() {
     <div className="space-y-5 pt-2">
       <header className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-ink">Calendario</h1>
+          <h1 className="text-balance text-2xl font-bold text-ink">Calendario</h1>
           <p className="text-sm text-ink-muted">
             Gli appuntamenti della coppia, con quelli che restano solo tuoi.
           </p>
@@ -227,7 +238,7 @@ export function CalendarPage() {
                         : 'text-ink-faint hover:bg-surface-soft'
                 }`}
               >
-                <span>{cell.date.getDate()}</span>
+                <span className="tabular-nums">{cell.date.getDate()}</span>
                 <span className="mt-0.5 flex h-1.5 items-center gap-0.5">
                   {dayEvents.slice(0, 3).map((occurrence) => (
                     <span
@@ -260,9 +271,7 @@ export function CalendarPage() {
         </h2>
 
         {loading || cycleLoading ? (
-          <div className="flex justify-center py-6">
-            <Spinner />
-          </div>
+          <CardListSkeleton rows={2} />
         ) : selectedOccurrences.length === 0 && selectedCycle.length === 0 ? (
           <EmptyState
             title="Nessun evento"
