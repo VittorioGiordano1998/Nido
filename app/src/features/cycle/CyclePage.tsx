@@ -103,11 +103,11 @@ export function CyclePage() {
     }
   }
 
-  async function handleSave(input: CycleLogInput) {
+  async function handleSave(input: CycleLogInput, days: number) {
     setSaving(true)
     setFormError(null)
     try {
-      await saveLog(selectedKey, input)
+      await saveLog(selectedKey, input, days)
       setEditorOpen(false)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Errore di salvataggio.')

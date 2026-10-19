@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { fromDateKey } from '../../core/dates'
+import { fromDateKey, toDateKey } from '../../core/dates'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
@@ -86,6 +86,8 @@ function rowToShare(row: CycleShareRow): CycleShare {
     source: row.source === 'auto' ? 'auto' : 'manual',
   }
 }
+
+export const MAX_PERIOD_DAYS = 10
 
 const DAY_MS = 86_400_000
 
@@ -283,7 +285,7 @@ export function useCycle() {
   )
 
   const saveLog = useCallback(
-    async (logDate: string, input: CycleLogInput) => {
+    async (logDate: string, input: CycleLogInput, days = 1) => {
       if (!coupleId || !userId) throw new Error('Coppia non ancora caricata.')
       const { data, error: saveError } = await supabase
         .from('cycle_logs')
@@ -303,7 +305,34 @@ export function useCycle() {
         .single()
       if (saveError) throw new Error(saveError.message)
       const saved = rowToLog(data as unknown as CycleLogRow)
-      const nextLogs = [saved, ...logs.filter((log) => log.logDate !== logDate)]
+      let nextLogs = [saved, ...logs.filter((log) => log.logDate !== logDate)]
+
+      // The following days of the period get the same flow, only where no
+      // entry exists yet: whatever she already wrote on those days stays.
+      if (days > 1 && input.flow !== null) {
+        const taken = new Set(nextLogs.map((log) => log.logDate))
+        const start = fromDateKey(logDate)
+        const extra = Array.from({ length: Math.min(days, MAX_PERIOD_DAYS) - 1 }, (_, index) =>
+          toDateKey(new Date(start.getFullYear(), start.getMonth(), start.getDate() + index + 1)),
+        ).filter((key) => !taken.has(key))
+        if (extra.length > 0) {
+          const { data: extraRows, error: extraError } = await supabase
+            .from('cycle_logs')
+            .upsert(
+              extra.map((key) => ({
+                couple_id: coupleId,
+                user_id: userId,
+                log_date: key,
+                flow: input.flow,
+                symptoms: [],
+              })),
+              { onConflict: 'user_id,log_date', ignoreDuplicates: true },
+            )
+            .select(LOG_COLUMNS)
+          if (extraError) throw new Error(extraError.message)
+          nextLogs = [...((extraRows ?? []) as unknown as CycleLogRow[]).map(rowToLog), ...nextLogs]
+        }
+      }
       setLogs(nextLogs)
       if (calendarShare) {
         try {

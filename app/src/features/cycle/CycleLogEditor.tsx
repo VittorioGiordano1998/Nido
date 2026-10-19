@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { formatDateIt } from '../../core/dates'
 import { Button, ErrorBanner, Field, Select, TextArea } from '../../ui/components'
 import { CloseIcon, TrashIcon } from '../../ui/icons'
+import { MAX_PERIOD_DAYS } from './useCycle'
 import type { CycleLog, CycleLogInput } from './useCycle'
 
 export const SYMPTOMS = [
@@ -21,7 +22,7 @@ interface CycleLogEditorProps {
   log: CycleLog | null
   saving: boolean
   error: string | null
-  onSave: (input: CycleLogInput) => Promise<void>
+  onSave: (input: CycleLogInput, days: number) => Promise<void>
   onDelete: (id: string) => Promise<void>
   onClose: () => void
 }
@@ -39,6 +40,7 @@ export function CycleLogEditor({
   const [mood, setMood] = useState(log?.mood ? String(log.mood) : '')
   const [symptoms, setSymptoms] = useState<string[]>(log?.symptoms ?? [])
   const [notes, setNotes] = useState(log?.notes ?? '')
+  const [days, setDays] = useState('1')
 
   useEffect(() => {
     const onKeyDown = (keyEvent: KeyboardEvent) => {
@@ -57,12 +59,15 @@ export function CycleLogEditor({
   }
 
   async function handleSubmit() {
-    await onSave({
-      flow: flow ? Number(flow) : null,
-      mood: mood ? Number(mood) : null,
-      symptoms,
-      notes: notes.trim() || null,
-    })
+    await onSave(
+      {
+        flow: flow ? Number(flow) : null,
+        mood: mood ? Number(mood) : null,
+        symptoms,
+        notes: notes.trim() || null,
+      },
+      flow ? Number(days) : 1,
+    )
   }
 
   function handleDelete() {
@@ -107,6 +112,21 @@ export function CycleLogEditor({
               <option value="5">5 · Abbondante</option>
             </Select>
           </Field>
+
+          {flow && (
+            <Field
+              label="Durata"
+              hint="Segna il flusso anche nei giorni successivi, dove non hai già scritto nulla."
+            >
+              <Select value={days} onChange={(changeEvent) => setDays(changeEvent.target.value)}>
+                {Array.from({ length: MAX_PERIOD_DAYS }, (_, index) => (
+                  <option key={index + 1} value={String(index + 1)}>
+                    {index === 0 ? 'Solo questo giorno' : `${index + 1} giorni`}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          )}
 
           <Field label="Umore">
             <Select value={mood} onChange={(changeEvent) => setMood(changeEvent.target.value)}>
