@@ -18,6 +18,10 @@ function translateAuthError(message: string): string {
     return 'Accesso Google non ancora abilitato su Supabase.'
   if (m.includes('should be different'))
     return 'La nuova password deve essere diversa da quella attuale.'
+  if (m.includes('already been registered') || m.includes('email address is already'))
+    return 'Esiste già un account con questa email.'
+  if (m.includes('invalid format') || m.includes('invalid email'))
+    return 'Indirizzo email non valido.'
   if (m.includes('reauth') || m.includes('nonce'))
     return 'Per cambiare password devi riaccedere: esci e accedi di nuovo.'
   return message
@@ -34,6 +38,7 @@ type AuthContextValue = {
   ) => Promise<{ needsEmailConfirm: boolean }>
   signInWithGoogle: () => Promise<void>
   changePassword: (password: string) => Promise<void>
+  changeEmail: (email: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -88,6 +93,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       changePassword: async (password) => {
         const { error } = await supabase.auth.updateUser({ password })
+        if (error) throw new Error(translateAuthError(error.message))
+      },
+      changeEmail: async (email) => {
+        const { error } = await supabase.auth.updateUser(
+          { email },
+          { emailRedirectTo: window.location.origin },
+        )
         if (error) throw new Error(translateAuthError(error.message))
       },
       signOut: async () => {

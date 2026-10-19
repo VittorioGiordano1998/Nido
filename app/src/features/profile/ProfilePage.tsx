@@ -7,6 +7,7 @@ import { CoupleCard } from './CoupleCard'
 import { CoverCard } from './CoverCard'
 import { CycleCard } from './CycleCard'
 import { DeleteAccountCard } from './DeleteAccountCard'
+import { EmailCard } from './EmailCard'
 import { ExportCard } from './ExportCard'
 import { NotificationsCard } from './NotificationsCard'
 import { PersonalizationCard } from './PersonalizationCard'
@@ -34,6 +35,7 @@ export function ProfilePage() {
       <PersonalizationCard />
       <CoverCard />
       <NotificationsCard />
+      <EmailCard />
       <SecurityCard />
       <CycleCard visible={!profile.loading && profile.sex !== 'male'} />
       <CoupleCard />
