@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { env } from '../../core/env'
 import { Button } from '../../ui/components'
 import { useAuth } from '../auth/AuthProvider'
 import { OnboardingSlides } from '../auth/OnboardingSlides'
@@ -40,7 +41,7 @@ export function ProfilePage() {
       <CycleCard visible={!profile.loading && profile.sex !== 'male'} />
       <CoupleCard />
       <SectionsCard />
-      <TestToolsCard />
+      {env.testToolsEnabled && <TestToolsCard />}
       <ExportCard />
       <DeleteAccountCard />
 

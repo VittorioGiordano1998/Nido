@@ -36,6 +36,7 @@ const CoupleContext = createContext<CoupleContextValue | null>(null)
 function translateJoinError(message: string): string {
   const m = message.toLowerCase()
   if (m.includes('invalid_code')) return 'Codice non valido: controlla di averlo scritto bene.'
+  if (m.includes('too_many_attempts')) return 'Troppi tentativi errati: riprova tra qualche minuto.'
   if (m.includes('couple_full')) return 'Questa coppia ha già due membri.'
   if (m.includes('already_in_couple')) return 'Fai già parte di una coppia.'
   return message
@@ -184,8 +185,10 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
         await refresh()
       },
       joinCouple: async (code) => {
-        const { error: rpcError } = await supabase.rpc('join_couple', { p_code: code })
+        const { data, error: rpcError } = await supabase.rpc('join_couple', { p_code: code })
         if (rpcError) throw new Error(translateJoinError(rpcError.message))
+        // A wrong code answers with a null couple (the attempt is recorded server-side).
+        if (!data) throw new Error(translateJoinError('invalid_code'))
         await refresh()
       },
     }),

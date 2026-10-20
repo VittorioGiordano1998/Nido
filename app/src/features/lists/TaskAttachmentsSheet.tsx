@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { parseLinkInput, safeHttpUrl } from '../../core/links'
 import { Button, ErrorBanner, TextArea, TextInput } from '../../ui/components'
 import { CloseIcon, ImageIcon, LinkIcon, TrashIcon } from '../../ui/icons'
 import { BackdropEditor } from './BackdropEditor'
@@ -91,11 +92,9 @@ export function TaskAttachmentsSheet({
   async function handleLink() {
     const raw = link.trim()
     if (!raw) return
-    const value = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`
-    try {
-      void new URL(value)
-    } catch {
-      setFormError('Il link non sembra valido.')
+    const value = parseLinkInput(raw)
+    if (!value) {
+      setFormError('Il link non sembra valido: usa un indirizzo http:// o https://.')
       return
     }
     const saved = await run(() => onAdd('link', value, caption.trim() || null))
@@ -242,7 +241,7 @@ export function TaskAttachmentsSheet({
                   ) : attachment.kind === 'link' ? (
                     <div className="flex items-center gap-3 rounded-xl bg-surface-soft p-2">
                       <a
-                        href={attachment.value}
+                        href={safeHttpUrl(attachment.value) ?? undefined}
                         target="_blank"
                         rel="noreferrer"
                         className="flex min-w-0 flex-1 items-center gap-2 text-sm text-accent-ink hover:underline"

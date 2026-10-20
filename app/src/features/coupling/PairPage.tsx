@@ -219,8 +219,8 @@ export function PairPage() {
               <TextInput
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="Es. H7K2QM9P"
-                maxLength={8}
+                placeholder="Es. H7K2QM9PX4TC"
+                maxLength={12}
                 autoCapitalize="characters"
                 required
               />

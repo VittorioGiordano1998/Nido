@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt, fromDateKey, toDateKey } from '../../core/dates'
+import { safeHttpUrl } from '../../core/links'
 import { Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { CheckIcon, ChevronLeftIcon, PlusIcon } from '../../ui/icons'
 import { useToast } from '../../ui/toast'
@@ -143,11 +144,11 @@ export function WishlistPage() {
                     </span>
                     <span className="block text-xs text-ink-muted">
                       {item.price !== null ? formatPrice(item.price, item.currency) : 'Senza prezzo'}
-                      {item.url ? (
+                      {safeHttpUrl(item.url) ? (
                         <>
                           {' · '}
                           <a
-                            href={item.url}
+                            href={safeHttpUrl(item.url) ?? undefined}
                             target="_blank"
                             rel="noreferrer"
                             onClick={(clickEvent) => clickEvent.stopPropagation()}

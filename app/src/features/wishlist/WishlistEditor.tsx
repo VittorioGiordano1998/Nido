@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { safeHttpUrl } from '../../core/links'
 import { Button, ErrorBanner, Field, Select, TextArea, TextInput } from '../../ui/components'
 import { CloseIcon, TrashIcon } from '../../ui/icons'
 import type { WishInput, WishItem } from './useWishlist'
@@ -65,7 +66,7 @@ export function WishlistEditor({
       return
     }
     const url = form.url.trim() || null
-    if (url && !/^https?:\/\//i.test(url)) {
+    if (url && !safeHttpUrl(url)) {
       setValidationError('Il link deve iniziare con http:// o https://')
       return
     }
