@@ -58,6 +58,21 @@ interface EmailTarget {
   name?: string
 }
 
+/** Constant-time check of the shared webhook secret (both sides hashed first,
+ * so the comparison does not depend on where the strings differ or their length). */
+async function secretMatches(received: string | null, expected: string): Promise<boolean> {
+  const encoder = new TextEncoder()
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(received ?? '')),
+    crypto.subtle.digest('SHA-256', encoder.encode(expected)),
+  ])
+  const left = new Uint8Array(a)
+  const right = new Uint8Array(b)
+  let diff = received === null ? 1 : 0
+  for (let i = 0; i < left.length; i += 1) diff |= left[i] ^ right[i]
+  return diff === 0
+}
+
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -131,7 +146,7 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method not allowed' }, 405)
 
   const secret = Deno.env.get('SEND_REMINDERS_SECRET')
-  if (!secret || req.headers.get('x-webhook-secret') !== secret) {
+  if (!secret || !(await secretMatches(req.headers.get('x-webhook-secret'), secret))) {
     return json({ error: 'unauthorized' }, 401)
   }
 
