@@ -100,7 +100,9 @@ es. `supabase/apply-keepalive.sql`, `supabase/apply-events-privacy.sql`,
 `supabase/apply-reset-couple.sql`, `supabase/apply-couple-hero.sql`,
 `supabase/apply-push-wiring.sql` (dopo aver sostituito i segnaposto; sostituisce
 `apply-push-events.sql` e `apply-push-moments.sql`),
-`supabase/apply-notification-prefs.sql` o `supabase/apply-event-reminders.sql`).
+`supabase/apply-notification-prefs.sql`, `supabase/apply-event-reminders.sql` o
+`supabase/apply-security-hardening.sql`: codice invito a 12 caratteri con blocco dopo 5
+tentativi errati, link solo http(s), nudge solo verso il partner).
 
 ### Keep-alive (piano gratuito)
 
@@ -229,7 +231,21 @@ Due strumenti pensati per l'uso privato/test:
   nel SQL Editor. Dal Profilo → *Zona test* → *Svuota i dati della coppia* (si scrive
   `RESET`): eventi, liste, note, wishlist, decisioni, promemoria, risparmi, tessere, capsule
   e ciclo vengono svuotati; account, coppia e banca domande restano. È pensato per riprovare
-  i flussi da zero: da rivedere prima di un uso pubblico.
+  i flussi da zero: da rivedere prima di un uso pubblico. La card è nascosta di default:
+  compare solo con `VITE_ENABLE_TEST_TOOLS=true` (mai su Vercel in produzione).
+
+## Sicurezza
+
+- Il repository è pubblico: nessun segreto va committato. Nei file `apply-push-*.sql` i
+  segnaposto `<SEND_PUSH_SECRET>` / `<SEND_REMINDERS_SECRET>` si sostituiscono solo nel SQL
+  Editor, mai nel file.
+- `app/vercel.json` imposta CSP e header di sicurezza. La CSP ammette lo script inline di
+  `app/index.html` tramite il suo hash SHA-256: se quello script cambia, ricalcola l'hash
+  (`sha256` in base64 del contenuto del tag `<script>`) e aggiornalo in `script-src`.
+- Checklist dal dashboard Supabase (non verificabile dal repo): conferma email attiva,
+  lunghezza minima password 8+, leaked-password protection, Site URL e Redirect URLs corretti,
+  Security Advisor senza avvisi, `service_role` mai tra le variabili `VITE_*` di Vercel.
+- Su GitHub: secret scanning, push protection e Dependabot attivi.
 
 ## Regole di progetto
 
