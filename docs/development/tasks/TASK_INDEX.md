@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-63 tasks — 8 Proposed · 0 Ready · 37 In Progress · 0 Blocked · 18 Done · 0 Cancelled
+66 tasks — 8 Proposed · 0 Ready · 37 In Progress · 0 Blocked · 21 Done · 0 Cancelled
 
 ## Proposed
 
@@ -87,6 +87,9 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-QOT-VITTORIOGIORDANOYBQ-002](done/TASK-QOT-VITTORIOGIORDANOYBQ-002-question-of-the-day-card-on-home.md) | Question of the day: card on Home | Feature | question of the day | Low | 2026-10-15 | 2026-10-15 |
 | [TASK-QOT-VITTORIOGIORDANOYBQ-003](done/TASK-QOT-VITTORIOGIORDANOYBQ-003-question-bank-expand-to-100-questions.md) | Question bank: expand to 100 questions | Chore | question of the day | Low | 2026-10-15 | 2026-10-15 |
 | [TASK-SEC-VITTORIOGIORDANOYBQ-001](done/TASK-SEC-VITTORIOGIORDANOYBQ-001-security-hardening-from-the-public-repo-audit.md) | Security hardening from the public-repo audit | Security | security | Medium | 2026-10-20 | 2026-10-20 |
+| [TASK-UI-VITTORIOGIORDANOYBQ-006](done/TASK-UI-VITTORIOGIORDANOYBQ-006-stile-piu-accattivante.md) | Stile più accattivante | — | UI | — | 2026-10-22 | 2026-10-22 |
+| [TASK-UI-VITTORIOGIORDANOYBQ-007](done/TASK-UI-VITTORIOGIORDANOYBQ-007-caricamento-foto-piu-veloce.md) | Caricamento foto più veloce | — | UI | — | 2026-10-22 | 2026-10-22 |
+| [TASK-UI-VITTORIOGIORDANOYBQ-008](done/TASK-UI-VITTORIOGIORDANOYBQ-008-precarica-le-foto-delle-liste.md) | Precarica le foto delle liste | — | UI | — | 2026-10-22 | 2026-10-22 |
 | [TASK-WEB-VITTORIOGIORDANOYBQ-001](done/TASK-WEB-VITTORIOGIORDANOYBQ-001-web-app-m0-skeleton-supabase-schema-auth-and-pairing.md) | Web app M0 - skeleton, Supabase schema, auth and pairing | Feature | web app | High | 2026-10-14 | 2026-10-15 |
 | [TASK-WEEK-VITTORIOGIORDANOYBQ-001](done/TASK-WEEK-VITTORIOGIORDANOYBQ-001-weekly-plan-a-proposal-per-week.md) | Weekly plan: a proposal per week | Feature | weekly plan | Low | 2026-10-14 | 2026-10-15 |
 | [TASK-WISH-VITTORIOGIORDANOYBQ-001](done/TASK-WISH-VITTORIOGIORDANOYBQ-001-wishlist-with-gift-radar-hooks.md) | Wishlist with gift radar hooks | Feature | wishlist | Low | 2026-10-14 | 2026-10-15 |
