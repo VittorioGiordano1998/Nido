@@ -201,6 +201,8 @@ export function TaskAttachmentsSheet({
                           <img
                             src={photoUrls[attachment.value]}
                             alt={attachment.caption ?? 'Foto'}
+                            loading="lazy"
+                            decoding="async"
                             className="h-16 w-16 rounded-lg object-cover ring-1 ring-line"
                           />
                         </a>

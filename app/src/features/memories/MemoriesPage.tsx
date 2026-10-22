@@ -197,6 +197,7 @@ export function MemoriesPage() {
                       src={urls[memory.photoPath]}
                       alt=""
                       loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   ) : null}

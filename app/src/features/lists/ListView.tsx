@@ -435,6 +435,8 @@ export function ListView() {
                   <img
                     src={assignee.avatarUrl}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full rounded-full object-cover"
                   />
                 ) : (

@@ -1,4 +1,9 @@
-import { LIST_PHOTO_BUCKET, signPhotoUrls as signBucketPhotoUrls, uploadPhoto } from '../../core/photos'
+import {
+  LIST_PHOTO_BUCKET,
+  preloadPhotos,
+  signPhotoUrls as signBucketPhotoUrls,
+  uploadPhoto,
+} from '../../core/photos'
 import { supabase } from '../../core/supabase'
 
 /**
@@ -45,4 +50,9 @@ export async function removePhotoIfUnused(path: string): Promise<void> {
 /** Signed URLs for a set of list-photo paths, keyed by path. */
 export function signPhotoUrls(paths: string[], ttlSeconds?: number): Promise<Record<string, string>> {
   return signBucketPhotoUrls(PHOTO_BUCKET, paths, ttlSeconds)
+}
+
+/** Warms the browser cache with list covers, so the lists screen paints them at once. */
+export function preloadListPhotos(paths: string[]): void {
+  preloadPhotos(PHOTO_BUCKET, paths)
 }

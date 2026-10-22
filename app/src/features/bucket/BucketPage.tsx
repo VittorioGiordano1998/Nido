@@ -164,7 +164,13 @@ export function BucketPage() {
             className="h-9 w-9 shrink-0 overflow-hidden rounded-lg ring-1 ring-line"
           >
             {urls[memory.path] ? (
-              <img src={urls[memory.path]} alt="" className="h-full w-full object-cover" />
+              <img
+                src={urls[memory.path]}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
             ) : (
               <span className="block h-full w-full bg-surface-muted" />
             )}

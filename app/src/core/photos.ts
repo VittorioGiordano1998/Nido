@@ -17,6 +17,15 @@ const DEFAULT_QUALITY = 0.82
 /** Small enough to keep as-is even without re-encoding. */
 const KEEP_AS_IS_BYTES = 900 * 1024
 const SIGNED_URL_TTL_SECONDS = 60 * 60 * 24
+/** A cached URL is reused only while it has this much life left. */
+const SIGNED_URL_REUSE_MARGIN_MS = 5 * 60 * 1000
+
+/**
+ * Signed URLs kept for the session. A fresh signature is a new URL, so the
+ * browser cache misses on every re-sign and the photo downloads again; reusing
+ * the same URL lets the cache answer on navigation back to a screen.
+ */
+const signedUrlCache = new Map<string, { url: string; expiresAt: number }>()
 
 export interface PhotoOptions {
   /** Longest side kept when downscaling (default 1600). */
@@ -104,6 +113,39 @@ export async function uploadPhoto(
   return path
 }
 
+/**
+ * Signed URLs already known for these paths, read synchronously: no network,
+ * so a screen can paint its photos on the very first render.
+ */
+export function cachedSignedUrls(bucket: string, paths: string[]): Record<string, string> {
+  const now = Date.now()
+  const urls: Record<string, string> = {}
+  for (const path of paths) {
+    const cached = signedUrlCache.get(`${bucket}|${path}`)
+    if (cached && cached.expiresAt - now > SIGNED_URL_REUSE_MARGIN_MS) urls[path] = cached.url
+  }
+  return urls
+}
+
+/**
+ * Warms the browser cache with photos a screen is about to show, so opening
+ * that screen paints them from memory. Best effort: the screen still loads
+ * its own photos if this fails.
+ */
+export function preloadPhotos(bucket: string, paths: string[]): void {
+  void signPhotoUrls(bucket, paths)
+    .then((urls) => {
+      for (const url of Object.values(urls)) {
+        const image = new Image()
+        image.decoding = 'async'
+        image.src = url
+      }
+    })
+    .catch(() => {
+      // Nothing to report: the screen loads the photos itself.
+    })
+}
+
 /** Signed URLs for a set of paths of one bucket, keyed by path. */
 export async function signPhotoUrls(
   bucket: string,
@@ -112,13 +154,25 @@ export async function signPhotoUrls(
 ): Promise<Record<string, string>> {
   const unique = [...new Set(paths.filter(Boolean))]
   if (unique.length === 0) return {}
+
+  const urls = cachedSignedUrls(bucket, unique)
+  const missing = unique.filter((path) => !(path in urls))
+  if (missing.length === 0) return urls
+
+  const now = Date.now()
+
   const { data, error } = await supabase.storage
     .from(bucket)
-    .createSignedUrls(unique, ttlSeconds)
+    .createSignedUrls(missing, ttlSeconds)
   if (error) throw new Error(error.message)
-  const urls: Record<string, string> = {}
   for (const entry of data ?? []) {
-    if (entry.signedUrl && entry.path) urls[entry.path] = entry.signedUrl
+    if (entry.signedUrl && entry.path) {
+      urls[entry.path] = entry.signedUrl
+      signedUrlCache.set(`${bucket}|${entry.path}`, {
+        url: entry.signedUrl,
+        expiresAt: now + ttlSeconds * 1000,
+      })
+    }
   }
   return urls
 }

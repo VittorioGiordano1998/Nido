@@ -5,7 +5,7 @@ import { uniqueChannelTopic } from '../../core/realtime'
 import { supabase } from '../../core/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
-import { clampFraming, removePhotoIfUnused, uploadListPhoto } from './photos'
+import { clampFraming, preloadListPhotos, removePhotoIfUnused, uploadListPhoto } from './photos'
 import type { Framing } from './photos'
 
 export interface TaskList {
@@ -159,7 +159,10 @@ export function useLists() {
         (listsResult.error ?? tasksResult.error)?.message ?? 'Errore di caricamento delle liste.',
       )
     } else {
-      setLists(((listsResult.data ?? []) as unknown as ListRow[]).map(listRowToList))
+      const loaded = ((listsResult.data ?? []) as unknown as ListRow[]).map(listRowToList)
+      setLists(loaded)
+      // The covers are shown on the lists screen: warm them while the user is elsewhere.
+      preloadListPhotos(loaded.flatMap((list) => (list.coverPath ? [list.coverPath] : [])))
       setTasks(((tasksResult.data ?? []) as unknown as TaskRow[]).map(taskRowToTask))
       setError(null)
     }
