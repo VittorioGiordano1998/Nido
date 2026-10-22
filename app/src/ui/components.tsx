@@ -37,7 +37,8 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const variants = {
-    primary: 'bg-accent-600 text-white hover:bg-accent-700 active:bg-accent-800 disabled:bg-accent-300',
+    primary:
+      'bg-gradient-to-br from-accent-500 to-accent-700 text-white shadow-md shadow-accent-600/25 hover:shadow-lg hover:shadow-accent-600/35 active:scale-[0.98] disabled:bg-none disabled:bg-accent-300 disabled:shadow-none',
     secondary:
       'bg-surface text-ink ring-1 ring-line hover:bg-surface-soft disabled:text-ink-faint',
     ghost: 'text-accent-ink hover:bg-accent-100 disabled:text-ink-faint',

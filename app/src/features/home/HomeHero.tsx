@@ -55,10 +55,16 @@ export function HomeHero() {
       className={`relative overflow-hidden rounded-3xl shadow-sm ring-1 ring-line/60 ${
         onPhoto
           ? ''
-          : 'bg-gradient-to-br from-accent-100 via-accent-50 to-sage-100 dark:from-accent-100 dark:via-accent-50 dark:to-surface-soft'
+          : 'bg-gradient-to-br from-accent-200 via-accent-50 to-sage-100 dark:from-accent-200 dark:via-accent-50 dark:to-surface-soft'
       }`}
     >
       {url && <BackdropPhoto url={url} framing={framing} />}
+      {!onPhoto && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-accent-300/50 blur-2xl"
+        />
+      )}
 
       <div className={`relative space-y-3 p-5 ${onPhoto ? 'text-white' : 'text-ink'}`}>
         <div className="flex items-end gap-3">
@@ -72,7 +78,7 @@ export function HomeHero() {
                   to={days}
                   separator="."
                   duration={1.4}
-                  className="text-4xl font-bold tabular-nums"
+                  className={`text-4xl font-extrabold tabular-nums ${onPhoto ? '' : 'text-accent-ink'}`}
                 />
                 <p
                   className={`text-xs font-semibold uppercase tracking-wide ${
