@@ -20,7 +20,7 @@ export function MemoryCard({ memory, url, index, onOpen }: MemoryCardProps) {
       style={{ transform: `rotate(${TILTS[index % TILTS.length]}deg)` }}
       className="block w-full text-left transition hover:rotate-0 focus-visible:rotate-0"
     >
-      <span className="block rounded-2xl bg-surface p-2 pb-2.5 shadow-sm ring-1 ring-line/70">
+      <span className="block rounded-2xl bg-surface p-2 pb-2.5 shadow-card ring-1 ring-line/70">
         <span className="block aspect-[4/5] overflow-hidden rounded-xl bg-surface-muted">
           {url ? (
             <img

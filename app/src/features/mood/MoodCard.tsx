@@ -71,7 +71,7 @@ export function MoodCard() {
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="font-display text-lg font-semibold text-ink">
           Come stai oggi?
         </h2>
         {streak > 0 && (

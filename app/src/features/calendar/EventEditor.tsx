@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { toDateKey, toTimeInput } from '../../core/dates'
 import { Button, ErrorBanner, Field, Select, TextArea, TextInput } from '../../ui/components'
-import { CloseIcon, LockIcon, TrashIcon } from '../../ui/icons'
+import { Sheet } from '../../ui/Sheet'
+import { LockIcon, TrashIcon } from '../../ui/icons'
 import { parseRecurrence, serializeRecurrence } from './recurrence'
 import type { RecurrenceFrequency } from './recurrence'
 import { REMINDER_OPTIONS } from './reminders'
@@ -110,14 +111,6 @@ export function EventEditor({
   const [form, setForm] = useState<FormState>(() => initialState(event, defaultDateKey, myId))
   const [validationError, setValidationError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const onKeyDown = (keyEvent: KeyboardEvent) => {
-      if (keyEvent.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
-
   async function handleSubmit() {
     const title = form.title.trim()
     if (!title) {
@@ -203,294 +196,268 @@ export function EventEditor({
   }
 
   return (
-    <div
-      role="presentation"
-      onClick={onClose}
-      className="fixed inset-0 z-30 flex items-end justify-center bg-scrim backdrop-blur-[2px] sm:items-center sm:p-6"
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={event ? 'Modifica evento' : 'Nuovo evento'}
-        onClick={(clickEvent) => clickEvent.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-canvas p-5 shadow-xl sm:rounded-3xl"
-      >
-        <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-ink">
-            {event ? 'Modifica evento' : 'Nuovo evento'}
-          </h2>
+    <Sheet title={event ? 'Modifica evento' : 'Nuovo evento'} onClose={onClose}>
+      <div className="space-y-4">
+        <Field label="Titolo">
+          <TextInput
+            value={form.title}
+            onChange={(changeEvent) => setForm({ ...form, title: changeEvent.target.value })}
+            placeholder="Es. Cena dai miei"
+            autoFocus
+          />
+        </Field>
+
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-line">
+          <span className="text-sm font-semibold text-ink-soft">Tutto il giorno</span>
           <button
             type="button"
-            onClick={onClose}
-            aria-label="Chiudi"
-            className="rounded-lg p-1.5 text-ink-faint hover:bg-surface-soft hover:text-ink-soft"
+            role="switch"
+            aria-checked={form.allDay}
+            aria-label="Evento tutto il giorno"
+            onClick={() => setForm({ ...form, allDay: !form.allDay })}
+            className={`h-6 w-11 shrink-0 rounded-full transition ${
+              form.allDay ? 'bg-accent-600' : 'bg-line-strong'
+            }`}
           >
-            <CloseIcon className="h-5 w-5" />
-          </button>
-        </header>
-
-        <div className="space-y-4">
-          <Field label="Titolo">
-            <TextInput
-              value={form.title}
-              onChange={(changeEvent) => setForm({ ...form, title: changeEvent.target.value })}
-              placeholder="Es. Cena dai miei"
-              autoFocus
-            />
-          </Field>
-
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-line">
-            <span className="text-sm font-semibold text-ink-soft">Tutto il giorno</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={form.allDay}
-              aria-label="Evento tutto il giorno"
-              onClick={() => setForm({ ...form, allDay: !form.allDay })}
-              className={`h-6 w-11 shrink-0 rounded-full transition ${
-                form.allDay ? 'bg-accent-600' : 'bg-line-strong'
+            <span
+              className={`block h-5 w-5 rounded-full bg-white shadow transition ${
+                form.allDay ? 'translate-x-[22px]' : 'translate-x-0.5'
               }`}
-            >
-              <span
-                className={`block h-5 w-5 rounded-full bg-white shadow transition ${
-                  form.allDay ? 'translate-x-[22px]' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
-          </div>
-
-          <Field label="Data">
-            <TextInput
-              type="date"
-              value={form.dateKey}
-              onChange={(changeEvent) => setForm({ ...form, dateKey: changeEvent.target.value })}
             />
-          </Field>
+          </button>
+        </div>
 
-          {!form.allDay && (
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Inizio">
-                <TextInput
-                  type="time"
-                  value={form.startTime}
-                  onChange={(changeEvent) =>
-                    setForm({ ...form, startTime: changeEvent.target.value })
-                  }
-                />
-              </Field>
-              <Field label="Fine">
-                <TextInput
-                  type="time"
-                  value={form.endTime}
-                  onChange={(changeEvent) =>
-                    setForm({ ...form, endTime: changeEvent.target.value })
-                  }
-                />
-              </Field>
-            </div>
-          )}
+        <Field label="Data">
+          <TextInput
+            type="date"
+            value={form.dateKey}
+            onChange={(changeEvent) => setForm({ ...form, dateKey: changeEvent.target.value })}
+          />
+        </Field>
 
-          <Field
-            label="Promemoria"
-            hint="Avviso su dispositivo ed email anche ad app chiusa; per i tutto il giorno il conto parte dalle 9:00."
+        {!form.allDay && (
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Inizio">
+              <TextInput
+                type="time"
+                value={form.startTime}
+                onChange={(changeEvent) =>
+                  setForm({ ...form, startTime: changeEvent.target.value })
+                }
+              />
+            </Field>
+            <Field label="Fine">
+              <TextInput
+                type="time"
+                value={form.endTime}
+                onChange={(changeEvent) =>
+                  setForm({ ...form, endTime: changeEvent.target.value })
+                }
+              />
+            </Field>
+          </div>
+        )}
+
+        <Field
+          label="Promemoria"
+          hint="Avviso su dispositivo ed email anche ad app chiusa; per i tutto il giorno il conto parte dalle 9:00."
+        >
+          <Select
+            value={form.remindMinutes === null ? 'default' : String(form.remindMinutes)}
+            onChange={(changeEvent) => {
+              const raw = changeEvent.target.value
+              setForm({ ...form, remindMinutes: raw === 'default' ? null : Number(raw) })
+            }}
           >
+            {REMINDER_OPTIONS.map((option) => (
+              <option
+                key={option.label}
+                value={option.value === null ? 'default' : String(option.value)}
+              >
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
+
+        <Field label="Ripetizione">
+          <Select
+            value={form.recurrenceFreq}
+            onChange={(changeEvent) =>
+              setForm({
+                ...form,
+                recurrenceFreq: changeEvent.target.value as FormState['recurrenceFreq'],
+              })
+            }
+          >
+            <option value="NONE">Non si ripete</option>
+            <option value="DAILY">Ogni giorno</option>
+            <option value="WEEKLY">Ogni settimana</option>
+            <option value="MONTHLY">Ogni mese</option>
+            <option value="YEARLY">Ogni anno</option>
+          </Select>
+        </Field>
+
+        {form.recurrenceFreq !== 'NONE' && (
+          <div className="space-y-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-line">
+            <Field label="Ogni quanto" hint="1 = ogni volta; 2 = salta un giro.">
+              <TextInput
+                type="number"
+                min={1}
+                max={52}
+                value={form.recurrenceInterval}
+                onChange={(changeEvent) =>
+                  setForm({ ...form, recurrenceInterval: changeEvent.target.value })
+                }
+              />
+            </Field>
+            <Field label="Fine">
+              <Select
+                value={form.recurrenceEnd}
+                onChange={(changeEvent) =>
+                  setForm({
+                    ...form,
+                    recurrenceEnd: changeEvent.target.value as RecurrenceEnd,
+                    recurrenceUntil: form.recurrenceUntil || form.dateKey,
+                  })
+                }
+              >
+                <option value="never">Mai</option>
+                <option value="until">A una data</option>
+                <option value="count">Dopo un numero di volte</option>
+              </Select>
+            </Field>
+            {form.recurrenceEnd === 'until' && (
+              <TextInput
+                type="date"
+                value={form.recurrenceUntil}
+                onChange={(changeEvent) =>
+                  setForm({ ...form, recurrenceUntil: changeEvent.target.value })
+                }
+              />
+            )}
+            {form.recurrenceEnd === 'count' && (
+              <TextInput
+                type="number"
+                min={1}
+                max={365}
+                value={form.recurrenceCount}
+                onChange={(changeEvent) =>
+                  setForm({ ...form, recurrenceCount: changeEvent.target.value })
+                }
+              />
+            )}
+          </div>
+        )}
+
+        <Field label="Luogo">
+          <TextInput
+            value={form.location}
+            onChange={(changeEvent) => setForm({ ...form, location: changeEvent.target.value })}
+            placeholder="Facoltativo"
+          />
+        </Field>
+
+        <Field label="Note">
+          <TextArea
+            rows={3}
+            value={form.description}
+            onChange={(changeEvent) =>
+              setForm({ ...form, description: changeEvent.target.value })
+            }
+            placeholder="Facoltativo"
+          />
+        </Field>
+
+        <Field
+          label="Occasione speciale"
+          hint="Compleanni e anniversari compaiono nel radar regali della wishlist."
+        >
+          <Select
+            value={form.occasion}
+            onChange={(changeEvent) =>
+              setForm({
+                ...form,
+                occasion: changeEvent.target.value as FormState['occasion'],
+                occasionFor: form.occasionFor || myId || '',
+              })
+            }
+          >
+            <option value="none">Nessuna</option>
+            <option value="birthday">Compleanno</option>
+            <option value="anniversary">Anniversario</option>
+          </Select>
+        </Field>
+
+        {form.occasion !== 'none' && (
+          <Field label="Per">
             <Select
-              value={form.remindMinutes === null ? 'default' : String(form.remindMinutes)}
-              onChange={(changeEvent) => {
-                const raw = changeEvent.target.value
-                setForm({ ...form, remindMinutes: raw === 'default' ? null : Number(raw) })
-              }}
+              value={form.occasionFor}
+              onChange={(changeEvent) =>
+                setForm({ ...form, occasionFor: changeEvent.target.value })
+              }
             >
-              {REMINDER_OPTIONS.map((option) => (
-                <option
-                  key={option.label}
-                  value={option.value === null ? 'default' : String(option.value)}
-                >
-                  {option.label}
+              {members.map((member) => (
+                <option key={member.userId} value={member.userId}>
+                  {member.userId === myId ? 'Io' : member.displayName}
                 </option>
               ))}
             </Select>
           </Field>
+        )}
 
-          <Field label="Ripetizione">
-            <Select
-              value={form.recurrenceFreq}
-              onChange={(changeEvent) =>
-                setForm({
-                  ...form,
-                  recurrenceFreq: changeEvent.target.value as FormState['recurrenceFreq'],
-                })
-              }
+        <Field label="Visibilità" hint="Un evento privato non è visibile al partner.">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, visibility: 'couple' })}
+              className={`rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
+                form.visibility === 'couple'
+                  ? 'bg-accent-600 text-white ring-accent-600'
+                  : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
+              }`}
             >
-              <option value="NONE">Non si ripete</option>
-              <option value="DAILY">Ogni giorno</option>
-              <option value="WEEKLY">Ogni settimana</option>
-              <option value="MONTHLY">Ogni mese</option>
-              <option value="YEARLY">Ogni anno</option>
-            </Select>
-          </Field>
+              Coppia
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, visibility: 'private' })}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
+                form.visibility === 'private'
+                  ? 'bg-accent-600 text-white ring-accent-600'
+                  : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
+              }`}
+            >
+              <LockIcon className="h-4 w-4" /> Privato
+            </button>
+          </div>
+        </Field>
 
-          {form.recurrenceFreq !== 'NONE' && (
-            <div className="space-y-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-line">
-              <Field label="Ogni quanto" hint="1 = ogni volta; 2 = salta un giro.">
-                <TextInput
-                  type="number"
-                  min={1}
-                  max={52}
-                  value={form.recurrenceInterval}
-                  onChange={(changeEvent) =>
-                    setForm({ ...form, recurrenceInterval: changeEvent.target.value })
-                  }
-                />
-              </Field>
-              <Field label="Fine">
-                <Select
-                  value={form.recurrenceEnd}
-                  onChange={(changeEvent) =>
-                    setForm({
-                      ...form,
-                      recurrenceEnd: changeEvent.target.value as RecurrenceEnd,
-                      recurrenceUntil: form.recurrenceUntil || form.dateKey,
-                    })
-                  }
-                >
-                  <option value="never">Mai</option>
-                  <option value="until">A una data</option>
-                  <option value="count">Dopo un numero di volte</option>
-                </Select>
-              </Field>
-              {form.recurrenceEnd === 'until' && (
-                <TextInput
-                  type="date"
-                  value={form.recurrenceUntil}
-                  onChange={(changeEvent) =>
-                    setForm({ ...form, recurrenceUntil: changeEvent.target.value })
-                  }
-                />
-              )}
-              {form.recurrenceEnd === 'count' && (
-                <TextInput
-                  type="number"
-                  min={1}
-                  max={365}
-                  value={form.recurrenceCount}
-                  onChange={(changeEvent) =>
-                    setForm({ ...form, recurrenceCount: changeEvent.target.value })
-                  }
-                />
-              )}
-            </div>
-          )}
+        {validationError && <ErrorBanner message={validationError} />}
+        {error && <ErrorBanner message={error} />}
 
-          <Field label="Luogo">
-            <TextInput
-              value={form.location}
-              onChange={(changeEvent) => setForm({ ...form, location: changeEvent.target.value })}
-              placeholder="Facoltativo"
-            />
-          </Field>
-
-          <Field label="Note">
-            <TextArea
-              rows={3}
-              value={form.description}
-              onChange={(changeEvent) =>
-                setForm({ ...form, description: changeEvent.target.value })
-              }
-              placeholder="Facoltativo"
-            />
-          </Field>
-
-          <Field
-            label="Occasione speciale"
-            hint="Compleanni e anniversari compaiono nel radar regali della wishlist."
+        <div className="flex items-center gap-2 pt-1">
+          <Button
+            type="button"
+            loading={saving}
+            onClick={() => void handleSubmit()}
+            className="flex-1"
           >
-            <Select
-              value={form.occasion}
-              onChange={(changeEvent) =>
-                setForm({
-                  ...form,
-                  occasion: changeEvent.target.value as FormState['occasion'],
-                  occasionFor: form.occasionFor || myId || '',
-                })
-              }
-            >
-              <option value="none">Nessuna</option>
-              <option value="birthday">Compleanno</option>
-              <option value="anniversary">Anniversario</option>
-            </Select>
-          </Field>
-
-          {form.occasion !== 'none' && (
-            <Field label="Per">
-              <Select
-                value={form.occasionFor}
-                onChange={(changeEvent) =>
-                  setForm({ ...form, occasionFor: changeEvent.target.value })
-                }
-              >
-                {members.map((member) => (
-                  <option key={member.userId} value={member.userId}>
-                    {member.userId === myId ? 'Io' : member.displayName}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-          )}
-
-          <Field label="Visibilità" hint="Un evento privato non è visibile al partner.">
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, visibility: 'couple' })}
-                className={`rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
-                  form.visibility === 'couple'
-                    ? 'bg-accent-600 text-white ring-accent-600'
-                    : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
-                }`}
-              >
-                Coppia
-              </button>
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, visibility: 'private' })}
-                className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
-                  form.visibility === 'private'
-                    ? 'bg-accent-600 text-white ring-accent-600'
-                    : 'bg-surface text-ink-soft ring-line hover:bg-surface-soft'
-                }`}
-              >
-                <LockIcon className="h-4 w-4" /> Privato
-              </button>
-            </div>
-          </Field>
-
-          {validationError && <ErrorBanner message={validationError} />}
-          {error && <ErrorBanner message={error} />}
-
-          <div className="flex items-center gap-2 pt-1">
+            {event ? 'Salva modifiche' : 'Crea evento'}
+          </Button>
+          {event && (
             <Button
               type="button"
-              loading={saving}
-              onClick={() => void handleSubmit()}
-              className="flex-1"
+              variant="ghost"
+              onClick={handleDelete}
+              disabled={saving}
+              className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
             >
-              {event ? 'Salva modifiche' : 'Crea evento'}
+              <TrashIcon className="h-4 w-4" /> Elimina
             </Button>
-            {event && (
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleDelete}
-                disabled={saving}
-                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
-              >
-                <TrashIcon className="h-4 w-4" /> Elimina
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </div>
+    </Sheet>
   )
 }

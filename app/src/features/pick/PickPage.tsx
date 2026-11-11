@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 
-import { Button, Card, EmptyState } from '../../ui/components'
+import { Button, ButtonLink, Card, EmptyState } from '../../ui/components'
 import { SparkleIllustration } from '../../ui/illustrations'
-import { ChevronLeftIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useLists } from '../lists/useLists'
 import { useWeekPlan } from '../weekplan/useWeekPlan'
@@ -108,23 +107,13 @@ export function PickPage() {
   const activePool = POOLS.find((entry) => entry.key === pool) ?? POOLS[0]
 
   return (
-    <div className="space-y-5 pt-2">
-      <header className="flex items-start gap-2">
-        <Link
-          to="/us"
-          aria-label="Torna a Noi"
-          viewTransition
-          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Link>
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Scegli per noi</h1>
-          <p className="text-sm text-ink-muted">
-            Quando non sapete decidere, decide la sorte: cosa guardare, cosa mangiare, chi tocca.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-5 pt-2 lg:max-w-2xl">
+      <PageHeader
+        title="Scegli per noi"
+        description="Quando non sapete decidere, decide la sorte: cosa guardare, cosa mangiare, chi tocca."
+        backTo="/us"
+        backLabel="Torna a Noi"
+      />
 
       <div className="grid grid-cols-2 gap-2" role="group" aria-label="Da dove estrarre">
         {POOLS.map((entry) => (
@@ -155,13 +144,11 @@ export function PickPage() {
           description={activePool.empty}
           action={
             pool !== 'couple' ? (
-              <Link
+              <ButtonLink
                 to={activePool.to}
-                viewTransition
-                className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
               >
                 Apri {activePool.label}
-              </Link>
+              </ButtonLink>
             ) : undefined
           }
         />

@@ -102,13 +102,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         aria-live="polite"
         aria-label="Notifiche"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 px-4 pb-[calc(env(safe-area-inset-bottom)+4.75rem)]"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 px-4 pb-[calc(env(safe-area-inset-bottom)+6.5rem)] lg:pb-6 lg:pl-[17rem]"
       >
         {toasts.map((toast) => (
           <div
             key={toast.id}
             role="status"
-            className="toast-enter pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl bg-ink px-4 py-3 text-sm font-medium text-canvas shadow-lg"
+            className="toast-enter pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl bg-ink px-4 py-3 text-sm font-medium text-canvas shadow-lift"
           >
             <span className="min-w-0 flex-1">
               {toast.tone === 'error' && <span className="sr-only">Errore: </span>}

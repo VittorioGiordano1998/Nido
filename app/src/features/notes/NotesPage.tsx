@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { formatShortDateIt } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { Button, Card, EmptyState, ErrorBanner, NoMatches } from '../../ui/components'
 import { NestIllustration } from '../../ui/illustrations'
 import { SearchField } from '../../ui/SearchField'
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { PlusIcon } from '../../ui/icons'
 import { useToast } from '../../ui/toast'
+import { PageHeader } from '../../ui/PageHeader'
 import { NoteEditor } from './NoteEditor'
 import { notePreview, useNotes } from './useNotes'
 import type { Note, NoteInput } from './useNotes'
@@ -18,6 +20,17 @@ export function NotesPage() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+
+  // Home and the global search land here on a given note: open it once per
+  // navigation, as soon as the notes are loaded.
+  const location = useLocation()
+  const requestedId = (location.state as { noteId?: unknown } | null)?.noteId
+  const [handledKey, setHandledKey] = useState<string | null>(null)
+  if (typeof requestedId === 'string' && !loading && handledKey !== location.key) {
+    setHandledKey(location.key)
+    const requested = notes.find((note) => note.id === requestedId)
+    if (requested) setEditor({ note: requested })
+  }
 
   // Client-side filter over title and body (TASK-SEARCH-…-001).
   const normalizedQuery = query.trim().toLowerCase()
@@ -82,19 +95,15 @@ export function NotesPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Note</h1>
-          <p className="text-sm text-ink-muted">Il blocchetto condiviso della coppia.</p>
-        </div>
-        <button
-          type="button"
-          onClick={openNew}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
-        >
-          <PlusIcon className="h-4 w-4" /> Nota
-        </button>
-      </header>
+      <PageHeader
+        title="Note"
+        description="Il blocchetto condiviso della coppia."
+        action={
+          <Button size="sm" onClick={openNew}>
+            <PlusIcon className="h-4 w-4" /> Nota
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
 
@@ -115,25 +124,24 @@ export function NotesPage() {
           title="Nessuna nota"
           description="La prima nota può essere qualsiasi cosa: un codice, un'idea, un promemoria."
           action={
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={openNew}
-              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
             >
               Scrivi la prima nota
-            </button>
+            </Button>
           }
         />
       ) : visibleNotes.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-line-strong bg-surface/60 px-4 py-6 text-center text-sm text-ink-faint">
+        <NoMatches>
           Nessuna nota corrisponde a «{query.trim()}».
-        </p>
+        </NoMatches>
       ) : (
-        <ul className="space-y-2">
+        <ul className="stagger grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleNotes.map((note) => (
             <li key={note.id}>
-              <button type="button" onClick={() => openNote(note)} className="w-full">
-                <Card className="w-full text-left transition hover:ring-accent-300">
+              <button type="button" onClick={() => openNote(note)} className="h-full w-full">
+                <Card interactive className="h-full w-full text-left">
                   <span className="block truncate text-sm font-semibold text-ink">
                     {note.title.trim() || 'Senza titolo'}
                   </span>

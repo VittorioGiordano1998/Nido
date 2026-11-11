@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
+import { Button } from '../ui/components'
 
 /**
  * Error boundary (TASK-ROB-…-001): a crashed view shows a friendly fallback
@@ -50,13 +51,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           <p className="text-sm text-ink-muted">
             I vostri dati sono al sicuro. Ricaricate la pagina per tornare al nido.
           </p>
-          <button
-            type="button"
+          <Button
+            size="sm"
             onClick={() => window.location.reload()}
-            className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
           >
             Ricarica
-          </button>
+          </Button>
         </div>
       </div>
     )

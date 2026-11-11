@@ -280,3 +280,30 @@ export function SparklesIcon({ className = 'h-5 w-5' }: IconProps) {
     </svg>
   )
 }
+
+export function SearchIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4 4" />
+    </svg>
+  )
+}
+
+export function NoteIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <path d="M6 4h9l4 4v12H6z" />
+      <path d="M15 4v4h4M9 12.5h7M9 16h5" />
+    </svg>
+  )
+}
+
+export function ClockIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...baseProps(className)}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  )
+}

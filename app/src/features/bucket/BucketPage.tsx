@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import { formatDateIt } from '../../core/dates'
 import { Button, Card, EmptyState, ErrorBanner, TextInput } from '../../ui/components'
 import { ChecklistIllustration } from '../../ui/illustrations'
-import { ChevronLeftIcon, TrashIcon } from '../../ui/icons'
+import { TrashIcon } from '../../ui/icons'
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { useToast } from '../../ui/toast'
+import { PageHeader } from '../../ui/PageHeader'
 import { MemoryEditor } from '../memories/MemoryEditor'
 import type { MemoryEditorInput } from '../memories/MemoryEditor'
 import { useMemories } from '../memories/useMemories'
@@ -190,23 +191,13 @@ export function BucketPage() {
   }
 
   return (
-    <div className="space-y-5 pt-2">
-      <header className="flex items-start gap-2">
-        <Link
-          to="/us"
-          aria-label="Torna a Noi"
-          viewTransition
-          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Link>
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Bucket list</h1>
-          <p className="text-sm text-ink-muted">
-            Le cose che volete fare insieme, spuntate una alla volta.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-5 pt-2 lg:max-w-2xl">
+      <PageHeader
+        title="Bucket list"
+        description="Le cose che volete fare insieme, spuntate una alla volta."
+        backTo="/us"
+        backLabel="Torna a Noi"
+      />
 
       {error && <ErrorBanner message={error} />}
 
@@ -244,13 +235,12 @@ export function BucketPage() {
           title="La lista è vuota"
           description="Scrivete la prima cosa da fare insieme: un viaggio, un corso, una cena strana."
           action={
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={() => document.getElementById('bucket-new-item')?.focus()}
-              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
             >
               Aggiungi la prima voce
-            </button>
+            </Button>
           }
         />
       ) : (

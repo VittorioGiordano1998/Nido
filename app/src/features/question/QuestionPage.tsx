@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt } from '../../core/dates'
 import { Button, Card, EmptyState, ErrorBanner, TextArea } from '../../ui/components'
-import { ChevronLeftIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useDailyQuestion } from './useDailyQuestion'
@@ -42,22 +41,13 @@ export function QuestionPage() {
   }
 
   return (
-    <div className="space-y-5 pt-2">
-      <header className="flex items-start gap-2">
-        <Link
-          to="/us"
-          aria-label="Torna a Noi"
-          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Link>
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Domanda del giorno</h1>
-          <p className="text-sm text-ink-muted">
-            Rispondete in segreto: le risposte si svelano quando ci siete tutti e due.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-5 pt-2 lg:max-w-2xl">
+      <PageHeader
+        title="Domanda del giorno"
+        description="Rispondete in segreto: le risposte si svelano quando ci siete tutti e due."
+        backTo="/us"
+        backLabel="Torna a Noi"
+      />
 
       {error && <ErrorBanner message={error} />}
 
@@ -138,7 +128,7 @@ export function QuestionPage() {
           </Card>
 
           <section className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+            <h2 className="font-display text-lg font-semibold text-ink">
               Archivio
             </h2>
             {history.length === 0 ? (

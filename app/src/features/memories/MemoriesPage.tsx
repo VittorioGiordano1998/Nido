@@ -1,18 +1,18 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 
-import { toDateKey } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { Button, Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { CameraIllustration } from '../../ui/illustrations'
-import { ChevronLeftIcon, PlusIcon } from '../../ui/icons'
+import { PlusIcon } from '../../ui/icons'
 import { SearchField } from '../../ui/SearchField'
 import { GridSkeleton } from '../../ui/Skeleton'
 import { useToast } from '../../ui/toast'
+import { PageHeader } from '../../ui/PageHeader'
 import { useCouple } from '../coupling/CoupleProvider'
 import { MemoryCard } from './MemoryCard'
 import { MemoryDetail } from './MemoryDetail'
 import { MemoryEditor } from './MemoryEditor'
 import type { MemoryEditorInput } from './MemoryEditor'
+import { memoriesOnThisDay, yearsAgoLabel } from './onThisDay'
 import { useMemories } from './useMemories'
 import type { Memory } from './useMemories'
 
@@ -44,10 +44,7 @@ export function MemoriesPage() {
   const [year, setYear] = useState<string>(ALL)
   const [query, setQuery] = useState('')
   // Captured once: "today" must not be recomputed on every render.
-  const [today] = useState(() => {
-    const now = new Date()
-    return { monthDay: toDateKey(now).slice(5), year: now.getFullYear() }
-  })
+  const [today] = useState(() => new Date())
 
   const detail = memories.find((memory) => memory.id === detailId) ?? null
 
@@ -71,20 +68,7 @@ export function MemoriesPage() {
   )
 
   // "Un anno fa oggi": same calendar day, earlier years (TASK-MEMO-…-002).
-  const onThisDay = useMemo(
-    () =>
-      memories
-        .filter(
-          (memory) =>
-            memory.takenOn.slice(5) === today.monthDay &&
-            Number(memory.takenOn.slice(0, 4)) < today.year,
-        )
-        .sort((a, b) => b.takenOn.localeCompare(a.takenOn)),
-    [memories, today],
-  )
-  const yearsAgo = onThisDay[0]
-    ? Math.max(1, today.year - Number(onThisDay[0].takenOn.slice(0, 4)))
-    : 0
+  const onThisDay = useMemo(() => memoriesOnThisDay(memories, today), [memories, today])
 
   function nameOf(userId: string): string {
     return couple?.members.find((member) => member.userId === userId)?.displayName ?? '—'
@@ -147,41 +131,30 @@ export function MemoriesPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2">
-          <Link
-            to="/us"
-            aria-label="Torna a Noi"
-            viewTransition
-            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
+      <PageHeader
+        title="Ricordi"
+        description="Il diario per immagini: una foto, una data, un posto nel tempo."
+        backTo="/us"
+        backLabel="Torna a Noi"
+        action={
+          <Button
+            size="sm"
+            onClick={() => {
+              setFormError(null)
+              setEditorOpen(true)
+            }}
           >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-balance text-2xl font-bold text-ink">Ricordi</h1>
-            <p className="text-sm text-ink-muted">
-              Il diario per immagini: una foto, una data, un posto nel tempo.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setFormError(null)
-            setEditorOpen(true)
-          }}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
-        >
-          <PlusIcon className="h-4 w-4" /> Ricordo
-        </button>
-      </header>
+            <PlusIcon className="h-4 w-4" /> Ricordo
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
 
       {onThisDay.length > 0 && (
         <section className="space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-            {yearsAgo === 1 ? 'Un anno fa oggi' : `${yearsAgo} anni fa oggi`}
+            {onThisDay[0] ? yearsAgoLabel(onThisDay[0].takenOn, today) : ''}
           </h2>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {onThisDay.map((memory) => (
@@ -189,7 +162,7 @@ export function MemoriesPage() {
                 key={memory.id}
                 type="button"
                 onClick={() => setDetailId(memory.id)}
-                className="flex w-40 shrink-0 items-center gap-2 rounded-2xl bg-surface p-2 text-left shadow-sm ring-1 ring-line/70 transition hover:ring-accent-300"
+                className="flex w-40 shrink-0 items-center gap-2 rounded-2xl bg-surface p-2 text-left shadow-card ring-1 ring-line/70 transition hover:ring-accent-300"
               >
                 <span className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-surface-muted">
                   {urls[memory.photoPath] ? (
@@ -257,17 +230,16 @@ export function MemoriesPage() {
               : 'Scegli un altro anno, un altro testo, o aggiungi un ricordo.'
           }
           action={
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={() => setEditorOpen(true)}
-              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
             >
               Aggiungi il primo ricordo
-            </button>
+            </Button>
           }
         />
       ) : (
-        <div className="grid grid-cols-2 gap-3 px-0.5">
+        <div className="stagger grid grid-cols-2 gap-3 px-0.5 sm:grid-cols-3 lg:grid-cols-4">
           {visible.map((memory, index) => (
             <MemoryCard
               key={memory.id}

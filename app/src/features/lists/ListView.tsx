@@ -107,7 +107,7 @@ export function ListView() {
 
   if (!list) {
     return (
-      <div className="space-y-5 pt-2">
+      <div className="space-y-5 pt-2 lg:max-w-2xl">
         <header className="flex items-center gap-2">
           <Link
             to="/lists"
@@ -354,7 +354,7 @@ export function ListView() {
           aria-label={`Apri i dettagli: ${task.title}`}
           onClick={openDetails}
           onKeyDown={onRowKeyDown}
-          className="relative flex h-24 cursor-pointer items-center gap-3 overflow-hidden rounded-2xl bg-surface px-4 shadow-sm ring-1 ring-line/70 transition hover:ring-accent-300"
+          className="relative flex h-24 cursor-pointer items-center gap-3 overflow-hidden rounded-2xl bg-surface px-4 shadow-card ring-1 ring-line/70 transition hover:ring-accent-300"
         >
           {hasBackdrop && backdropUrl && backdrop && (
             <span className={task.done ? 'opacity-60 saturate-50' : ''}>
@@ -486,7 +486,7 @@ export function ListView() {
   }
 
   return (
-    <div className="space-y-5 pt-2">
+    <div className="space-y-5 pt-2 lg:max-w-2xl">
       <header className={`relative overflow-hidden rounded-2xl ${coverUrl ? 'p-3' : ''}`}>
         {coverUrl && list.coverPath && (
           <BackdropPhoto

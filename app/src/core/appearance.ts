@@ -64,6 +64,15 @@ export function readCachedAppearance(): { theme: Theme; accent: Accent } {
 }
 
 /**
+ * The current value of a theme token (e.g. `--color-accent-500`), for the few
+ * views that paint on a canvas and need a literal color instead of a class.
+ */
+export function readThemeColor(token: string, fallback: string): string {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim()
+  return value || fallback
+}
+
+/**
  * Applies the pair to the document, updates the browser chrome color and
  * refreshes the cache the pre-paint script reads. One DOM side effect; the
  * caller owns persistence (profiles.theme / profiles.accent).

@@ -2,7 +2,9 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-import { Button, Card, ErrorBanner, Field, Screen, TextInput } from '../../ui/components'
+import { readThemeColor } from '../../core/appearance'
+import { Button, Card, ErrorBanner, Field, TextInput } from '../../ui/components'
+import { EntryLayout } from '../../ui/EntryLayout'
 import DotGrid from '../../ui/reactbits/DotGrid'
 import { useAuth } from './AuthProvider'
 
@@ -16,6 +18,11 @@ export function LoginPage() {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirmSent, setConfirmSent] = useState(false)
+  // The dot grid paints on WebGL: it needs literal colors, read once from the theme.
+  const [dotColors] = useState(() => ({
+    base: readThemeColor('--color-line-strong', '#d6d3d1'),
+    active: readThemeColor('--color-accent-500', '#d96f48'),
+  }))
 
   // RequireAuth remembers where the visitor was headed (e.g. /pair?code=…):
   // after signing in they land there instead of Home.
@@ -43,28 +50,22 @@ export function LoginPage() {
   }
 
   return (
-    <Screen className="relative justify-center gap-6 overflow-hidden px-6 py-10">
-      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <EntryLayout
+      title={mode === 'signin' ? 'Bentornati nel nido' : 'Create il vostro nido'}
+      description="Lo spazio privato dove la vostra coppia tiene le cose importanti."
+      backdrop={
         <DotGrid
           dotSize={3}
           gap={22}
-          baseColor="#d8c9bd"
-          activeColor="#c25532"
+          baseColor={dotColors.base}
+          activeColor={dotColors.active}
           glow={0.5}
           opacity={0.55}
           proximity={120}
           fade={1}
         />
-      </div>
-      <header className="space-y-2 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
-        <h1 className="text-3xl font-bold text-ink">
-          {mode === 'signin' ? 'Bentornato' : 'Crea il vostro nido'}
-        </h1>
-        <p className="text-sm text-ink-muted">
-          Lo spazio privato dove la vostra coppia tiene le cose importanti.
-        </p>
-      </header>
+      }
+    >
 
       {confirmSent ? (
         <Card>
@@ -149,6 +150,6 @@ export function LoginPage() {
           </p>
         </Card>
       )}
-    </Screen>
+    </EntryLayout>
   )
 }

@@ -3,15 +3,16 @@ import type { FormEvent } from 'react'
 import { Navigate, useSearchParams } from 'react-router-dom'
 import QRCode from 'react-qr-code'
 
+import { readThemeColor } from '../../core/appearance'
 import {
   Button,
   Card,
   ErrorBanner,
   Field,
   FullPageSpinner,
-  Screen,
   TextInput,
 } from '../../ui/components'
+import { EntryLayout } from '../../ui/EntryLayout'
 import { CheckIcon, CopyIcon } from '../../ui/icons'
 import StarBorder from '../../ui/reactbits/StarBorder'
 import { useAuth } from '../auth/AuthProvider'
@@ -33,6 +34,11 @@ export function PairPage() {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  // The star trail paints on a canvas: it needs literal colors, read once from the theme.
+  const [trailColors] = useState(() => ({
+    head: readThemeColor('--color-accent-400', '#e48f6f'),
+    tail: readThemeColor('--color-accent-600', '#c25532'),
+  }))
 
   const waitingForPartner = couple !== null && couple.members.length < 2
 
@@ -90,15 +96,10 @@ export function PairPage() {
 
   if (waitingForPartner && couple?.inviteCode) {
     return (
-      <Screen className="justify-center gap-6 px-6 py-10">
-        <header className="space-y-2 text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
-          <h1 className="text-balance text-2xl font-bold text-ink">Invita il tuo partner</h1>
-          <p className="text-sm text-ink-muted">
-            Fai entrare {couple.name ? `"${couple.name}"` : 'la vostra coppia'} nell'app con questo
-            codice:
-          </p>
-        </header>
+      <EntryLayout
+        title="Invita il tuo partner"
+        description={`Fai entrare ${couple.name ? `«${couple.name}»` : 'la vostra coppia'} nell'app con questo codice.`}
+      >
 
         <Card className="space-y-4 text-center">
           {inviteUrl && (
@@ -121,11 +122,11 @@ export function PairPage() {
             style={{ padding: '0.75rem 1rem' }}
             radius={12}
             thickness={1}
-            color="#e48f6f"
-            trailColor="#c25532"
-            backgroundColor="#fdf6f2"
-            textColor="#a2432a"
-            borderColor="rgba(194, 85, 50, 0.18)"
+            color={trailColors.head}
+            trailColor={trailColors.tail}
+            backgroundColor="var(--color-accent-50)"
+            textColor="var(--color-accent-ink)"
+            borderColor="color-mix(in srgb, var(--color-accent-500) 22%, transparent)"
             duration={6}
             glow={0.7}
             trailLength={0.25}
@@ -151,19 +152,15 @@ export function PairPage() {
         >
           Esci ({session?.user.email})
         </button>
-      </Screen>
+      </EntryLayout>
     )
   }
 
   return (
-    <Screen className="justify-center gap-6 px-6 py-10">
-      <header className="space-y-2 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent-glyph">Nido</p>
-        <h1 className="text-balance text-2xl font-bold text-ink">Create il vostro spazio</h1>
-        <p className="text-sm text-ink-muted">
-          Crea una nuova coppia e invita il partner, oppure inserisci il codice che ti ha mandato.
-        </p>
-      </header>
+    <EntryLayout
+      title="Create il vostro spazio"
+      description="Crea una nuova coppia e invita il partner, oppure inserisci il codice che ti ha mandato."
+    >
 
       <div className="flex rounded-xl bg-surface-muted p-1 text-sm font-semibold">
         <button
@@ -172,7 +169,7 @@ export function PairPage() {
             setMode('create')
             setError(null)
           }}
-          className={`flex-1 rounded-lg py-2 transition ${mode === 'create' ? 'bg-surface text-ink shadow-sm' : 'text-ink-muted'}`}
+          className={`flex-1 rounded-lg py-2 transition ${mode === 'create' ? 'bg-surface text-ink shadow-card' : 'text-ink-muted'}`}
         >
           Crea una coppia
         </button>
@@ -182,7 +179,7 @@ export function PairPage() {
             setMode('join')
             setError(null)
           }}
-          className={`flex-1 rounded-lg py-2 transition ${mode === 'join' ? 'bg-surface text-ink shadow-sm' : 'text-ink-muted'}`}
+          className={`flex-1 rounded-lg py-2 transition ${mode === 'join' ? 'bg-surface text-ink shadow-card' : 'text-ink-muted'}`}
         >
           Ho un codice
         </button>
@@ -239,6 +236,6 @@ export function PairPage() {
       >
         Esci ({session?.user.email})
       </button>
-    </Screen>
+    </EntryLayout>
   )
 }

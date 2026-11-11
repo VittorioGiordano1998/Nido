@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@fontsource-variable/figtree/wght.css";
+@import "@fontsource-variable/fraunces/soft.css";
 
 /*
  * Tema di Nido.
@@ -8,14 +10,25 @@
  * - I neutri (canvas/surface/ink/line) si ribaltano con data-theme.
  * - La scala accent e' un preset: i gradini bassi (50-200) hanno una variante
  *   scura, piu' sotto, per restare superfici morbide in entrambi i temi.
- * - sage e red restano scale fisse, con dark: espliciti nei pochi punti d'uso.
+ * - sage e red restano scale fisse, con dark: espliciti nei pochi punti d'uso;
+ *   per il codice nuovo ci sono le coppie semantiche sage-soft/sage-ink e
+ *   honey-soft/honey-ink, che si ribaltano da sole col tema.
+ * - Font (self-hosted, la CSP non ammette origini esterne): Figtree per il
+ *   testo, Fraunces per i titoli (font-display).
+ * - Ombre calde a due livelli (shadow-card, shadow-lift) e grana carta sul
+ *   canvas: i colori vengono dalle variabili --shade-* e --grain qui sotto.
  */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 @theme {
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Figtree Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+
+  /* Ombre - i colori (--shade-*) si ribaltano col tema, vedi sotto */
+  --shadow-card: 0 1px 2px var(--shade-soft), 0 10px 24px -14px var(--shade-deep);
+  --shadow-lift: 0 2px 4px var(--shade-soft), 0 22px 44px -18px var(--shade-deep);
 
   /* Neutri - valori del tema chiaro, ribaltati sotto [data-theme='dark'] */
   --color-canvas: #faf7f3;
@@ -51,10 +64,20 @@
   --color-sage-300: #c3d1bd;
   --color-sage-500: #829a79;
   --color-sage-700: #55684e;
+
+  /* Coppie semantiche (superficie tenue + testo), ribaltate nel tema scuro */
+  --color-sage-soft: #e9efe6;
+  --color-sage-ink: #4a5c44;
+  --color-honey-soft: #f6ecd6;
+  --color-honey-ink: #7a5a1e;
 }
 
 :root {
   color-scheme: light;
+
+  --shade-soft: rgb(87 58 38 / 0.07);
+  --shade-deep: rgb(87 58 38 / 0.28);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .25 0 0 0 0 .17 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 [data-theme='dark'] {
@@ -71,6 +94,15 @@
   --color-line: #3a332e;
   --color-line-strong: #4a423c;
   --color-scrim: rgb(0 0 0 / 0.55);
+
+  --color-sage-soft: #2a3227;
+  --color-sage-ink: #c3d1bd;
+  --color-honey-soft: #3a3020;
+  --color-honey-ink: #e2c789;
+
+  --shade-soft: rgb(0 0 0 / 0.3);
+  --shade-deep: rgb(0 0 0 / 0.6);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .9 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 
   --color-accent-ink: #eeb49d;
   --color-accent-glyph: #e48f6f;
@@ -157,6 +189,7 @@ html {
 
 body {
   @apply bg-canvas text-ink antialiased;
+  background-image: var(--grain);
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -166,6 +199,30 @@ textarea,
 select,
 button {
   font: inherit;
+}
+
+/* Titoli: il serif morbido del diario. SOFT arrotonda le grazie. */
+h1,
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings: 'SOFT' 100;
+  letter-spacing: -0.015em;
+}
+
+::selection {
+  background: var(--color-accent-200);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-400);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
 }
 
 /* ---------------------------------------------------------------------------
@@ -204,6 +261,96 @@ button {
   animation: toast-enter 180ms ease-out both;
 }
 
+/* Sheet (ui/Sheet.tsx): il velo sfuma, il pannello sale dal basso su telefono
+ * e compare con un leggero zoom quando e' un dialog centrato. */
+@keyframes scrim-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-enter {
+  from {
+    transform: translate3d(0, 28px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-enter {
+  from {
+    transform: scale(0.97);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.scrim-enter {
+  animation: scrim-enter 160ms ease-out both;
+}
+
+.sheet-enter {
+  animation: sheet-enter 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (min-width: 40rem) {
+  .sheet-enter {
+    animation: dialog-enter 180ms ease-out both;
+  }
+}
+
+/* Entrata a cascata per griglie e liste di card: i primi figli salgono uno
+ * dopo l'altro, dal nono in poi tutti insieme. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+/* `backwards` and no end keyframe: once it has played, the element keeps its
+ * own transform (the polaroids stay tilted). */
+.stagger > * {
+  animation: rise-in 280ms ease-out backwards;
+}
+
+.stagger > :nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.stagger > :nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.stagger > :nth-child(4) {
+  animation-delay: 105ms;
+}
+
+.stagger > :nth-child(5) {
+  animation-delay: 140ms;
+}
+
+.stagger > :nth-child(6) {
+  animation-delay: 175ms;
+}
+
+.stagger > :nth-child(7) {
+  animation-delay: 210ms;
+}
+
+.stagger > :nth-child(n + 8) {
+  animation-delay: 245ms;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 180ms;
@@ -238,7 +385,10 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   .page-enter,
-  .toast-enter {
+  .toast-enter,
+  .scrim-enter,
+  .sheet-enter,
+  .stagger > * {
     animation: none;
   }
 

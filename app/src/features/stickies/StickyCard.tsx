@@ -69,7 +69,7 @@ export function StickyCard() {
 
   return (
     <section className="space-y-2">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+      <h2 className="font-display text-lg font-semibold text-ink">
         Bigliettini
       </h2>
 

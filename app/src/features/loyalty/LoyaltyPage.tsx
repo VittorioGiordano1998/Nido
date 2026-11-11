@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { Button, Card, EmptyState, ErrorBanner } from '../../ui/components'
-import { ChevronLeftIcon, CloseIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { PlusIcon, TrashIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
+import { Sheet } from '../../ui/Sheet'
 import { useToast } from '../../ui/toast'
 import { LoyaltyBarcode } from './LoyaltyBarcode'
 import { LoyaltyEditor, toneClasses } from './LoyaltyEditor'
@@ -57,33 +58,23 @@ export function LoyaltyPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2">
-          <Link
-            to="/us"
-            aria-label="Torna a Noi"
-            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
+      <PageHeader
+        title="Tessere"
+        description="Le tessere dei negozi, pronte al banco anche senza rete."
+        backTo="/us"
+        backLabel="Torna a Noi"
+        action={
+          <Button
+            size="sm"
+            onClick={() => {
+              setFormError(null)
+              setEditor({ card: null })
+            }}
           >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-balance text-2xl font-bold text-ink">Tessere</h1>
-            <p className="text-sm text-ink-muted">
-              Le tessere dei negozi, pronte al banco anche senza rete.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setFormError(null)
-            setEditor({ card: null })
-          }}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
-        >
-          <PlusIcon className="h-4 w-4" /> Nuova
-        </button>
-      </header>
+            <PlusIcon className="h-4 w-4" /> Nuova
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
       {formError && <ErrorBanner message={formError} />}
@@ -96,7 +87,7 @@ export function LoyaltyPage() {
           description="Aggiungi la prima: numero e formato, e la mostri al banco in un tocco."
         />
       ) : (
-        <ul className="grid grid-cols-2 gap-2">
+        <ul className="stagger grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
           {cards.map((card) => (
             <li key={card.id}>
               <button
@@ -104,7 +95,7 @@ export function LoyaltyPage() {
                 onClick={() => setViewer(card)}
                 className="w-full text-left"
               >
-                <Card className="space-y-1.5 transition hover:ring-accent-300">
+                <Card interactive className="space-y-1.5">
                   <span
                     className={`inline-block max-w-full truncate rounded-full px-2.5 py-1 text-[11px] font-semibold ${toneClasses(card.color)}`}
                   >
@@ -121,30 +112,8 @@ export function LoyaltyPage() {
       )}
 
       {viewer && (
-        <div
-          role="presentation"
-          onClick={() => setViewer(null)}
-          className="fixed inset-0 z-40 flex items-center justify-center bg-scrim p-6 backdrop-blur-[2px]"
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={viewer.storeName}
-            onClick={(clickEvent) => clickEvent.stopPropagation()}
-            className="w-full max-w-sm space-y-4 rounded-3xl bg-canvas p-5 shadow-xl"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <h2 className="text-lg font-bold text-ink">{viewer.storeName}</h2>
-              <button
-                type="button"
-                onClick={() => setViewer(null)}
-                aria-label="Chiudi"
-                className="rounded-lg p-1.5 text-ink-faint hover:bg-surface-soft hover:text-ink-soft"
-              >
-                <CloseIcon className="h-5 w-5" />
-              </button>
-            </div>
-
+        <Sheet title={viewer.storeName} size="sm" onClose={() => setViewer(null)}>
+          <div className="space-y-4">
             <div className="flex justify-center rounded-2xl bg-white p-4">
               <LoyaltyBarcode code={viewer.code} type={viewer.barcodeType} />
             </div>
@@ -163,16 +132,15 @@ export function LoyaltyPage() {
                 Modifica
               </Button>
               <Button
-                variant="ghost"
+                variant="danger"
                 disabled={saving}
                 onClick={() => void handleDelete(viewer.id)}
-                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
               >
                 <TrashIcon className="h-4 w-4" /> Elimina
               </Button>
             </div>
           </div>
-        </div>
+        </Sheet>
       )}
 
       {editor && (

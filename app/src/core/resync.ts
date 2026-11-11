@@ -33,6 +33,15 @@ function wire(): void {
   window.addEventListener('online', emit)
 }
 
+/**
+ * Asks every subscribed hook for a silent refresh now. For changes made
+ * through another instance of a hook (quick add): the page that is open
+ * catches up at once instead of waiting for its Realtime event.
+ */
+export function requestAppResync(): void {
+  emit()
+}
+
 /** Registers a silent refresh; returns the unsubscribe function. */
 export function subscribeToAppResync(listener: ResyncListener): () => void {
   wire()

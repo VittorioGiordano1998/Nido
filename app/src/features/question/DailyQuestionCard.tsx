@@ -35,7 +35,7 @@ export function DailyQuestionCard() {
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="font-display text-lg font-semibold text-ink">
           Domanda del giorno
         </h2>
         <Link to="/us/question" className="text-xs font-semibold text-accent-ink hover:underline">
@@ -52,7 +52,7 @@ export function DailyQuestionCard() {
         </Card>
       ) : (
         <Link to="/us/question" className="block">
-          <Card className="space-y-2 transition hover:ring-accent-300">
+          <Card interactive className="space-y-2">
             <div className="flex items-start justify-between gap-3">
               <p className="text-sm font-semibold text-ink">{question.text}</p>
               {streak > 0 && (

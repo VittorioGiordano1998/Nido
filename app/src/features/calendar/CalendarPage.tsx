@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
   addMonths,
+  fromDateKey,
   formatDateIt,
   formatMonthYearIt,
   formatTimeIt,
@@ -9,7 +11,7 @@ import {
   startOfMonth,
   toDateKey,
 } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { Button, Card, EmptyState, ErrorBanner } from '../../ui/components'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -18,6 +20,7 @@ import {
 } from '../../ui/icons'
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { useToast } from '../../ui/toast'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { periodDayKeys, periodLabel, useCycleCalendar } from '../cycle/useCycleCalendar'
@@ -49,8 +52,25 @@ export function CalendarPage() {
   const { periods, loading: cycleLoading, error: cycleError } = useCycleCalendar()
   const { showToast } = useToast()
 
-  const [month, setMonth] = useState(() => startOfMonth(new Date()))
-  const [selectedKey, setSelectedKey] = useState(() => toDateKey(new Date()))
+  // Home's week strip and the global search land here on a given day.
+  const location = useLocation()
+  const requestedKey = (location.state as { dateKey?: unknown } | null)?.dateKey
+  const initialKey =
+    typeof requestedKey === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(requestedKey)
+      ? requestedKey
+      : null
+
+  const [month, setMonth] = useState(() =>
+    startOfMonth(initialKey ? fromDateKey(initialKey) : new Date()),
+  )
+  const [selectedKey, setSelectedKey] = useState(() => initialKey ?? toDateKey(new Date()))
+  // Already on the calendar when another day is requested: follow it once.
+  const [handledKey, setHandledKey] = useState(location.key)
+  if (initialKey && handledKey !== location.key) {
+    setHandledKey(location.key)
+    setSelectedKey(initialKey)
+    setMonth(startOfMonth(fromDateKey(initialKey)))
+  }
   const [editor, setEditor] = useState<{ event: CalendarEvent | null } | null>(null)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -158,27 +178,21 @@ export function CalendarPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Calendario</h1>
-          <p className="text-sm text-ink-muted">
-            Gli appuntamenti della coppia, con quelli che restano solo tuoi.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={openNew}
-          disabled={!hasCouple}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-accent-300"
-        >
-          <PlusIcon className="h-4 w-4" /> Evento
-        </button>
-      </header>
+      <PageHeader
+        title="Calendario"
+        description="Gli appuntamenti della coppia, con quelli che restano solo tuoi."
+        action={
+          <Button size="sm" onClick={openNew} disabled={!hasCouple}>
+            <PlusIcon className="h-4 w-4" /> Evento
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
       {cycleError && <ErrorBanner message={cycleError} />}
 
-      <Card className="space-y-3">
+      <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:space-y-0">
+      <Card className="space-y-3 lg:sticky lg:top-9">
         <div className="flex items-center justify-between">
           <button
             type="button"
@@ -266,7 +280,7 @@ export function CalendarPage() {
       </Card>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="font-display text-lg font-semibold text-ink">
           {formatDateIt(selectedKey)}
         </h2>
 
@@ -316,7 +330,7 @@ export function CalendarPage() {
                       onClick={() => openEdit(occurrence.event)}
                       className="w-full"
                     >
-                      <Card className="flex w-full items-center gap-3 text-left transition hover:ring-accent-300">
+                      <Card interactive className="flex w-full items-center gap-3 text-left">
                         <span
                           className={`h-9 w-1.5 shrink-0 rounded-full ${
                             occurrence.event.createdBy === myId ? 'bg-accent-400' : 'bg-sage-500'
@@ -348,6 +362,7 @@ export function CalendarPage() {
           </div>
         )}
       </section>
+      </div>
 
       {editor && (
         <EventEditor

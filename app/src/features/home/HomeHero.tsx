@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom'
-
 import { daysSince, formatDateIt } from '../../core/dates'
+import { Avatar } from '../../ui/Avatar'
+import { ButtonLink } from '../../ui/components'
 import { HeartIcon } from '../../ui/icons'
 import CountUp from '../../ui/reactbits/CountUp'
 import { Skeleton } from '../../ui/Skeleton'
@@ -8,15 +8,6 @@ import { useAuth } from '../auth/AuthProvider'
 import { BackdropPhoto } from '../lists/BackdropPhoto'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useCoupleHero } from '../coupling/useCoupleHero'
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('')
-}
 
 /**
  * Home hero (TASK-HOME-…-002): warm gradient by default, the couple's cover
@@ -37,14 +28,11 @@ export function HomeHero() {
     return (
       <section
         aria-hidden="true"
-        className="rounded-3xl bg-surface/60 p-5 ring-1 ring-line/50"
+        className="flex min-h-48 items-end rounded-[1.75rem] bg-surface/60 p-5 ring-1 ring-line/50"
       >
-        <div className="flex items-end gap-3">
-          <Skeleton className="h-9 w-9 rounded-full" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-9 w-28" />
-            <Skeleton className="h-3 w-36" />
-          </div>
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-12 w-32" />
+          <Skeleton className="h-3 w-40" />
         </div>
       </section>
     )
@@ -52,94 +40,78 @@ export function HomeHero() {
 
   return (
     <section
-      className={`relative overflow-hidden rounded-3xl shadow-sm ring-1 ring-line/60 ${
-        onPhoto
-          ? ''
-          : 'bg-gradient-to-br from-accent-200 via-accent-50 to-sage-100 dark:from-accent-200 dark:via-accent-50 dark:to-surface-soft'
+      className={`relative flex min-h-48 flex-col justify-end overflow-hidden rounded-[1.75rem] shadow-card ring-1 ring-line/60 lg:min-h-60 ${
+        onPhoto ? '' : 'bg-gradient-to-br from-accent-200 via-accent-50 to-sage-soft'
       }`}
     >
       {url && <BackdropPhoto url={url} framing={framing} />}
       {!onPhoto && (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-accent-300/50 blur-2xl"
-        />
+        <>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-14 -top-14 h-52 w-52 rounded-full bg-accent-300/50 blur-3xl"
+          />
+          <HeartIcon className="pointer-events-none absolute -right-6 -top-4 h-40 w-40 rotate-12 text-accent-300/40" />
+        </>
       )}
 
-      <div className={`relative space-y-3 p-5 ${onPhoto ? 'text-white' : 'text-ink'}`}>
-        <div className="flex items-end gap-3">
-          <HeartIcon
-            className={`h-9 w-9 shrink-0 ${onPhoto ? 'text-white' : 'text-accent-glyph'}`}
-          />
+      <div className={`relative space-y-4 p-5 ${onPhoto ? 'text-white' : 'text-ink'}`}>
+        {days !== null && couple?.startedAt ? (
           <div>
-            {days !== null && couple?.startedAt ? (
-              <>
-                <CountUp
-                  to={days}
-                  separator="."
-                  duration={1.4}
-                  className={`text-4xl font-extrabold tabular-nums ${onPhoto ? '' : 'text-accent-ink'}`}
-                />
-                <p
-                  className={`text-xs font-semibold uppercase tracking-wide ${
-                    onPhoto ? 'text-white/85' : 'text-accent-glyph'
-                  }`}
-                >
-                  giorni insieme
-                </p>
-                <p className={`text-xs ${onPhoto ? 'text-white/75' : 'text-ink-muted'}`}>
-                  dal {formatDateIt(couple.startedAt)}
-                </p>
-              </>
-            ) : (
-              <p className="text-sm font-semibold">
-                La vostra storia inizia qui: il contatore parte dal giorno che scegliete voi.
-              </p>
-            )}
+            <p className="flex items-baseline gap-2">
+              <CountUp
+                to={days}
+                separator="."
+                duration={1.4}
+                className={`font-display text-6xl font-semibold leading-none tabular-nums ${
+                  onPhoto ? '' : 'text-accent-ink'
+                }`}
+              />
+              <span
+                className={`font-display text-xl font-semibold ${
+                  onPhoto ? 'text-white/90' : 'text-accent-ink'
+                }`}
+              >
+                giorni insieme
+              </span>
+            </p>
+            <p className={`mt-1 text-xs ${onPhoto ? 'text-white/80' : 'text-ink-muted'}`}>
+              dal {formatDateIt(couple.startedAt)}
+            </p>
           </div>
-        </div>
+        ) : (
+          <p className="max-w-xs font-display text-xl font-semibold text-balance">
+            La vostra storia inizia qui: il contatore parte dal giorno che scegliete voi.
+          </p>
+        )}
 
         <div className="flex flex-wrap items-center gap-2">
           {members.map((member) => (
             <span
               key={member.userId}
-              className={`flex items-center gap-2 rounded-full py-0.5 pl-0.5 pr-3 text-xs font-semibold ${
-                onPhoto ? 'bg-white/20' : 'bg-surface/80 ring-1 ring-line'
+              className={`flex items-center gap-2 rounded-full py-0.5 pl-0.5 pr-3 text-xs font-semibold backdrop-blur ${
+                onPhoto ? 'bg-white/20' : 'bg-surface/75 ring-1 ring-line/70'
               }`}
             >
-              {member.avatarUrl ? (
-                <img
-                  src={member.avatarUrl}
-                  alt=""
-                  className="h-7 w-7 rounded-full object-cover ring-1 ring-white/40"
-                />
-              ) : (
-                <span
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold ${
-                    onPhoto ? 'bg-white/25 text-white' : 'bg-sage-300 text-sage-700'
-                  }`}
-                >
-                  {initials(member.displayName)}
-                </span>
-              )}
+              <Avatar
+                name={member.displayName}
+                url={member.avatarUrl}
+                size="sm"
+                onPhoto={onPhoto}
+                className="ring-0"
+              />
               {member.displayName}
             </span>
           ))}
+          {!partner && (
+            <ButtonLink
+              to="/pair"
+              className={onPhoto ? 'bg-none bg-white/25 shadow-none hover:bg-white/35' : ''}
+            >
+              Invita il partner
+            </ButtonLink>
+          )}
         </div>
-
-        {!partner && (
-          <Link
-            to="/pair"
-            viewTransition
-            className={`inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition ${
-              onPhoto
-                ? 'bg-white/20 text-white hover:bg-white/30'
-                : 'bg-accent-600 text-white hover:bg-accent-700'
-            }`}
-          >
-            Invita il partner
-          </Link>
-        )}
       </div>
     </section>
   )

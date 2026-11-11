@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import {
   addMonths,
@@ -11,6 +11,7 @@ import {
 } from '../../core/dates'
 import { Button, Card, ErrorBanner, Select, Spinner, TextInput } from '../../ui/components'
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { CycleLogEditor } from './CycleLogEditor'
@@ -195,21 +196,13 @@ export function CyclePage() {
 
   if (consentAt === null) {
     return (
-      <div className="space-y-5 pt-2">
-        <header className="flex items-start gap-2">
-          <Link
-            to="/profile"
-            aria-label="Torna al Profilo"
-            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-          >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-balance text-2xl font-bold text-ink">Ciclo</h1>
-            <p className="text-sm text-ink-muted">Un diario personale, con riepiloghi
-              condivisibili quando vuoi.</p>
-          </div>
-        </header>
+      <div className="space-y-5 pt-2 lg:max-w-2xl">
+        <PageHeader
+          title="Ciclo"
+          description="Un diario personale, con riepiloghi condivisibili quando vuoi."
+          backTo="/profile"
+          backLabel="Torna al Profilo"
+        />
 
         {formError && <ErrorBanner message={formError} />}
 
@@ -229,22 +222,13 @@ export function CyclePage() {
   }
 
   return (
-    <div className="space-y-5 pt-2">
-      <header className="flex items-start gap-2">
-        <Link
-          to="/profile"
-          aria-label="Torna al Profilo"
-          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Link>
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Ciclo</h1>
-          <p className="text-sm text-ink-muted">
-            Solo tuo; al partner arrivano soltanto i riepiloghi che condividi.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-5 pt-2 lg:max-w-2xl">
+      <PageHeader
+        title="Ciclo"
+        description="Solo tuo; al partner arrivano soltanto i riepiloghi che condividi."
+        backTo="/profile"
+        backLabel="Torna al Profilo"
+      />
 
       {error && <ErrorBanner message={error} />}
       {formError && <ErrorBanner message={formError} />}
@@ -312,7 +296,7 @@ export function CyclePage() {
       </Card>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="font-display text-lg font-semibold text-ink">
           {formatDateIt(selectedKey)}
         </h2>
 
@@ -353,16 +337,15 @@ export function CyclePage() {
         ) : (
           <Card className="flex items-center justify-between gap-3">
             <p className="text-xs text-ink-muted">Nessun segno per questo giorno.</p>
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={() => {
                 setFormError(null)
                 setEditorOpen(true)
               }}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-accent-700"
             >
               <PlusIcon className="h-4 w-4" /> Aggiungi
-            </button>
+            </Button>
           </Card>
         )}
       </section>
@@ -394,7 +377,7 @@ export function CyclePage() {
       </Card>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="font-display text-lg font-semibold text-ink">
           Riepiloghi condivisi
         </h2>
 

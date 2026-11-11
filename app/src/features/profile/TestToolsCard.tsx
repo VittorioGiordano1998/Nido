@@ -44,7 +44,7 @@ export function TestToolsCard() {
 
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-muted">
+      <h2 className="mb-3 font-display text-lg font-semibold text-ink">
         Zona test
       </h2>
 

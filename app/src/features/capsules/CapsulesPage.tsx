@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt, fromDateKey, toDateKey } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { Button, Card, EmptyState, ErrorBanner } from '../../ui/components'
 import { NestIllustration } from '../../ui/illustrations'
-import { ChevronLeftIcon, PlusIcon } from '../../ui/icons'
+import { PlusIcon } from '../../ui/icons'
 import { useToast } from '../../ui/toast'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { CapsuleEditor } from './CapsuleEditor'
 import { useCapsules } from './useCapsules'
@@ -95,7 +95,7 @@ export function CapsulesPage() {
     return (
       <li key={capsule.id}>
         <button type="button" onClick={() => openEdit(capsule)} className="w-full">
-          <Card className="w-full text-left transition hover:ring-accent-300">
+          <Card interactive className="w-full text-left">
             <span className="block truncate text-sm font-semibold text-ink">
               {capsule.title.trim() || 'Senza titolo'}
             </span>
@@ -139,30 +139,17 @@ export function CapsulesPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2">
-          <Link
-            to="/us"
-            aria-label="Torna a Noi"
-            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-          >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-balance text-2xl font-bold text-ink">Capsule del tempo</h1>
-            <p className="text-sm text-ink-muted">
-              Scrivi oggi, leggi il giorno scelto: il partner non può aprirla prima.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={openNew}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
-        >
-          <PlusIcon className="h-4 w-4" /> Capsula
-        </button>
-      </header>
+      <PageHeader
+        title="Capsule del tempo"
+        description="Scrivi oggi, leggi il giorno scelto: il partner non può aprirla prima."
+        backTo="/us"
+        backLabel="Torna a Noi"
+        action={
+          <Button size="sm" onClick={openNew}>
+            <PlusIcon className="h-4 w-4" /> Capsula
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
 
@@ -174,13 +161,12 @@ export function CapsulesPage() {
           title="Nessuna capsula"
           description="Scrivete qualcosa oggi e scegliete il giorno in cui l'altro lo leggerà."
           action={
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={openNew}
-              className="rounded-xl bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
             >
               Scrivi la prima capsula
-            </button>
+            </Button>
           }
         />
       ) : (
@@ -195,7 +181,7 @@ export function CapsulesPage() {
                 description="Sigilla la prima: il testo resta chiuso fino alla data scelta."
               />
             ) : (
-              <ul className="space-y-2">{mine.map((capsule) => renderMine(capsule))}</ul>
+              <ul className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">{mine.map((capsule) => renderMine(capsule))}</ul>
             )}
           </section>
 
@@ -204,7 +190,7 @@ export function CapsulesPage() {
               <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 Capsule aperte del partner
               </h2>
-              <ul className="space-y-2">{theirs.map((capsule) => renderTheirs(capsule))}</ul>
+              <ul className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">{theirs.map((capsule) => renderTheirs(capsule))}</ul>
             </section>
           )}
         </div>

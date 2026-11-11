@@ -11,7 +11,7 @@ export function CycleCard({ visible = true }: { visible?: boolean }) {
 
   return (
     <Link to="/cycle" className="block">
-      <Card className="flex items-center justify-between gap-3 transition hover:ring-accent-300">
+      <Card interactive className="flex items-center justify-between gap-3">
         <span className="min-w-0">
           <span className="block text-sm font-semibold text-ink">Ciclo</span>
           <span className="block text-xs text-ink-muted">

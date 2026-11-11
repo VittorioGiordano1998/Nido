@@ -27,7 +27,7 @@ export function PersonalizationCard() {
 
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-muted">
+      <h2 className="mb-3 font-display text-lg font-semibold text-ink">
         Personalizzazione
       </h2>
       <div className="space-y-4">
@@ -43,7 +43,7 @@ export function PersonalizationCard() {
                 aria-pressed={theme === option.value}
                 onClick={() => changeTheme(option.value)}
                 className={`flex-1 rounded-lg py-2 transition ${
-                  theme === option.value ? 'bg-surface text-ink shadow-sm' : 'text-ink-muted'
+                  theme === option.value ? 'bg-surface text-ink shadow-card' : 'text-ink-muted'
                 }`}
               >
                 {option.label}

@@ -94,3 +94,34 @@ export function toTimeInput(iso: string): string {
   const date = new Date(iso)
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
 }
+
+/** Giorni di calendario da oggi a un istante (0 = oggi, negativo = passato). */
+export function daysUntil(target: Date, today = new Date()): number {
+  const targetUtc = Date.UTC(target.getFullYear(), target.getMonth(), target.getDate())
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+  return Math.round((targetUtc - todayUtc) / 86_400_000)
+}
+
+/** `oggi`, `domani`, `tra 5 giorni`: la distanza in parole, per i conti alla rovescia. */
+export function relativeDayLabel(days: number): string {
+  if (days <= 0) return 'oggi'
+  if (days === 1) return 'domani'
+  return `tra ${days} giorni`
+}
+
+/** I sette giorni (da lunedì a domenica) della settimana che contiene `date`. */
+export function weekDays(date = new Date()): Array<{ date: Date; key: string }> {
+  const mondayOffset = (date.getDay() + 6) % 7
+  return Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(date.getFullYear(), date.getMonth(), date.getDate() - mondayOffset + index)
+    return { date: day, key: toDateKey(day) }
+  })
+}
+
+/** `Buongiorno`, `Buon pomeriggio` o `Buonasera` secondo l'ora locale. */
+export function greetingFor(date = new Date()): string {
+  const hour = date.getHours()
+  if (hour >= 5 && hour < 13) return 'Buongiorno'
+  if (hour >= 13 && hour < 18) return 'Buon pomeriggio'
+  return 'Buonasera'
+}

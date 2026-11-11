@@ -9,7 +9,7 @@ export function CoupleCard() {
 
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-muted">
+      <h2 className="mb-3 font-display text-lg font-semibold text-ink">
         La vostra coppia
       </h2>
       <div className="space-y-2 text-sm">

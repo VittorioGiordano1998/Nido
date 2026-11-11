@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt } from '../../core/dates'
 import { Button, Card, ErrorBanner, TextArea } from '../../ui/components'
-import { CheckIcon, ChevronLeftIcon, CloseIcon } from '../../ui/icons'
+import { CheckIcon, CloseIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { currentWeekStart, useWeekPlan } from './useWeekPlan'
@@ -117,22 +117,13 @@ export function PlanPage() {
   )
 
   return (
-    <div className="space-y-5 pt-2">
-      <header className="flex items-start gap-2">
-        <Link
-          to="/us"
-          aria-label="Torna a Noi"
-          className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Link>
-        <div className="space-y-1">
-          <h1 className="text-balance text-2xl font-bold text-ink">Piano settimanale</h1>
-          <p className="text-sm text-ink-muted">
-            Una proposta a settimana da fare insieme, da accettare o rilanciare.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-5 pt-2 lg:max-w-2xl">
+      <PageHeader
+        title="Piano settimanale"
+        description="Una proposta a settimana da fare insieme, da accettare o rilanciare."
+        backTo="/us"
+        backLabel="Torna a Noi"
+      />
 
       {error && <ErrorBanner message={error} />}
       {formError && <ErrorBanner message={formError} />}
@@ -142,7 +133,7 @@ export function PlanPage() {
       ) : (
         <>
           <section className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+            <h2 className="font-display text-lg font-semibold text-ink">
               Questa settimana
             </h2>
 
@@ -167,14 +158,13 @@ export function PlanPage() {
                     <p className="text-xs text-ink-faint">In attesa di {partnerName}…</p>
                   ) : (
                     <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
+                      <Button
+                        size="sm"
                         onClick={() => void handleStatus(active.id, 'accepted')}
                         disabled={saving}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-accent-700 disabled:opacity-50"
                       >
                         <CheckIcon className="h-4 w-4" /> Accetta
-                      </button>
+                      </Button>
                       <button
                         type="button"
                         onClick={() => void handleStatus(active.id, 'declined')}
@@ -241,7 +231,7 @@ export function PlanPage() {
 
           {history.length > 0 && (
             <section className="space-y-2">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
+              <h2 className="font-display text-lg font-semibold text-ink">
                 Le settimane passate
               </h2>
               <ul className="space-y-2">

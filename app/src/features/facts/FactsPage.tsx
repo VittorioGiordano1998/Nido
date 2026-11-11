@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { Button, Card, EmptyState, ErrorBanner, Field, TextInput } from '../../ui/components'
-import { ChevronLeftIcon, CloseIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { Sheet } from '../../ui/Sheet'
+import { PlusIcon, TrashIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { useFacts } from './useFacts'
@@ -53,99 +54,73 @@ function FactEditor({
   }
 
   return (
-    <div
-      role="presentation"
-      onClick={onClose}
-      className="fixed inset-0 z-30 flex items-end justify-center bg-scrim backdrop-blur-[2px] sm:items-center sm:p-6"
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={fact ? 'Modifica scheda' : 'Nuova scheda'}
-        onClick={(event) => event.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-canvas p-5 shadow-xl sm:rounded-3xl"
-      >
-        <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-ink">
-            {fact ? 'Modifica scheda' : 'Nuova scheda'}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Chiudi"
-            className="rounded-lg p-1.5 text-ink-faint hover:bg-surface-soft hover:text-ink-soft"
-          >
-            <CloseIcon className="h-5 w-5" />
-          </button>
-        </header>
-
-        <div className="space-y-4">
-          <Field label="Voce">
+    <Sheet title={fact ? 'Modifica scheda' : 'Nuova scheda'} onClose={onClose}>
+      <div className="space-y-4">
+        <Field label="Voce">
+          <TextInput
+            autoFocus
+            value={label}
+            onChange={(event) => setLabel(event.target.value)}
+            placeholder="Es. Numero di scarpe"
+          />
+        </Field>
+        <Field label="Valore">
+          <TextInput
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            placeholder="Es. 42"
+          />
+        </Field>
+        <Field label="Categoria">
+          <div className="space-y-2">
             <TextInput
-              autoFocus
-              value={label}
-              onChange={(event) => setLabel(event.target.value)}
-              placeholder="Es. Numero di scarpe"
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+              placeholder="Es. Taglie"
             />
-          </Field>
-          <Field label="Valore">
-            <TextInput
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              placeholder="Es. 42"
-            />
-          </Field>
-          <Field label="Categoria">
-            <div className="space-y-2">
-              <TextInput
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                placeholder="Es. Taglie"
-              />
-              <div className="flex flex-wrap gap-1.5">
-                {CATEGORY_SUGGESTIONS.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => setCategory(suggestion)}
-                    className="rounded-full bg-surface-soft px-2.5 py-1 text-xs font-semibold text-ink-soft transition hover:bg-accent-100 hover:text-accent-ink"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-1.5">
+              {CATEGORY_SUGGESTIONS.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => setCategory(suggestion)}
+                  className="rounded-full bg-surface-soft px-2.5 py-1 text-xs font-semibold text-ink-soft transition hover:bg-accent-100 hover:text-accent-ink"
+                >
+                  {suggestion}
+                </button>
+              ))}
             </div>
-          </Field>
+          </div>
+        </Field>
 
-          {validationError && <ErrorBanner message={validationError} />}
-          {error && <ErrorBanner message={error} />}
+        {validationError && <ErrorBanner message={validationError} />}
+        {error && <ErrorBanner message={error} />}
 
-          <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-2 pt-1">
+          <Button
+            type="button"
+            loading={saving}
+            onClick={() => void handleSubmit()}
+            className="flex-1"
+          >
+            {fact ? 'Salva' : 'Aggiungi'}
+          </Button>
+          {fact && (
             <Button
               type="button"
-              loading={saving}
-              onClick={() => void handleSubmit()}
-              className="flex-1"
+              variant="ghost"
+              disabled={saving}
+              onClick={() => {
+                if (window.confirm('Eliminare questa scheda?')) void onDelete(fact.id)
+              }}
+              className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
             >
-              {fact ? 'Salva' : 'Aggiungi'}
+              <TrashIcon className="h-4 w-4" /> Elimina
             </Button>
-            {fact && (
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={saving}
-                onClick={() => {
-                  if (window.confirm('Eliminare questa scheda?')) void onDelete(fact.id)
-                }}
-                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/60"
-              >
-                <TrashIcon className="h-4 w-4" /> Elimina
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </div>
+    </Sheet>
   )
 }
 
@@ -225,34 +200,24 @@ export function FactsPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2">
-          <Link
-            to="/us"
-            aria-label="Torna a Noi"
-            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
+      <PageHeader
+        title="Cosa c'è da sapere"
+        description="Le cose utili da ricordare, senza doverle chiedere."
+        backTo="/us"
+        backLabel="Torna a Noi"
+        action={
+          <Button
+            size="sm"
+            onClick={() => {
+              setFormError(null)
+              setEditor({ fact: null, subjectId: activeSubject })
+            }}
+            disabled={!activeSubject}
           >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-balance text-2xl font-bold text-ink">Cosa c'è da sapere</h1>
-            <p className="text-sm text-ink-muted">
-              Le cose utili da ricordare, senza doverle chiedere.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setFormError(null)
-            setEditor({ fact: null, subjectId: activeSubject })
-          }}
-          disabled={!activeSubject}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-accent-300"
-        >
-          <PlusIcon className="h-4 w-4" /> Scheda
-        </button>
-      </header>
+            <PlusIcon className="h-4 w-4" /> Scheda
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
 
@@ -291,7 +256,7 @@ export function FactsPage() {
               <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 {category}
               </h2>
-              <ul className="space-y-2">
+              <ul className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">
                 {factsInGroup.map((fact) => (
                   <li key={fact.id}>
                     <button
@@ -302,7 +267,7 @@ export function FactsPage() {
                       }}
                       className="w-full"
                     >
-                      <Card className="flex items-center justify-between gap-3 text-left transition hover:ring-accent-300">
+                      <Card interactive className="flex items-center justify-between gap-3 text-left">
                         <span className="min-w-0">
                           <span className="block truncate text-xs font-semibold uppercase tracking-wide text-ink-faint">
                             {fact.label}

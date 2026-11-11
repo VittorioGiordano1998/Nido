@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
 import { formatDateIt } from '../../core/dates'
-import { Card, EmptyState, ErrorBanner } from '../../ui/components'
-import { CheckIcon, ChevronLeftIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { Button, Card, EmptyState, ErrorBanner } from '../../ui/components'
+import { CheckIcon, PlusIcon, TrashIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { useCouple } from '../coupling/CoupleProvider'
 import { DecisionEditor } from './DecisionEditor'
@@ -71,33 +71,23 @@ export function DecisionsPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2">
-          <Link
-            to="/us"
-            aria-label="Torna a Noi"
-            className="mt-0.5 rounded-lg p-1.5 text-ink-muted transition hover:bg-surface-soft"
+      <PageHeader
+        title="Decisioni alla cieca"
+        description="Votate di nascosto, poi rivelate e scoprite se siete d'accordo."
+        backTo="/us"
+        backLabel="Torna a Noi"
+        action={
+          <Button
+            size="sm"
+            onClick={() => {
+              setFormError(null)
+              setEditorOpen(true)
+            }}
           >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-balance text-2xl font-bold text-ink">Decisioni alla cieca</h1>
-            <p className="text-sm text-ink-muted">
-              Votate di nascosto, poi rivelate e scoprite se siete d'accordo.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setFormError(null)
-            setEditorOpen(true)
-          }}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-700"
-        >
-          <PlusIcon className="h-4 w-4" /> Nuova
-        </button>
-      </header>
+            <PlusIcon className="h-4 w-4" /> Nuova
+          </Button>
+        }
+      />
 
       {error && <ErrorBanner message={error} />}
       {formError && <ErrorBanner message={formError} />}
@@ -110,7 +100,7 @@ export function DecisionsPage() {
           description="Crea la prima: una domanda e due o più opzioni, da votare in segreto."
         />
       ) : (
-        <ul className="space-y-2">
+        <ul className="grid grid-cols-1 items-start gap-2.5 lg:grid-cols-2">
           {decisions.map((decision) => {
             const revealed = decision.revealedAt !== null
             const allVotes: DecisionVote[] = votes.filter(

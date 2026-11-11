@@ -3,9 +3,10 @@ import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { CardListSkeleton } from '../../ui/Skeleton'
-import { Button, EmptyState, ErrorBanner, TextInput } from '../../ui/components'
+import { Button, EmptyState, ErrorBanner, NoMatches, TextInput } from '../../ui/components'
 import { SearchField } from '../../ui/SearchField'
 import { ChevronRightIcon, ListIcon, PlusIcon } from '../../ui/icons'
+import { PageHeader } from '../../ui/PageHeader'
 import { BackdropPhoto } from './BackdropPhoto'
 import { useLists } from './useLists'
 import { usePhotoUrls } from './usePhotoUrls'
@@ -60,12 +61,10 @@ export function ListsPage() {
 
   return (
     <div className="space-y-5 pt-2">
-      <header className="space-y-1">
-        <h1 className="text-balance text-2xl font-bold text-ink">Liste</h1>
-        <p className="text-sm text-ink-muted">
-          Spesa, film, valigie: tutto quello che fate insieme.
-        </p>
-      </header>
+      <PageHeader
+        title="Liste"
+        description="Spesa, film, valigie: tutto quello che fate insieme."
+      />
 
       {error && <ErrorBanner message={error} />}
 
@@ -99,20 +98,20 @@ export function ListsPage() {
           description="Create la prima: spesa, film da vedere, valigie…"
         />
       ) : visibleLists.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-line-strong bg-surface/60 px-4 py-6 text-center text-sm text-ink-faint">
+        <NoMatches>
           Nessuna lista corrisponde a «{query.trim()}».
-        </p>
+        </NoMatches>
       ) : (
-        <ul className="space-y-2">
+        <ul className="stagger grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleLists.map((list) => {
             const count = counts.get(list.id) ?? { open: 0, total: 0 }
             const coverUrl = list.coverPath ? (coverUrls[list.coverPath] ?? null) : null
             return (
               <li key={list.id}>
-                <Link to={`/lists/${list.id}`} className="block">
+                <Link to={`/lists/${list.id}`} viewTransition className="block">
                   <div
-                    className={`relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl shadow-sm ring-1 ring-line/70 transition hover:ring-accent-300 ${
-                      coverUrl ? 'h-24' : 'bg-surface p-4'
+                    className={`relative flex h-24 items-center justify-between gap-3 overflow-hidden rounded-2xl shadow-card ring-1 ring-line/60 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift hover:ring-accent-300 ${
+                      coverUrl ? '' : 'bg-surface p-4'
                     }`}
                   >
                     {coverUrl && list.coverPath && (
@@ -123,7 +122,7 @@ export function ListsPage() {
                     )}
                     <span className={`relative z-10 min-w-0 ${coverUrl ? 'pl-4' : ''}`}>
                       <span
-                        className={`block truncate text-sm font-semibold ${
+                        className={`block truncate font-display text-lg font-semibold ${
                           coverUrl ? 'text-white' : 'text-ink'
                         }`}
                       >
