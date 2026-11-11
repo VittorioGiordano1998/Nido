@@ -3,6 +3,10 @@
     "scaffold": {
       "command": "node",
       "args": ["tools/scaffold.mjs", "mcp"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
     }
   }
 }
