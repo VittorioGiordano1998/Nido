@@ -2,7 +2,7 @@
 
 This folder is the registry of known issues; each record lives in its own `KI-<OWNER>-<NNN>-<slug>.md` file in the subfolder matching its status. New records are created from `KNOWN_ISSUE_TEMPLATE.md` and move subfolders when fixed (`fixed/`) or declined (`wont-fix/`).
 
-2 issues — 0 Open · 2 Fixed · 0 Won't fix
+3 issues — 0 Open · 3 Fixed · 0 Won't fix
 
 ## Open
 
@@ -15,6 +15,7 @@ This folder is the registry of known issues; each record lives in its own `KI-<O
 | --- | --- | --- | --- | --- | --- |
 | [KI-VITTORIOGIORDANOYBQ-001](fixed/KI-VITTORIOGIORDANOYBQ-001-events-private-visibility-is-not-enforced-by-rls.md) | Events: 'private' visibility is not enforced by RLS | supabase | Medium | 2026-10-14 | 2026-10-14 |
 | [KI-VITTORIOGIORDANOYBQ-002](fixed/KI-VITTORIOGIORDANOYBQ-002-realtime-two-hooks-on-the-same-channel-topic-crash-the-secon.md) | Realtime: two hooks on the same channel topic crash the second subscriber | realtime | Medium | 2026-10-15 | 2026-10-15 |
+| [KI-VITTORIOGIORDANOYBQ-003](fixed/KI-VITTORIOGIORDANOYBQ-003-reloading-a-page-inside-the-app-lands-on-home.md) | Reloading a page inside the app lands on Home | coupling | Medium | 2026-11-11 | 2026-11-11 |
 
 ## Won't Fix
 

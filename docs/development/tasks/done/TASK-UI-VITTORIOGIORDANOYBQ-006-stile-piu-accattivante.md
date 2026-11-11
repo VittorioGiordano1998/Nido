@@ -1,10 +1,10 @@
 ---
 id: TASK-UI-VITTORIOGIORDANOYBQ-006
 owner: VITTORIOGIORDANOYBQ
-type: null
+type: Style
 status: Done
-area: UI
-severity: null
+area: ui polish
+severity: Low
 opened: 2026-10-22
 done: 2026-10-22
 next: null
