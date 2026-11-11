@@ -147,11 +147,17 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
   const [couple, setCouple] = useState<CoupleInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // The user the couple was last resolved for. Until it matches the signed-in
+  // user the couple is still unknown: without this, the render between "session
+  // arrived" and "fetch started" reads as "no couple" and a reload on any page
+  // bounces through /pair to Home.
+  const [resolvedFor, setResolvedFor] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     if (!userId) {
       setCouple(null)
       setError(null)
+      setResolvedFor(null)
       setLoading(false)
       return
     }
@@ -162,6 +168,7 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Errore di caricamento.')
     } finally {
+      setResolvedFor(userId)
       setLoading(false)
     }
   }, [userId])
@@ -170,10 +177,12 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
     void refresh()
   }, [refresh])
 
+  const pending = loading || (userId !== null && resolvedFor !== userId)
+
   const value = useMemo<CoupleContextValue>(
     () => ({
       couple,
-      loading,
+      loading: pending,
       error,
       refresh,
       createCouple: async ({ name, startedAt }) => {
@@ -192,7 +201,7 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
         await refresh()
       },
     }),
-    [couple, loading, error, refresh],
+    [couple, pending, error, refresh],
   )
 
   return <CoupleContext.Provider value={value}>{children}</CoupleContext.Provider>
