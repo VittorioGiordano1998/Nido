@@ -32,3 +32,6 @@ Thumbs.db
 # ── Project ─────────────────────────────────────────────────────────────────
 # Supabase CLI local state (project link and pooler info), machine-local.
 supabase/.temp/
+# Playwright MCP output (screenshots and console logs of the running app):
+# they can show personal data, and this repository is public.
+/.playwright-mcp/
