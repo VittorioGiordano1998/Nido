@@ -28,6 +28,13 @@ sviluppata da zero: codice, testi, grafica e brand originali.
 | 2026-10-15 | [jsbarcode](https://github.com/lindell/JsBarcode) | MIT | Rendering locale dei codici a barre (Code 128, EAN-13, Code 39) nella sezione Tessere; i QR usano `react-qr-code` |
 | 2026-10-16 | [JSZip](https://stuk.github.io/jszip/) | MIT (o GPLv3, a scelta) | Archivio ZIP dell'export dati (GDPR) dal Profilo; caricato solo al momento dell'esportazione (import dinamico) |
 
+## Font
+
+| Data | Font | Licenza | Cosa è stato incluso |
+| --- | --- | --- | --- |
+| 2026-11-11 | [Fraunces](https://github.com/undercasetype/Fraunces) via `@fontsource-variable/fraunces` | SIL Open Font License 1.1 | Font dei titoli (variante `soft`), servito dal nostro stesso dominio dentro il bundle; nessuna richiesta a servizi esterni |
+| 2026-11-11 | [Figtree](https://github.com/erikdkennedy/figtree) via `@fontsource-variable/figtree` | SIL Open Font License 1.1 | Font del testo, servito dal nostro stesso dominio dentro il bundle; nessuna richiesta a servizi esterni |
+
 ## Servizi esterni
 
 | Data | Servizio | Ruolo | Cosa |

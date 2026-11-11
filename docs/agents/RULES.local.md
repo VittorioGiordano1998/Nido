@@ -43,10 +43,15 @@ Never the reverse. The database schema has a single source of truth:
 
 ## Project conventions
 
-- **Private repository, no unsolicited push.** `origin` points to
+- **Public repository, no unsolicited push.** `origin` points to
   `github.com/VittorioGiordano1998/Nido` (the owner's account) and stays the only remote;
   agents commit locally and never push — the owner pushes. Record moves and index
   regeneration work without a git repository.
+- **Nothing sensitive in tracked files.** Everything pushed is world-readable: no keys,
+  tokens, project refs, real email addresses, real names or personal data in code, tests,
+  records, docs or commit messages. Test credentials are never written to a file;
+  screenshots and logs of the running app stay out of the repository (`.playwright-mcp/` is
+  ignored). Fixtures use invented data.
 - UI language is Italian; code, comments, docs and records are English.
 - No hard-coded endpoints or keys: the Supabase URL and anon key live in `app/.env.local`,
   read through `app/src/core/env.ts`. A missing value shows the in-app setup screen instead
@@ -56,6 +61,12 @@ Never the reverse. The database schema has a single source of truth:
 - Vendored third-party UI components live in `app/src/ui/reactbits/` (source + license
   header per file, registered in `docs/legal/LEGAL-NOTES.md`). They stay Views: no app logic
   inside, theme colors mapped to the clay/sage tokens.
+- Shared view primitives live in `app/src/ui/`: `Sheet` (every modal), `PageHeader` and
+  `SectionHeader` (page and section titles), `Button` / `ButtonLink`, `Card`, `IconTile`,
+  `Avatar`, `EntryLayout` (screens outside the shell). Use them instead of hand-written
+  markup; colors, fonts and shadows come only from the tokens in `app/src/index.css`.
+- Fonts are self-hosted (`@fontsource-variable/*`, bundled by Vite): the CSP in
+  `app/vercel.json` allows same-origin fonts only.
 - On this machine npm must be run through `cmd /c` (the PowerShell execution policy blocks
   the `.ps1` shims).
 - Product plan lives in the `PLAN-VITTORIOGIORDANOYBQ-001` record
