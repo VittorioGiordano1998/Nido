@@ -182,9 +182,14 @@ export function TaskAttachmentsSheet({
                       </p>
                       <div className="flex flex-wrap items-center gap-1.5">
                         {attachment.isBackdrop ? (
-                          <span className="rounded-full bg-accent-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                            Sfondo
-                          </span>
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => openFraming(attachment, 'backdrop')}
+                            className="rounded-full bg-accent-600 px-2 py-0.5 text-[11px] font-semibold text-white transition hover:bg-accent-700 disabled:opacity-50"
+                          >
+                            Sfondo · inquadra
+                          </button>
                         ) : (
                           <button
                             type="button"
