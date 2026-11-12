@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { AppRouter } from './app/router'
 import { ErrorBoundary } from './app/ErrorBoundary'
+import { applyBrandIcons, readCachedAppearance } from './core/appearance'
 import { isSupabaseConfigured } from './core/env'
 import { SetupScreen } from './core/SetupScreen'
 import { AuthProvider } from './features/auth/AuthProvider'
@@ -14,6 +15,10 @@ import { ToastProvider } from './ui/toast'
 
 const rootEl = document.getElementById('root')
 if (!rootEl) throw new Error('Elemento #root non trovato')
+
+// The pre-paint script tints the page; the tab and home-screen icons follow
+// the cached accent here, so even the login screen shows the right one.
+applyBrandIcons(readCachedAppearance().accent)
 
 function SetupGate({ children }: { children: ReactNode }) {
   if (!isSupabaseConfigured) return <SetupScreen />

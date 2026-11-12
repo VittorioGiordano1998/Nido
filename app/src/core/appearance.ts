@@ -72,6 +72,41 @@ export function readThemeColor(token: string, fallback: string): string {
   return value || fallback
 }
 
+/** Paper tone of the glyph on the favicon tile: fixed, it does not flip with the theme. */
+const ICON_PAPER = '#faf7f3'
+
+/**
+ * The favicon drawing in the given tile color. Same geometry as
+ * public/favicon.svg and ui/Brand.tsx (BrandMark): keep the three in step.
+ */
+function brandIconSvg(tile: string): string {
+  return (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+    `<rect width="64" height="64" rx="15" fill="${tile}"/>` +
+    `<path d="M14 52V31a18 18 0 0 1 36 0v21" fill="none" stroke="${ICON_PAPER}" stroke-width="6.5" stroke-linecap="round"/>` +
+    `<ellipse cx="32" cy="40" rx="7" ry="8.8" fill="${ICON_PAPER}"/>` +
+    '</svg>'
+  )
+}
+
+/**
+ * Tints the browser tab icon and the iOS home-screen icon with the accent in
+ * use. The static files (public/favicon.svg, apple-touch-icon.png) are the
+ * default-accent fallback; the other accents get a data-URL SVG for the tab
+ * and a prebuilt public/apple-touch-icon-<accent>.png.
+ */
+export function applyBrandIcons(accent: Accent): void {
+  const swatch = ACCENT_OPTIONS.find((option) => option.value === accent)?.swatch
+  const tab = document.querySelector<HTMLLinkElement>('link[rel="icon"][type="image/svg+xml"]')
+  if (tab && swatch) {
+    tab.href = `data:image/svg+xml,${encodeURIComponent(brandIconSvg(swatch))}`
+  }
+  const touch = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]')
+  if (touch) {
+    touch.href = accent === DEFAULT_ACCENT ? '/apple-touch-icon.png' : `/apple-touch-icon-${accent}.png`
+  }
+}
+
 /**
  * Applies the pair to the document, updates the browser chrome color and
  * refreshes the cache the pre-paint script reads. One DOM side effect; the
@@ -82,6 +117,7 @@ export function applyAppearance(theme: Theme, accent: Accent): void {
   const root = document.documentElement
   root.dataset.theme = resolved
   root.dataset.accent = accent
+  applyBrandIcons(accent)
 
   // The canvas color comes from the CSS tokens: one source of truth.
   const canvas = getComputedStyle(root).getPropertyValue('--color-canvas').trim()
