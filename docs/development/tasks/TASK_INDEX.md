@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-74 tasks — 8 Proposed · 0 Ready · 38 In Progress · 0 Blocked · 28 Done · 0 Cancelled
+76 tasks — 8 Proposed · 0 Ready · 38 In Progress · 0 Blocked · 30 Done · 0 Cancelled
 
 ## Proposed
 
@@ -74,6 +74,8 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 
 | ID | Task | Type | Area | Severity | Opened | Done |
 | --- | --- | --- | --- | --- | --- | --- |
+| [TASK-APP-VITTORIOGIORDANOYBQ-001](done/TASK-APP-VITTORIOGIORDANOYBQ-001-redesign-the-nido-app-icon-favicon-in-app-brand-mark.md) | Redesign the Nido app icon (favicon + in-app brand mark) | Feature | app | Low | 2026-11-12 | 2026-11-12 |
+| [TASK-APP-VITTORIOGIORDANOYBQ-002](done/TASK-APP-VITTORIOGIORDANOYBQ-002-make-the-favicon-and-touch-icon-follow-the-chosen-accent.md) | Make the favicon and touch icon follow the chosen accent | Feature | app | Low | 2026-11-12 | 2026-11-12 |
 | [TASK-CAL-VITTORIOGIORDANOYBQ-001](done/TASK-CAL-VITTORIOGIORDANOYBQ-001-calendar-shared-events-with-visibility-and-realtime.md) | Calendar: shared events with visibility and realtime | Feature | calendar | High | 2026-10-14 | 2026-10-15 |
 | [TASK-CAL-VITTORIOGIORDANOYBQ-002](done/TASK-CAL-VITTORIOGIORDANOYBQ-002-calendar-recurrences-rrule-and-local-reminders.md) | Calendar: recurrences (RRULE) and local reminders | Feature | calendar | Medium | 2026-10-14 | 2026-10-15 |
 | [TASK-CAPS-VITTORIOGIORDANOYBQ-001](done/TASK-CAPS-VITTORIOGIORDANOYBQ-001-time-capsules-that-open-on-a-chosen-day.md) | Time capsules that open on a chosen day | Feature | capsules | Medium | 2026-10-14 | 2026-10-15 |
