@@ -2,7 +2,7 @@
 
 This folder holds one Markdown record per task, each in the subfolder matching its status; new records are created from `TASK_TEMPLATE.md` and move subfolders on every status change.
 
-72 tasks — 8 Proposed · 0 Ready · 37 In Progress · 0 Blocked · 27 Done · 0 Cancelled
+74 tasks — 8 Proposed · 0 Ready · 38 In Progress · 0 Blocked · 28 Done · 0 Cancelled
 
 ## Proposed
 
@@ -56,6 +56,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-ROB-VITTORIOGIORDANOYBQ-002](in-progress/TASK-ROB-VITTORIOGIORDANOYBQ-002-robustness-resync-when-the-app-comes-back-to-the-foreground.md) | Robustness: resync when the app comes back to the foreground | Feature | robustness | Low | 2026-10-16 | — |
 | [TASK-SAV-VITTORIOGIORDANOYBQ-001](in-progress/TASK-SAV-VITTORIOGIORDANOYBQ-001-savings-projects.md) | Savings projects | Feature | savings | Medium | 2026-10-15 | — |
 | [TASK-SEARCH-VITTORIOGIORDANOYBQ-001](in-progress/TASK-SEARCH-VITTORIOGIORDANOYBQ-001-search-per-section-text-filter-notes-lists-memories.md) | Search: per-section text filter (notes, lists, memories) | Feature | search | Low | 2026-10-16 | — |
+| [TASK-SEC-VITTORIOGIORDANOYBQ-002](in-progress/TASK-SEC-VITTORIOGIORDANOYBQ-002-security-review-of-the-database-edge-functions-storage-and-c.md) | Security review of the database, Edge Functions, storage and client | Chore | security | High | 2026-11-11 | — |
 | [TASK-STICK-VITTORIOGIORDANOYBQ-001](in-progress/TASK-STICK-VITTORIOGIORDANOYBQ-001-sticky-notes-quick-notes-you-leave-on-the-partner-s-home.md) | Sticky notes: quick notes you leave on the partner's Home | Feature | sticky notes | Low | 2026-10-16 | — |
 | [TASK-TEST-VITTORIOGIORDANOYBQ-001](in-progress/TASK-TEST-VITTORIOGIORDANOYBQ-001-test-tooling-reset-couple-data.md) | Test tooling: reset couple data | Feature | test tooling | Low | 2026-10-15 | — |
 | [TASK-UI-VITTORIOGIORDANOYBQ-001](in-progress/TASK-UI-VITTORIOGIORDANOYBQ-001-ui-toast-feedback-with-undo-for-destructive-actions.md) | UI: toast feedback with undo for destructive actions | Feature | ui polish | Medium | 2026-10-16 | — |
@@ -81,6 +82,7 @@ This folder holds one Markdown record per task, each in the subfolder matching i
 | [TASK-HOME-VITTORIOGIORDANOYBQ-001](done/TASK-HOME-VITTORIOGIORDANOYBQ-001-home-summary-next-events-and-open-tasks.md) | Home summary: next events and open tasks | Feature | home | Medium | 2026-10-14 | 2026-10-15 |
 | [TASK-HOME-VITTORIOGIORDANOYBQ-003](done/TASK-HOME-VITTORIOGIORDANOYBQ-003-home-countdown-week-strip-and-on-this-day.md) | Home: countdown, week strip and on this day | Feature | home | Medium | 2026-11-11 | 2026-11-11 |
 | [TASK-LIST-VITTORIOGIORDANOYBQ-001](done/TASK-LIST-VITTORIOGIORDANOYBQ-001-lists-shared-lists-with-check-items-and-assignment.md) | Lists: shared lists with check items and assignment | Feature | lists | High | 2026-10-14 | 2026-10-15 |
+| [TASK-LIST-VITTORIOGIORDANOYBQ-005](done/TASK-LIST-VITTORIOGIORDANOYBQ-005-let-the-user-re-frame-an-item-s-photo-backdrop-after-it-is-s.md) | Let the user re-frame an item's photo backdrop after it is set | Bug | lists | Low | 2026-11-12 | 2026-11-12 |
 | [TASK-NOTE-VITTORIOGIORDANOYBQ-001](done/TASK-NOTE-VITTORIOGIORDANOYBQ-001-notes-shared-notes-with-realtime-editing.md) | Notes: shared notes with realtime editing | Feature | notes | Medium | 2026-10-14 | 2026-10-15 |
 | [TASK-ONB-VITTORIOGIORDANOYBQ-001](done/TASK-ONB-VITTORIOGIORDANOYBQ-001-first-run-polish-onboarding-slides-and-invite-qr-code.md) | First-run polish: onboarding slides and invite QR code | Feature | onboarding | Low | 2026-10-15 | 2026-10-15 |
 | [TASK-PROF-VITTORIOGIORDANOYBQ-001](done/TASK-PROF-VITTORIOGIORDANOYBQ-001-profile-personalization-theme-accent-and-password-change.md) | Profile personalization: theme, accent and password change | Feature | profile and personalization | Medium | 2026-10-14 | 2026-10-15 |
