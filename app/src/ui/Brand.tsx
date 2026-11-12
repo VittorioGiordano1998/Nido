@@ -1,13 +1,19 @@
 /**
- * Brand: the Nido mark (a ring around a dot — the nest and what it holds, same
- * drawing as the favicon) and the serif wordmark.
+ * Brand: the Nido mark (a sheltering arch around an egg — the home and what it
+ * holds, same drawing as the favicon, minus the tile) and the serif wordmark.
+ * Keep it in step with app/public/favicon.svg.
  */
 
 export function BrandMark({ className = 'h-6 w-6' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" className={className}>
-      <circle cx="16" cy="16" r="11" stroke="currentColor" strokeWidth="3.5" />
-      <circle cx="16" cy="16" r="3.5" fill="currentColor" />
+    <svg viewBox="9.5 9 45 46.5" fill="none" aria-hidden="true" className={className}>
+      <path
+        d="M14 52V31a18 18 0 0 1 36 0v21"
+        stroke="currentColor"
+        strokeWidth="6.5"
+        strokeLinecap="round"
+      />
+      <ellipse cx="32" cy="40" rx="7" ry="8.8" fill="currentColor" />
     </svg>
   )
 }
